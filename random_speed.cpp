@@ -184,7 +184,7 @@ int main(int argc, char*argv[])
 #endif
     atoi(argv[1]);
 
-#if !defined(BOOST_NO_INT64_T) && \
+#if !defined(BOOST_NO_INT64_T) && !defined(BOOST_NO_INTEGRAL_INT64_T) && \
     !defined(BOOST_NO_INCLASS_MEMBER_INITIALIZATION)
   run(iter, "rand48", boost::rand48());
   linear_congruential<boost::uint64_t>
