@@ -2,7 +2,7 @@
  *
  * Copyright Jens Maurer 2000
  * Permission to use, copy, modify, sell, and distribute this software
- * is hereby granted without free provided that the above copyright notice
+ * is hereby granted without fee provided that the above copyright notice
  * appears in all copies and that both that copyright notice and this
  * permission notice appear in supporting documentation,
  *
@@ -18,6 +18,7 @@
 #include <string>
 #include <cassert>
 #include <cmath>
+#include <iterator>
 #include <boost/random.hpp>
 #include <boost/config.hpp>
 
@@ -89,7 +90,8 @@ void instantiate_iterator_interface(Generator & gen)
   (void) &ref;
   typename Generator::difference_type diff = 0;
   (void) &diff;
-  std::input_iterator_tag it(typename Generator::iterator_category());
+  typedef typename Generator::iterator_category iterator_category;
+  std::input_iterator_tag it = iterator_category();
   (void) &it;
 
   assert(res == *gen++);
