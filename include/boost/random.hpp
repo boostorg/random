@@ -37,6 +37,8 @@
 #ifndef BOOST_RANDOM_HPP
 #define BOOST_RANDOM_HPP
 
+#include <boost/random/variate_generator.hpp>
+
 // generators
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/additive_combine.hpp>
