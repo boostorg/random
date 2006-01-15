@@ -18,12 +18,20 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/random/variate_generator.hpp>
+#include <boost/random/normal_distribution.hpp>
 
 namespace boost {
 
-// correlated multi-variate normally distributed numbers
+/// \brief distribution creating correlated multi-variate normally distributed numbers
+///
+/// the multivariate normal distribution creates correlated random numbers with a specified
+/// mean vector and covariance matrix. Instead of using a vector as the \c result_type, the
+/// \c result_type is a scalar real number, and the \c operator() should be called once for
+/// each element of the vector.
+
 template<class RealType = double>
-class normal_distribution
+class multivariate_normal_distribution
 {
 public:
   typedef RealType input_type;
@@ -36,17 +44,41 @@ public:
     BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
 #endif
 
-  explicit normal_distribution(const vector_type& mean,
+  /// \brief the constructor of the multi-variate normal distribution
+  /// \param mean the vector of mean values
+  /// \param cholesky the Cholesky decomposition of the covariance matrix
+  ///
+  /// The Cholesky decomposition has to be a square matrix and its dimension
+  /// has to be the same as that of the mean vector. Instead of a Cholesky
+  /// decomposition any other square root of the covariance matrix could be passed.
+  
+  explicit multivariate_normal_distribution(const vector_type& mean,
                                const matrix_type& cholesky)
     : mean_(mean)
     , cholesky_(cholesky)
-    , buffer_(mean.size())
+    , buffer_(mean_.size())
     , ptr_(buffer_.end())
   {
+    BOOST_ASSERT(mean_.size()==cholesky_.size1() && mean_.size()==cholesky_.size2());
+  }
+
+  /// \brief the constructor of the multi-variate normal distribution with zero mean
+  /// \param cholesky the Cholesky decomposition of the covariance matrix
+  ///
+  /// Instead of a Cholesky decomposition any other square root 
+  /// of the covariance matrix could be passed.
+  
+  explicit multivariate_normal_distribution(const matrix_type& cholesky)
+    : mean_(cholesky.size1())
+    , cholesky_(cholesky)
+    , buffer_(mean_.size())
+    , ptr_(buffer_.end())
+  {
+    mean_.clear();
   }
 
   // compiler-generated copy constructor is NOT fine, need to purge cache
-  normal_distribution(const normal_distribution& other)
+  multivariate_normal_distribution(const normal_distribution& other)
     : mean_(other.mean_)
     , cholesky_(other.cholesky_)
     , buffer_(mean.size())
@@ -56,7 +88,10 @@ public:
 
   // compiler-generated copy ctor and assignment operator are fine
 
+  /// the vector of mean values
   vector_type const& mean() const { return mean_; }
+
+  /// the Cholesky decomposition of the covariance marix
   matrix_type const& cholesky() const { return cholesky_; }
 
   void reset() { ptr_ = buffer_.end(); }
@@ -64,44 +99,32 @@ public:
   template<class Engine>
   result_type operator()(Engine& eng)
   {
-#ifndef BOOST_NO_STDC_NAMESPACE
-    // allow for Koenig lookup
-    using std::sqrt; using std::log; using std::sin; using std::cos;
-#endif
-    if(!_valid) {
-      _r1 = eng();
-      _r2 = eng();
-      _cached_rho = sqrt(-result_type(2) * log(result_type(1)-_r2));
-      _valid = true;
-    } else {
-      _valid = false;
+    if(ptr_ == buffer_.end()) {
+      variate_generator<Engine&,normal_distribution<RealType> > gen(eng,normal_distribution<RealType>());
+      std::generate(buffer_.begin(),buffer_.end(),gen);
+      buffer_=numeric::ublas::prod(cholesky_,buffer_)+mean_;
+      ptr_ = buffer_.begin();
     }
-    // Can we have a boost::mathconst please?
-    const result_type pi = result_type(3.14159265358979323846);
-    
-    return _cached_rho * (_valid ?
-                          cos(result_type(2)*pi*_r1) :
-                          sin(result_type(2)*pi*_r1))
-      * _sigma + _mean;
+    return *ptr_++;
   }
 
 #if !defined(BOOST_NO_OPERATORS_IN_NAMESPACE) && !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template<class CharT, class Traits>
   friend std::basic_ostream<CharT,Traits>&
-  operator<<(std::basic_ostream<CharT,Traits>& os, const normal_distribution& nd)
+  operator<<(std::basic_ostream<CharT,Traits>& os, const multivariate_normal_distribution& nd)
   {
-    os << nd._mean << " " << nd._sigma << " "
-       << nd._valid << " " << nd._cached_rho << " " << nd._r1;
+    os << nd.mean_ << nd.cholesky_ << nd.buffer << nd.ptr_-buffer.begin();
     return os;
   }
 
   template<class CharT, class Traits>
   friend std::basic_istream<CharT,Traits>&
-  operator>>(std::basic_istream<CharT,Traits>& is, normal_distribution& nd)
+  operator>>(std::basic_istream<CharT,Traits>& is, multivariate_normal_distribution& nd)
   {
-    is >> std::ws >> nd._mean >> std::ws >> nd._sigma
-       >> std::ws >> nd._valid >> std::ws >> nd._cached_rho
-       >> std::ws >> nd._r1;
+    std::size_t pos;
+    is >> std::ws >> nd.mean_ >> std::ws >> nd.cholesky_
+       >> std::ws >> nd.buffer_ >> std::ws >> pos;
+    nd.ptr_ = nd.buffer_.begin() + pos;
     return is;
   }
 #endif
