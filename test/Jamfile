@@ -1,0 +1,32 @@
+# Boost parallel random Library test Jamfile
+
+#  (C) Copyright 2006 Mattthias Troyer.
+#  Use, modification, and distribution are subject to the 
+#  Boost Software License, Version 1.0. (See accompanying file 
+#  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+
+subproject libs/random/test ;
+
+# bring in rules for testing
+import testing ;
+
+# Make tests run by default.
+DEPENDS all : test ;
+
+{
+  # look in BOOST_ROOT for sources first, just in this Jamfile
+  local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+
+  test-suite random_sprng
+   :
+  [ run sprng_test.cpp 
+        <lib>../build/boost_random_sprng
+        : : : : sprng_test ]
+
+  [ run sprng_parameter_test.cpp 
+        <lib>../build/boost_random_sprng
+        : : : : sprng_parameter_test ]
+  ;
+}
+

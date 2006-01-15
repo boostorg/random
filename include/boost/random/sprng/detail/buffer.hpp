@@ -37,7 +37,7 @@ public:
   /// packs a SPRNG generator into a new buffer
   /// @param genptr the SPRNG pointer to the generator
   /// @param pack_fun the SPRNG function used to pack the generator
-  buffer(int* genptr, int(*pack_fun)(int*,char**) 
+  buffer(int* genptr, int(*pack_fun)(int*,char**) )
   {
     pack(genptr,pack_fun);
   }
@@ -53,7 +53,7 @@ public:
   {
     buffer_.clear();
     char* buf;
-    std::size_t len = (*pack)(genptr,&buf);
+    std::size_t len = (*pack_fun)(genptr,&buf);
     if (buf==0)
       boost::throw_exception(std::bad_alloc());
     std::copy(buf,buf+len,std::back_inserter(buffer_));
@@ -63,10 +63,10 @@ public:
   /// 
   /// @param unpack_fun the SPRNG function used to unpack the generator
   /// @returns a newly created SPRNG generator. The return value is 0 if the creation of the generator failed
-  int* unpack(int*(*unpack_fun)(int*,char**) )
+  int* unpack(int*(*unpack_fun)(const char*) )
   {
-    BOOST_ASSERT(!buffer.empty());
-    int* genptr (*unpack_fun)(&buffer_[0]);
+    BOOST_ASSERT(!buffer_.empty());
+    int* genptr = (*unpack_fun)(&buffer_[0]);
     if (genptr==0)
       boost::throw_exception(std::bad_alloc());
     return genptr;
@@ -77,7 +77,7 @@ public:
   void write(OutputStream& os) const
   {
     os << buffer_.size();
-    for (buffer_type::const_iterator it=buffer.begin();it!=buffer.end();++it)
+    for (buffer_type::const_iterator it=buffer_.begin();it!=buffer_.end();++it)
       os << " " << static_cast<int>(*it);
   }
 
@@ -88,10 +88,18 @@ public:
     std::size_t len;
     is >> len;
     buffer_.resize(len);
-    for (buffer_type::iterator it=buffer.begin();it!=buffer.end();++it)
-      is >> *it;
+    for (buffer_type::iterator it=buffer_.begin();it!=buffer_.end();++it) 
+    {
+      int x;
+      is >> x;
+      *it =x;
+    }
   }
-  
+
+  bool operator==(const buffer& b)
+  {
+    return b.buffer_ == buffer_;
+  }  
 private:
   buffer_type buffer_;
 };

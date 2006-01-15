@@ -1,0 +1,29 @@
+# Copyright (C) 2006 Matthias Troyer
+
+# Use, modification and distribution is subject to the Boost Software
+# License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+subproject libs/random/build ;
+
+SOURCES = lcg64/lcg64
+          lcg/lcg
+          cmrg/cmrg
+          mlfg/mlfg
+          lfg/lfg
+          pmlcg/pmlcg
+          memory
+          primes_32
+          primes_64
+          store
+          checkid
+        ;
+
+if $(SPRNG_ROOT) {
+lib boost_random_sprng
+  : $(SPRNG_ROOT)/SRC/$(SOURCES).c 
+  :
+    <include>$(SPRNG_ROOT)/SRC 
+  : debug release
+  ;
+}
