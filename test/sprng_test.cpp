@@ -20,7 +20,7 @@
 #include <vector>
 #include <boost/random.hpp>
 #include <boost/config.hpp>
-#include <boost/random/sprng/lcg64.hpp>
+#include <boost/random/sprng.hpp>
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/included/test_exec_monitor.hpp>
@@ -29,23 +29,13 @@
   namespace std { using ::abs; using ::fabs; using ::pow; }
 #endif
 
-
-/*
- * General portability note:
- * MSVC mis-compiles explicit function template instantiations.
- * For example, f<A>() and f<B>() are both compiled to call f<A>().
- * BCC is unable to implicitly convert a "const char *" to a std::string
- * when using explicit function template instantiations.
- *
- * Therefore, avoid explicit function template instantiations.
- */
-
 /*
  * Validate correct implementation
  */
 
 // validation value not yet obtained
-bool check(double x, const boost::random::sprng::lcg64&) { return true; }
+template <class RNG>
+bool check(double x, const RNG&) { return true; }
 
 template<class PRNG>
 void validate(const std::string & name, const PRNG &)
@@ -67,7 +57,12 @@ void validate(const std::string & name, const PRNG &)
 void validate_all()
 {
   using namespace boost;
+  validate("sprng::lfg", boost::random::sprng::lfg());
+  validate("sprng::lcg", boost::random::sprng::lcg());
   validate("sprng::lcg64", boost::random::sprng::lcg64());
+  validate("sprng::cmrg", boost::random::sprng::cmrg());
+  validate("sprng::mlfg", boost::random::sprng::mlfg());
+//  validate("sprng::pmlcg", boost::random::sprng::pmlcg());
 }
 
 
@@ -278,7 +273,12 @@ void instantiate_urng(const std::string & s, const URNG &, const ResultType &)
 void instantiate_all()
 {
   using namespace boost;
+  instantiate_urng("sprng::lfg", boost::random::sprng::lfg(),0.);
+  instantiate_urng("sprng::lcg", boost::random::sprng::lcg(),0.);
   instantiate_urng("sprng::lcg64", boost::random::sprng::lcg64(),0.);
+  instantiate_urng("sprng::cmrg", boost::random::sprng::cmrg(),0.);
+  instantiate_urng("sprng::mlfg", boost::random::sprng::mlfg(),0.);
+//  instantiate_urng("sprng::pmlcg", boost::random::sprng::pmlcg(),0.);
 }
 
 
@@ -299,7 +299,12 @@ template class boost::normal_distribution<x>; \
 template class boost::uniform_on_sphere<x>; \
 template class boost::lognormal_distribution<x>;
 
+INSTANT(boost::random::sprng::lfg)
+INSTANT(boost::random::sprng::lcg)
 INSTANT(boost::random::sprng::lcg64)
+INSTANT(boost::random::sprng::cmrg)
+INSTANT(boost::random::sprng::mlfg)
+//INSTANT(boost::random::sprng::pmlcg)
 
 #undef INSTANT
 #endif
