@@ -1,5 +1,4 @@
 /* 
- * Copyright Matthias Troyer/* 
  * Copyright Matthias Troyer 2006
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
@@ -10,9 +9,9 @@
 #ifndef BOOST_RANDOM_BUFFERED_UNIFORM_01_HPP
 #define BOOST_RANDOM_BUFFERED_UNIFORM_01_HPP
 
-#include <boost/buffered_generator.hpp>
-#include <boost/variate_generator.hpp>
-#include <boost/uniform_real.hpp>
+#include <boost/random/buffered_generator.hpp>
+#include <boost/random/variate_generator.hpp>
+#include <boost/random/uniform_real.hpp>
 
 #include <iostream>
 
@@ -50,7 +49,7 @@ public:
   /// \param buffer_size the size of the buffer
 
   buffered_uniform_01(std::size_t buffer_size=BOOST_BUFFERED_GENERATOR_BUFFER_SIZE) 
-   : base_type(generator_type(engine_type(),distribution_type()) 
+   : base_type(generator_type(engine_type(),distribution_type()))
   {}
 
   /// constructs a generator from the given engine
@@ -60,7 +59,7 @@ public:
   /// If a reference type is specifed as \c Engine type, a reference to the
   /// \c engine is stored and used, otherweise the engine is copied.
   buffered_uniform_01(engine_type engine, std::size_t buffer_size=BOOST_BUFFERED_GENERATOR_BUFFER_SIZE) 
-   : base_type(generator_type(engine,distribution_type()) 
+   : base_type(generator_type(engine,distribution_type()))
   {}
 
 

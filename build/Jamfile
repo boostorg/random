@@ -27,3 +27,8 @@ lib boost_random_sprng
   : debug release
   ;
 }
+#else 
+#{
+#  ECHO Set the SPRNG_ROOT environment variable to point to the SPRNG sources;
+#  ECHO if you want to build the SPRNG parallel randum number generators.;
+#}
