@@ -31,6 +31,10 @@ DEPENDS all : test ;
   [ run buffered_generator_test.cpp 
         <lib>../build/boost_random_sprng
         : : : : buffered_generator_test ]
+
+  [ run buffered_uniform_01_test.cpp 
+        <lib>../build/boost_random_sprng
+        : : : : buffered_uniform_01_test ]
   ;
 }
 
