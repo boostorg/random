@@ -27,6 +27,10 @@ DEPENDS all : test ;
   [ run sprng_parameter_test.cpp 
         <lib>../build/boost_random_sprng
         : : : : sprng_parameter_test ]
+
+  [ run buffered_generator_test.cpp 
+        <lib>../build/boost_random_sprng
+        : : : : buffered_generator_test ]
   ;
 }
 

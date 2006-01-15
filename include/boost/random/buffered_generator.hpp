@@ -1,5 +1,4 @@
 /* 
- * Copyright Matthias Troyer/* 
  * Copyright Matthias Troyer 2006
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
@@ -48,7 +47,7 @@ public:
   ///
   /// \param buffer_size the size of the buffer
   buffered_generator(std::size_t buffer_size=BOOST_BUFFERED_GENERATOR_BUFFER_SIZE) 
-   : buffer_(b)
+   : buffer_(buffer_size)
    , ptr_(buffer_.end()) 
   {
     BOOST_ASSERT(buffer_size!=0);
@@ -57,7 +56,7 @@ public:
   /// the copy constructor copies the buffer
   buffered_generator(const buffered_generator& gen)
    : buffer_(gen.buffer_)
-   , ptr_(buf_.begin()+(gen.ptr_-gen.buffer_.begin())
+   , ptr_(buffer_.begin()+(gen.ptr_-gen.buffer_.begin()))
   {}
 
   /// trivial virtual destructor
@@ -67,12 +66,12 @@ public:
   ///
   /// values are taken from the buffer, which is refilled by a call
   /// to fill_buffer when all values have been used up
-  result_type operator()() {
+  value_type operator()() {
     if(ptr_==buffer_.end()) {
       fill_buffer(buffer_);
       ptr_=buffer_.begin();
     }
-    BOOST_ASSERT(ptr!=buffer_.end());
+    BOOST_ASSERT(ptr_!=buffer_.end());
     return *ptr_++;
   }
   
@@ -114,7 +113,7 @@ public:
   typedef Generator generator_type;
   
   //// the type of values generated
-  typedef buffered_generator<ValueType>::value_type value_type;
+  typedef typename buffered_generator<ValueType>::value_type value_type;
   
   /// constructs a default-constructed generator
   /// \param buffer_size the size of the buffer
@@ -135,10 +134,13 @@ public:
   {}
 
 private:
-  /// fills the buffer using \c std::generate
-  void fill_buffer(buffered_generator<ValueType>::buffer_type& buffer)
+  typedef typename buffered_generator<ValueType>::buffer_type buffer_type;
+  
+  /// fills the buffer using the generator
+  void fill_buffer(buffer_type& buffer)
   {
-    std::generate(buffer.begin(),buffer.end(),boost::ref(generator_));
+    for (typename buffer_type::iterator it=buffer.begin();it!=buffer.end();++it)
+      *it=generator_();
   }
   
   generator_type generator_;

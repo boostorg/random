@@ -47,15 +47,6 @@ public:
   /// the number of different parameters for the constructor and seeding
   enum { max_param = 3 };
 
-  /// constructor taking the SPRNG intialization arguments
-  /// @param stream The number of this streamuence. Needs to be less than the num_stream parameter.
-  /// @param num_stream The total number of random number streams to be created. Needs to be less than max_streams
-  /// @param global_seed the common seed for all random number streams
-  /// @param param optional parametrization of the generator. Needs to be less than max_param.
-  ///
-  /// The SPRNG library guarantees that if the global_seed and param arguments are the same, 
-  /// the random number streams specified by stream (0 <= stream < num_stream) are independent and non-overlapping.
-  /// Changing eiher global_seed or the param will lead to different random number streams
   
   lcg64()
    : sprng_ptr(0)
