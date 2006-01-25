@@ -23,11 +23,11 @@
 
 namespace boost {
 
-/// \brief distribution creating correlated multi-variate normally distributed numbers
+/// @brief distribution creating correlated multi-variate normally distributed numbers
 ///
 /// the multivariate normal distribution creates correlated random numbers with a specified
-/// mean vector and covariance matrix. Instead of using a vector as the \c result_type, the
-/// \c result_type is a scalar real number, and the \c operator() should be called once for
+/// mean vector and covariance matrix. Instead of using a vector as the @c result_type, the
+/// @c result_type is a scalar real number, and the @c operator() should be called once for
 /// each element of the vector.
 
 template<class RealType = double>
@@ -44,9 +44,9 @@ public:
     BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
 #endif
 
-  /// \brief the constructor of the multi-variate normal distribution
-  /// \param mean the vector of mean values
-  /// \param cholesky the Cholesky decomposition of the covariance matrix
+  /// @brief the constructor of the multi-variate normal distribution
+  /// @param mean the vector of mean values
+  /// @param cholesky the Cholesky decomposition of the covariance matrix
   ///
   /// The Cholesky decomposition has to be a square matrix and its dimension
   /// has to be the same as that of the mean vector. Instead of a Cholesky
@@ -60,10 +60,11 @@ public:
     , ptr_(buffer_.end())
   {
     BOOST_ASSERT(mean_.size()==cholesky_.size1() && mean_.size()==cholesky_.size2());
+    std::cerr << &ptr_() << " " << &buffer_.begin()() << "\n";
   }
 
-  /// \brief the constructor of the multi-variate normal distribution with zero mean
-  /// \param cholesky the Cholesky decomposition of the covariance matrix
+  /// @brief the constructor of the multi-variate normal distribution with zero mean
+  /// @param cholesky the Cholesky decomposition of the covariance matrix
   ///
   /// Instead of a Cholesky decomposition any other square root 
   /// of the covariance matrix could be passed.
@@ -78,15 +79,23 @@ public:
   }
 
   // compiler-generated copy constructor is NOT fine, need to purge cache
-  multivariate_normal_distribution(const normal_distribution& other)
+  multivariate_normal_distribution(const multivariate_normal_distribution& other)
     : mean_(other.mean_)
     , cholesky_(other.cholesky_)
-    , buffer_(mean.size())
+    , buffer_(mean_.size())
     , ptr_(buffer_.end())
   {
   }
 
-  // compiler-generated copy ctor and assignment operator are fine
+  // compiler-generated assignment is NOT fine, need to purge cache
+  multivariate_normal_distribution& operator=(const multivariate_normal_distribution& other)
+  {
+    mean_=other.mean_;
+    cholesky_=other.cholesky_;
+    buffer_=other.buffer_;
+    ptr_ = buffer_.begin() + (other.ptr_-other.buffer_.begin());
+    return *this;
+  }
 
   /// the vector of mean values
   vector_type const& mean() const { return mean_; }
@@ -113,7 +122,8 @@ public:
   friend std::basic_ostream<CharT,Traits>&
   operator<<(std::basic_ostream<CharT,Traits>& os, const multivariate_normal_distribution& nd)
   {
-    os << nd.mean_ << nd.cholesky_ << nd.buffer << nd.ptr_-buffer.begin();
+    std::size_t pos = nd.ptr_-nd.buffer_.begin();
+    os << nd.mean_ << nd.cholesky_ << nd.buffer_ << pos;
     return os;
   }
 

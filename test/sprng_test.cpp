@@ -21,6 +21,7 @@
 #include <boost/random.hpp>
 #include <boost/config.hpp>
 #include <boost/random/sprng.hpp>
+#include <boost/random/multivariate_normal_distribution.hpp>
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/included/test_exec_monitor.hpp>
@@ -117,7 +118,7 @@ void instantiate_dist(URNG& urng, const char * name, const Dist& dist)
     URNG restored_engine;
     input >> restored_engine;
     input >> std::ws;
-    Dist restored_dist;
+    Dist restored_dist(dist);
     input >> restored_dist;
 #if !defined(BOOST_MSVC) || BOOST_MSVC > 1300 // MSVC brokenness
     boost::variate_generator<URNG, Dist> old(urng, d);
@@ -151,6 +152,13 @@ void instantiate_real_dist(URNG& urng, RealType /* ignored */)
                    boost::cauchy_distribution<RealType>(1));
   instantiate_dist(urng, "gamma_distribution",
                    boost::gamma_distribution<RealType>(1));
+  typename boost::multivariate_normal_distribution<RealType>::matrix_type cholesky(2,2);
+  cholesky(0,0)=1.;
+  cholesky(0,1)=1.;
+  cholesky(1,0)=1.;
+  cholesky(1,1)=1.;
+  boost::multivariate_normal_distribution<RealType> dist(cholesky);
+  instantiate_dist(urng, "multivariate_normal_distribution",dist);
 }
 
 template<class URNG, class ResultType>
