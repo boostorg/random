@@ -52,8 +52,7 @@ public:
   /// has to be the same as that of the mean vector. Instead of a Cholesky
   /// decomposition any other square root of the covariance matrix could be passed.
   
-  explicit multivariate_normal_distribution(const vector_type& mean,
-                               const matrix_type& cholesky)
+  explicit multivariate_normal_distribution(const matrix_type& cholesky, const vector_type& mean)
     : mean_(mean)
     , cholesky_(cholesky)
     , buffer_(mean_.size())
@@ -120,21 +119,21 @@ public:
 #if !defined(BOOST_NO_OPERATORS_IN_NAMESPACE) && !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   template<class CharT, class Traits>
   friend std::basic_ostream<CharT,Traits>&
-  operator<<(std::basic_ostream<CharT,Traits>& os, const multivariate_normal_distribution& nd)
+  operator<<(std::basic_ostream<CharT,Traits>& os, const multivariate_normal_distribution& mnd)
   {
-    std::size_t pos = nd.ptr_-nd.buffer_.begin();
-    os << nd.mean_ << nd.cholesky_ << nd.buffer_ << pos;
+    std::size_t pos = mnd.ptr_-mnd.buffer_.begin();
+    os << mnd.mean_ << mnd.cholesky_ << mnd.buffer_ << pos;
     return os;
   }
 
   template<class CharT, class Traits>
   friend std::basic_istream<CharT,Traits>&
-  operator>>(std::basic_istream<CharT,Traits>& is, multivariate_normal_distribution& nd)
+  operator>>(std::basic_istream<CharT,Traits>& is, multivariate_normal_distribution& mnd)
   {
     std::size_t pos;
-    is >> std::ws >> nd.mean_ >> std::ws >> nd.cholesky_
-       >> std::ws >> nd.buffer_ >> std::ws >> pos;
-    nd.ptr_ = nd.buffer_.begin() + pos;
+    is >> std::ws >> mnd.mean_ >> std::ws >> mnd.cholesky_
+       >> std::ws >> mnd.buffer_ >> std::ws >> pos;
+    mnd.ptr_ = mnd.buffer_.begin() + pos;
     return is;
   }
 #endif

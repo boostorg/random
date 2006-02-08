@@ -78,15 +78,15 @@ public:
   }
 
 
-#define BOOST_RANDOM_LCG64_CONSTRUCTOR(z, n, unused) \
-  template <BOOST_PP_ENUM_PARAMS(n,class T)>         \
+#define BOOST_RANDOM_SPRNG_CONSTRUCTOR(z, n, unused)                 \
+  template <BOOST_PP_ENUM_PARAMS(n,class T)>                         \
   BOOST_SPRNG_GENERATOR(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))   \
-   : sprng_ptr(0)                                    \
-  {                                                  \
-    seed(BOOST_PP_ENUM_PARAMS(n,x) );                \
+   : sprng_ptr(0)                                                    \
+  {                                                                  \
+    seed(BOOST_PP_ENUM_PARAMS(n,x) );                                \
   }
    
-BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_LCG64_CONSTRUCTOR,~)
+BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
 
   BOOST_SPRNG_GENERATOR const& operator=(BOOST_SPRNG_GENERATOR const& rhs)
   {
@@ -114,7 +114,7 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_LCG64_CONSTRUCTOR,~)
     BOOST_ASSERT(param < max_param);
     sprng_ptr= BOOST_SPRNG_CALL(init_rng) (sprng_type, stream, num_stream, s, param);
     if (sprng_ptr==0)
-      boost::throw_exception(std::runtime_error("Failed initializing SPRNG LCG64 generator"));
+      boost::throw_exception(std::runtime_error("Failed initializing SPRNG generator"));
   }
   
   /// seed with the default.

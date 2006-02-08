@@ -33,15 +33,15 @@ namespace boost {
 /// large buffer is filled in a virtual function call, and then
 /// numbers from this buffer used when operator() is called.
 
-template <class ValueType>
+template <class ResultType>
 class buffered_generator
 {
 public:
   //// the type of values generated
-  typedef ValueType value_type;
+  typedef ResultType result_type;
 
   /// the data type of the buffer used
-  typedef std::vector<value_type> buffer_type;
+  typedef std::vector<result_type> buffer_type;
   
   /// \brief the constructor of the buffered generator
   ///
@@ -62,11 +62,19 @@ public:
   /// trivial virtual destructor
   virtual ~buffered_generator() {}
 
+  /// non-trivbial the assignment
+  buffered_generator& operator=(const buffered_generator& gen)
+  {
+    buffer_ = gen.buffer_;
+    ptr_ = buffer_.begin()+(gen.ptr_-gen.buffer_.begin());
+    return *this;
+  }
+
   /// \brief returns the next generated value 
   ///
   /// values are taken from the buffer, which is refilled by a call
   /// to fill_buffer when all values have been used up
-  value_type operator()() {
+  result_type operator()() {
     if(ptr_==buffer_.end()) {
       fill_buffer(buffer_);
       ptr_=buffer_.begin();
@@ -82,12 +90,12 @@ public:
     ptr_=buffer_.end();
   }
 
-protected:
-  /// read access to the buffer for derived classes
-  buffer_type const& buffer() const
-  {
-    return buffer_;
-  }
+//protected:
+//  /// read access to the buffer for derived classes
+//  buffer_type const& buffer() const
+//  {
+//    return buffer_;
+//  }
   
 private:
   /// \brief pure virtual function to fill the buffer
@@ -102,18 +110,18 @@ private:
 /// \brief a concrete simple implementation of a buffered generator
 /// 
 /// \param Generator the type of the generator used to fill the buffer
-/// \param ValueType the type of values generated
+/// \param ResultType the type of values generated
 
-template <class Generator, class ValueType> 
-class basic_buffered_generator : public buffered_generator<ValueType>
+template <class Generator, class ResultType> 
+class basic_buffered_generator : public buffered_generator<ResultType>
 {
-  typedef buffered_generator<ValueType> base_type;
+  typedef buffered_generator<ResultType> base_type;
 public:
   /// the date type of the generator used to fill the buffer
   typedef Generator generator_type;
   
   //// the type of values generated
-  typedef typename buffered_generator<ValueType>::value_type value_type;
+  typedef typename buffered_generator<ResultType>::result_type result_type;
   
   /// constructs a default-constructed generator
   /// \param buffer_size the size of the buffer
@@ -134,7 +142,7 @@ public:
   {}
 
 private:
-  typedef typename buffered_generator<ValueType>::buffer_type buffer_type;
+  typedef typename buffered_generator<ResultType>::buffer_type buffer_type;
   
   /// fills the buffer using the generator
   void fill_buffer(buffer_type& buffer)
