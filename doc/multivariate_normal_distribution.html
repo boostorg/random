@@ -1,0 +1,116 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Multivariate normal distribution</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>Multivariate normal distribution</h1>
+
+<h2><a name="intro">Introduction</a></h2>
+
+This header provides a multi-variate normal distribution of correlated normally distributed random numbers.
+
+<h3>Synopsis</h3>
+
+<h2><a name="normal_distribution">Class template <code>multivariate_normal_distribution</code></a></h2>
+
+<h3>Synopsis</h3>
+
+<pre>
+#include &lt;<a href="../../../boost/random/multivariate_normal_distribution.hpp">boost/random/multivariate_normal_distribution.hpp</a>&gt;
+
+template&lt;class RealType = double&gt;
+class multivariate_normal_distribution
+{
+public:
+  typedef RealType input_type;
+  typedef RealType result_type;
+
+  typedef numeric::ublas::vector&lt;RealType> vector_type;
+  typedef numeric::ublas::matrix&lt;RealType> matrix_type;
+
+  explicit multivariate_normal_distribution(const vector_type&amp; m,
+                               const matrix_type&amp; c);
+                               
+  explicit multivariate_normal_distribution(const matrix_type&amp; c)
+
+  vector_type const&amp; mean() const;
+  matrix_type const&amp; cholesky() const;
+  void reset();
+
+  template&lt;class UniformRandomNumberGenerator&gt;
+  result_type operator()(UniformRandomNumberGenerator&amp; urng);
+};
+</pre>
+
+<h3>Description</h3>
+
+Instantiations of class template <code>multivariate_normal_distribution</code>
+model a <a href="http://www.boost.org/libs/random/doc/random-concepts.html#random-dist">random
+distribution</a>, producing correlated multivariate normally distributed random numbers. 
+Multivariate normally distributed random numbers are sequences of n random numbers, distributed with given mean values M(i), 
+and covariance matrix Cov(i,j). 
+<p>
+Instead of using a sequence type as <code>result_type</code> the design decision was to keep the underlying real 
+number type as the <code>result_type</code>. Hence, n succesive calls are required to obtain all n multivariate
+normal numbers. This removes the need to choose a specific container type as <code>result_type</code>, while still
+allowing any container to be filled using, for example, <code>std::generate</code>.
+
+The constructor of the distributiuon takes the Cholesky decomposition C of the covariance matrix Cov = C*C, and the vector of
+mean values M. The algoritm used first creates a vector v of n normally distributed random numbers with 0 mean and unit 
+variance and then calculates the multivariate randim numbers using the equation m + C * v.
+
+<h3>Members</h3>
+
+<pre>
+  explicit multivariate_normal_distribution(const vector_type&amp; m,
+                               const matrix_type&amp; c);
+</pre>
+
+<strong>Requires:</strong> m.size() == c.size1() &amp;&amp; c.size1() == c.size2()
+<br><strong>Effects:</strong> Constructs a
+<code>multivariate_normal_distribution</code> object; <code>m</code> and
+<code>c</code> are the mean values and Cholesky deceomposition of the covariance matrix of the distribution.
+
+<pre>
+  explicit multivariate_normal_distribution(const vector_type&amp; m,
+                               const matrix_type&amp; c);
+</pre>
+
+<strong>Requires:</strong>c.size1() == c.size2()
+<br><strong>Effects:</strong> Constructs a
+<code>multivariate_normal_distribution</code> object; <code>c</code> is Cholesky deceomposition of the covariance 
+matrix of the distribution, with zero mean values.
+
+<pre>  vector_type const&amp; mean() const</pre>
+<strong>Returns:</strong> The mean parameter of the distribution.
+
+<pre>  matrix_type const&amp; cholesky() const</pre>
+<strong>Returns:</strong> The Cholesky decomposition of the covariance matrix of the distribution.
+
+<pre>
+  template&lt;class UniformRandomNumberGenerator&gt;
+  result_type operator()(UniformRandomNumberGenerator&amp; urng);
+</pre>
+<strong>Returns:</strong> On the first call, it creates a vector of n multivariate normally distributed random numbers, caches it, 
+and returns the first value. The next n-1 calls return the next elements of the vector. The n+1-st call again creates a new vector
+of multivariate normally distributed random numbers.
+
+<pre>
+  void reset()
+</pre>
+
+<strong>Effects:</strong> Clears the cache of multivariate normally distributed random numbers. 
+The next call to <code>operator()(UniformRandomNumberGenerator&amp; urng)</code> will create a new vector
+of multivariate normally distributed random numbers.
+
+<p>
+<hr>
+Matthias Troyer, 2006-02-06
+</body>
+</html>

@@ -157,8 +157,13 @@ void instantiate_real_dist(URNG& urng, RealType /* ignored */)
   cholesky(0,1)=1.;
   cholesky(1,0)=1.;
   cholesky(1,1)=1.;
-  boost::multivariate_normal_distribution<RealType> dist(cholesky);
-  instantiate_dist(urng, "multivariate_normal_distribution",dist);
+  typename boost::multivariate_normal_distribution<RealType>::vector_type mean(2);
+  mean(0)=-1.;
+  mean(1)=1.;
+  boost::multivariate_normal_distribution<RealType> dist1(cholesky);
+  boost::multivariate_normal_distribution<RealType> dist2(cholesky,mean);
+  instantiate_dist(urng, "multivariate_normal_distribution with zero mean",dist1);
+  instantiate_dist(urng, "multivariate_normal_distribution",dist2);
 }
 
 template<class URNG, class ResultType>

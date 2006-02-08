@@ -1,0 +1,224 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Boost Random Number Library Polymorphic Generators</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>Random Number Library Polymorphic Generators</h1>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#synopsis">Synopsis</a>
+<li><a href="#buffered_generator">Class template
+<code>buffered_generator</code></a>
+<li><a href="#basic_buffered_generator">Class template <code>basic_buffered_generator</code></a>
+<li><a href="#buffered_uniform_01">Class template <code>buffered_uniform_01</code></a>
+</ul>
+
+<h2><a name="intro">Introduction</a></h2>
+
+Boost.Random and the TR1 random number library provide a number of efficient pseudo 
+random number generators. These pseudo random number generators follow an algorithmic
+prescription to generate numbers that look "sufficiently" random to be used in place of
+true random numbers. Since, however these "random numbers" are not truly random, one
+has to be careful when using them for high-precision Monte Carlo simulations. Experience
+has shown that the only reliable test for the quality of a random number generator for
+a given application is to redo the calculation with more than one type of random number
+generator.
+
+In order to facilitate the switching of random number engines at runtime, we here provide
+polymorphic generator classes. Since the cost os a virtual operator(), requiring a virtual function 
+call for every single number is prohibitive in high performance applications, the <code>buffered_generator</code>
+uses a virtual function <code>fill_buffer</code> to generate not just one but a sequence of numbers, and then return
+values from that buffer using an inlines <code>operator()</code> until the buffer is exhausted.
+
+We provide an abstract class template  <code>buffered_generator&lt;ResultType></code> and a concrete 
+derived class template <code>buffered_generator&lt;GeneratorType,ResultType></code>, which uses a given generator
+to fill the buffer. 
+
+Since generators can have different ranges, 
+we additionally provide, for convenience, a <code>buffered_uniform_01&lt;GeneratorType,ResultType></code>
+random number generator class template. This template models a uniform random number generator by providing <code>min()</code> and <code>max()</code> functions
+and can thus be used with any of the distributions of Boost.Random.
+
+<h2>Synopsis<h2>
+
+<h3>Header <code>&lt;boost/buffered_generator.hpp&gt;</code></h3>
+
+<pre>
+namespace boost {
+  template &lt;class ResultType>
+  class buffered_generator;
+
+  template &lt;class Generator, class ResultType>
+  class basic_buffered_generator;
+}
+</pre>
+
+<h3>Header <code>&lt;boost/buffered_uniform_01.hpp&gt;</code></h3>
+
+<pre>
+namespace boost {
+  template &lt;class Generator, class ResultType>
+  class buffered_uniform_01;
+}
+</pre>
+
+<h2><a name="buffered_generator">Class template
+<code>buffered_generator</code></a></h2>
+
+<h3>Synopsis</h3>
+
+<pre>
+template &lt;class ResultType>
+class buffered_generator
+{
+public:
+  typedef ResultType result_type;
+  typedef std::vector&lt;result_type> buffer_type;
+  
+  buffered_generator(std::size_t buffer_size=8192);
+  buffered_generator(const buffered_generator&amp;);
+  virtual ~buffered_generator();
+  
+  buffered_generator&amp; operator=(const buffered_generator&amp; );
+  void reset();
+
+  inline result_type operator()();
+
+private:
+  virtual void fill_buffer(buffer_type&amp;) = 0;
+};
+</pre>
+
+<h3>Description</h3>
+
+The <code>buffered_generator</code> class template is an abstract base class for runtime-polymorphic generators. 
+To remove the performance penalty of a virtual <code>operator()</code>, a pure virtual function <code>fill_buffer()</code> 
+is used to generate a buffer of generatord values.
+
+<h3>Members</h3>
+
+<pre>buffered_generator(std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>buffered_generator</code>
+with a buffer of the size given as argument.
+
+<pre>buffered_generator(const buffered_generator&amp;)</pre>
+
+<strong>Effects:</strong> Constructs a <code>buffered_generator</code>
+with a buffer filled with the same values as the argument's buffer.
+
+<pre>buffered_generator&amp; operator=(const buffered_generator&amp; )</pre>
+copies the buffer of the argument to the buffer of the left hand side <code>buffered_generator</code>.
+
+<pre>inline result_type operator()()</pre>
+<strong>Returns:</strong> the next value from the buffer, and calls <code>fill_buffer</code> if the buffer has ben exhausted.
+
+<pre>void reset();</pre>
+<strong>Effects:</strong> clears the buffer. A subsequent call to <code>operator()</code> causes the buffer to be filled with new values.
+
+<pre>virtual void fill_buffer(buffer_type&amp;) = 0</pre>
+<strong>Effects:</strong> fills the buffer with new values. This function has to be implemented by the derived classes.
+
+<h2><a name="basic_buffered_generator">Class template
+<code>basic_buffered_generator</code></a></h2>
+
+<h3>Synopsis</h3>
+
+<pre>
+template &lt;class Generator, class ResultType> 
+class basic_buffered_generator : public buffered_generator<ResultType>
+{
+public:
+  typedef Generator generator_type;
+  typedef typename ResultType result_type;
+  
+  basic_buffered_generator(std::size_t buffer_size=8192);
+  basic_buffered_generator(generator_type gen, std::size_t buffer_size=8192);
+
+private:
+  void fill_buffer(buffered_generator&lt;ResultType>::buffer_type&amp; buffer);
+};
+</pre>
+
+<h3>Description</h3>
+
+The <code>basic_buffered_generator</code> class template is a concrete derived class template for runtime-polymorphic generators. It uses
+the generator provided as template argument to fill the buffer of the <code>buffered_generator</code> base class. If the <code>Generator</code> is a reference type,
+a reference to the generator passed to the constructor is used. Otherwise a copy of the generator is used.
+
+<h3>Members</h3>
+
+<pre>basic_buffered_generator(std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>basic_buffered_generator</code>
+with a buffer of the size given as argument, and uses a default-generated Generator.
+
+<pre>basic_buffered_generator(generator_type gen, std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>basic_buffered_generator</code>
+with a buffer of the size given as argument. It uses a copy of the given Generator, or a reference if the <code>Generator</code> type is a reference.
+
+<h2><a name="buffered_uniform_01">Class template
+<code>buffered_uniform_01</code></a></h2>
+
+<h3>Synopsis</h3>
+
+<pre>
+template <class Engine, class RealType=double> 
+class buffered_uniform_01 
+ : public basic_buffered_generator<
+       variate_generator<Engine,uniform_real<RealType> >
+     , double>
+ 
+{
+public:
+  typedef RealType result_type;
+  typedef Engine engine_type;
+  typedef uniform_real<RealType> distribution_type;
+  typedef variate_generator<engine_type,distribution_type> generator_type;
+  
+  buffered_uniform_01(std::size_t buffer_size=8192);
+  buffered_uniform_01(engine_type engine, std::size_t buffer_size=8192);
+
+  inline result_type min() const;
+  inline result_type max() const;
+};
+</pre>
+
+<h3>Description</h3>
+
+The <code>buffered_uniform_01</code> class template is a concrete derived class template for runtime-polymorphic generators. It uses
+a variate_generator producing uniform random numbers in the interval[0,1) to fill the buffer of the <code>buffered_generator</code> base class.
+If the <code>Engine</code> is a reference type,
+a reference to the random number engine passed to the constructor is used. Otherwise a copy of the enigine is used.
+
+<h3>Members</h3>
+
+<pre>buffered_uniform_01(std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>basic_buffered_generator</code>
+with a buffer of the size given as argument, and uses a default-generated random number generator.
+
+<pre>basic_buffered_generator(generator_type gen, std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>buffered_uniform_01</code>
+with a buffer of the size given as argument, and uses a copy of the given random number engine, or a reference if the <code>Generator</code> type is a reference.
+
+<pre>inline result_type min() const</pre>
+<strong>Returns</strong> 0.
+
+<pre>inline result_type max() const</pre>
+<strong>Returns</strong> 1.
+
+<hr>
+Matthias Troyer, 2006-02-07
+
+</body>
+</html>

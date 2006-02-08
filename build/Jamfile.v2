@@ -4,10 +4,12 @@
 # License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-if [ peek : SPRNG_ROOT ]
+
+if [ modules.peek : SPRNG_ROOT ]
 {
 project boost/random/sprng
     : source-location $(SPRNG_ROOT)/SRC
+    : requirements <include>$(SPRNG_ROOT)/SRC 
     : default-build release
     ;
 
@@ -17,12 +19,25 @@ SOURCES = lcg64/lcg64
           mlfg/mlfg
           lfg/lfg
           pmlcg/pmlcg
+          memory
+          primes_32
+          primes_64
+          store
+          checkid
         ;
         
+
 lib boost_random_sprng
-  : $(SOURCES).c 
-  :
-    <include>$(SPRNG_ROOT)/SRC 
-  : debug release
-  ;
+ :        $(SPRNG_ROOT)/SRC/lcg64/lcg64
+          $(SPRNG_ROOT)/SRC/lcg/lcg.c
+          $(SPRNG_ROOT)/SRC/cmrg/cmrg
+          $(SPRNG_ROOT)/SRC/mlfg/mlfg
+          $(SPRNG_ROOT)/SRC/lfg/lfg
+          $(SPRNG_ROOT)/SRC/pmlcg/pmlcg
+          $(SPRNG_ROOT)/SRC/memory
+          $(SPRNG_ROOT)/SRC/primes_32
+          $(SPRNG_ROOT)/SRC/primes_64
+          $(SPRNG_ROOT)/SRC/store
+          $(SPRNG_ROOT)/SRC/checkid
+        ;
 }
