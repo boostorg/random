@@ -1,0 +1,217 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Boost Random Number Library Parallel Generators</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>Random Number Library Parallel Generators</h1>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#named">Named parameters</a>
+<li><a href="#sprng">SPRNG wrappers</a>
+<li><a href="#build">Building SPRNG</a>
+</ul>
+
+<h2><a name="intro">Introduction</a></h2>
+
+Stochastic simulations on parallel machines face an additional problem over
+simulations on a single CPU: we not only need one random number stream but
+uncorrelated random number streams for each CPU. Since massively parallel
+machines with 65536 CPUs exist, this can be a formidable challenge.
+<P>
+The <A HREF="http://sprng.cs.fsu.edu/">
+Scalable Parallel Pseuo Random Number Generators Library (SPRNG)</A> is a 
+C-library that was designed to solve this challenge. As explained in more
+detail in the <a href="http://sprng.cs.fsu.edu/Version1.0/paper/node7.html">
+SPRNG paper</a>, there are several methods of creating independent parallel
+random number streams, using parametrization of the generator, or cycle
+division techniques.
+<P>
+Since the method to create independent streams depends on the choice of
+generator, no generic version can be implemented. Instead the SPNRG library
+uses an interface that requires the specification of the following
+parameters
+<P>
+<a name="table1"/>
+<table border="1">
+<head>
+<tr>
+<td>Parameter name</td><td>Notes</td></tr>
+</tr>
+</head>
+<body>
+<tr><td><code>total_streams</code></td>
+<td>The total number of streams required</td>
+</tr>
+<tr><td><code>stream_number</code></td>
+<td>The number of the current stream</td>
+</tr>
+<tr><td><code>global_seed</code></td>
+<td>a global seed shared by all streams</td>
+<tr><td><code>parameter</code></td>
+<td>parametrizes the generator, by picking, e.g., the multiplier in a linear 
+congruential generator</td>
+</tr>
+</body>
+</table>
+<P>
+
+The SPRNG library guaranetees that generators created with the same values of 
+<code>total_streams</code>, <code>global_seed</code> and <code>parameter</code>
+but different values for <code>stream_number</code> produce independent
+non-overlapping sequences of random numbers. In a parallel application, typically
+the node number is chosen as <code>stream_number</code> and the total number
+of nodes as <code>total_streams</code>.
+<p>
+For the parallel Boost.Random extensions we use these conventions of the SPRNG
+library and provide a named parameter interface to seed parallel random
+number generators andTR1-conforming C++ wrappers to the SPRNG library.
+
+
+<h2><a name="named">Named parameter interface</a></h2>
+
+<h3>Header <code>&lt;boost/parallel.hpp&gt;</code></h3>
+
+<pre>
+#include &lt;boost/parameter/keyword.hpp>
+
+namespace boost { 
+namespace random {
+  
+  BOOST_PARAMETER_KEYWORD(tag,stream_number)
+  BOOST_PARAMETER_KEYWORD(tag,total_streams)
+  BOOST_PARAMETER_KEYWORD(tag,global_seed)
+  BOOST_PARAMETER_KEYWORD(tag,parameter)
+} 
+}
+</pre>
+
+defines a named parameter interface for the seed parameters for parallel random
+number generators according to the above <a hrefg="table1">table</a>.
+
+
+<h2>SPRNG wrappers<h2>
+
+<h3>Header <code>&lt;boost/sprng.hpp&gt;</code></h3>
+
+<pre>
+namespace boost {
+namespace random {
+namespace sprng {
+
+class lfg;
+class lcg;
+class lcg64;
+class cmrg;
+class mlfg;
+
+}
+}
+}
+</pre>
+
+This header provides Boost.Random and TR1-conforming wrappers to the SPRNG
+Generators. In addition to the members required for a random number generator
+the SPNRG wrappers provide the follwing, where RNG is the type of a SPRNG 
+Generators and rng and object of that type:
+<P>
+<table border="1">
+<head><tr><td>Expression</td><td>Notes</td></tr></head>
+<body>
+<tr><td><code>RNG::sprng_type</code></td>
+<td>the integer SPRNG random numnber generator type</td></tr>
+<tr><td><code>RNG::max_streams</code></td>
+<td>the maximum number of independent streams</td></tr>
+<tr><td><code>RNG::max_param</code></td>
+<td>the number of different parameter values allowed for the generator</td></tr>
+<tr><td><code>RNG(<i>named parameters</i>)</code></td>
+<td>constructs a generator with the named parameters given</td></tr>
+<tr><td><code>rng.seed(<i>named parameters</i>)</code></td>
+<td>seeds the generator with the named parameters given</td></tr>
+</body>
+</table>
+<P>
+The named parameters follow the convention in the introduction and have the
+following allowed values and defaults:
+
+<P>
+<a name="table1"/>
+<table border="1">
+<head>
+<tr>
+<td>Parameter name</td><td>Default</td><td>Legal values</td></tr>
+</tr>
+</head>
+<body>
+<tr><td><code>total_streams</code></td><td>1</td>
+<td> 0 <= <code>total_streams</code> < <code>RNG::max_streams</code></td>
+</tr>
+<tr><td><code>stream_number</code></td><td>0</td>
+<td> 0 <= <code>stream_number</code> < <code>total_streams</code></td>
+</tr>
+<tr><td><code>global_seed</code></td><td>0</td>
+<td>any valid <code>int</code></td>
+</tr>
+<tr><td><code>parameter</code></td><td>0</td>
+<td> 0 &lt;= <code>parameter</code> < <code>RNG::max_param</code></td>
+
+</tr>
+</body>
+</table>
+<P>
+
+The following table lists the specific values of the constants for the various
+SPRNG Generators:
+
+<P>
+<a name="table1"/>
+<table border="1">
+<head>
+<tr>
+<td>SPRNG generator</td><td><code>sprng_type</code></td>
+<td><code>max_streams</code></td><td><code>max_param</code></td></tr>
+</tr>
+</head>
+<body>
+<tr><td><code>boost::random::spring::lfg</code></td>
+<td>0</td><td>2<sup>31</sup>-1</td><td>11</td></tr>
+<tr><td><code>boost::random::spring::lcg</code></td>
+<td>1</td><td>2<sup>19</sup></td><td>7</td></tr>
+<tr><td><code>boost::random::spring::lcg64</code></td>
+<td>2</td><td>146138719</td><td>3</td></tr>
+<tr><td><code>boost::random::spring::cmrg</code></td>
+<td>3</td><td>146138719</td><td>3</td></tr>
+<tr><td><code>boost::random::spring::mlfg</code></td>
+<td>4</td><td>2<sup>31</sup>-1</td><td>11</td></tr>
+
+</tr>
+</body>
+</table>
+<P>
+
+
+
+
+<h2><a name="build">Building the SPRNG library</h2>
+
+The SPRNG wrappers are a header-only library but executables will need
+to be linked with the SPRNG library.
+<P>
+Sources of SPRNG library can be downloaded from the 
+<a href="http://sprng.cs.fsu.edu/">SPRNG web page</a> and built either
+by manually setting up the Makefile provided with the SPRNG library, or
+by using the Boost.build system. To build SPRNG using the Boost build system
+set the environment variable SPRNG_ROOT to point to the root directory of the
+SPRNG library source tree.
+
+<hr>
+Matthias Troyer, 2006-02-07
+
+</body>
+</html>
