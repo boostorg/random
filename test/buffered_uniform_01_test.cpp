@@ -44,9 +44,9 @@ void test(const std::string & name, const PRNG &)
   PRNG rng_copy;  // default ctor
   typedef double result_type;
   
-  boost::buffered_uniform_01<PRNG> gen_default;
-  boost::buffered_uniform_01<PRNG> gen_copy(rng);
-  boost::buffered_uniform_01<PRNG&> gen_ref(rng);
+  boost::basic_buffered_uniform_01<PRNG> gen_default;
+  boost::basic_buffered_uniform_01<PRNG> gen_copy(rng);
+  boost::basic_buffered_uniform_01<PRNG&> gen_ref(rng);
   
   result_type val_default=forward(gen_default);
   result_type val_copy=forward(gen_copy);
