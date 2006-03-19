@@ -14,10 +14,30 @@ import testing ;
 # Make tests run by default.
 DEPENDS all : test ;
 
+# look in BOOST_ROOT for sources first, just in this Jamfile
+local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+
+test-suite random_parallel
+ :
+[ run lcg64_test.cpp 
+      <lib>../build/boost_random
+      : : : : lcg64_test ]
+      
+[ run parameter_test.cpp 
+      <lib>../build/boost_random
+      : : : : parameter_test ]
+
+  [ run buffered_generator_test.cpp 
+        <lib>../build/boost_random
+        : : : : buffered_generator_test ]
+
+  [ run buffered_uniform_01_test.cpp 
+        <lib>../build/boost_random
+        : : : : buffered_uniform_01_test ]
+;
+
 if $(SPRNG_ROOT)
 {
-  # look in BOOST_ROOT for sources first, just in this Jamfile
-  local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
 
   test-suite random_sprng
    :
@@ -29,13 +49,6 @@ if $(SPRNG_ROOT)
         <lib>../build/boost_random_sprng
         : : : : sprng_parameter_test ]
 
-  [ run buffered_generator_test.cpp 
-        <lib>../build/boost_random_sprng
-        : : : : buffered_generator_test ]
-
-  [ run buffered_uniform_01_test.cpp 
-        <lib>../build/boost_random_sprng
-        : : : : buffered_uniform_01_test ]
   ;
 }
 

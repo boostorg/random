@@ -14,7 +14,7 @@
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
 #include <boost/random/sprng/detail/buffer.hpp>
-#include <boost/random/parallel/keyword.hpp>
+#include <boost/random/sprng/keyword.hpp>
 #include <boost/parameter/macros.hpp>
 #include <boost/preprocessor/cat.hpp>
 
@@ -25,7 +25,7 @@
 #elif !defined(BOOST_SPRNG_MAX_STREAMS)
 #error Please set BOOST_SPRNG_MAX_STREAMS to the maximum number of streams supported by the SPRNG generator
 #elif !defined(BOOST_SPRNG_MAX_PARAMS)
-#error Please set BOOST_SPRNG_MAX_PARAMS to the maximum number of para,meters supported by the SPRNG generator
+#error Please set BOOST_SPRNG_MAX_PARAMS to the maximum number of parameters supported by the SPRNG generator
 #else
 
 #define BOOST_SPRNG_CALL(FUN) BOOST_PP_CAT(BOOST_SPRNG_GENERATOR,BOOST_PP_CAT(_,FUN))
@@ -124,7 +124,7 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
   }
 
   // forwarding seed functions
-  BOOST_PARAMETER_MEMFUN(void,seed,1,4,parallel_seed_params)
+  BOOST_PARAMETER_MEMFUN(void,seed,1,4,sprng_seed_params)
   {
     seed_implementation(p[stream_number|0u], p[total_streams|1u], p[global_seed|0], p[parameter|0u]);
   }

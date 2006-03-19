@@ -20,7 +20,7 @@
 #include <vector>
 #include <boost/random.hpp>
 #include <boost/config.hpp>
-#include <boost/random/sprng/lcg64.hpp>
+#include <boost/random/parallel/lcg64.hpp>
 #include <boost/random/buffered_generator.hpp>
 
 #include <boost/test/test_tools.hpp>
@@ -70,7 +70,7 @@ void test(const std::string & name, const PRNG &)
 void test_all()
 {
   test("minstd_rand", boost::minstd_rand());
-  test("sprng::lcg64", boost::random::sprng::lcg64());
+  test("lcg64", boost::lcg64());
 }
 
 

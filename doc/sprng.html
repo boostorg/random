@@ -1,0 +1,136 @@
+
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Boost Random Number Library SPRNG Wrapper</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<h1>Random Number Library SPRNG Wrappers</h1>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#sprng">SPRNG wrappers</a>
+<li><a href="#build">Building SPRNG</a>
+</ul>
+
+<h2><a name="intro">Introduction</a></h2>
+
+The <A HREF="http://sprng.cs.fsu.edu/">
+Scalable Parallel Pseuo Random Number Generators Library (SPRNG)</A> is the
+most widely used and portable C-library for parallel random number generators.
+This header provides Boost.Random and TR1-conforming wrappers to the generators
+in the SPRNG library.
+
+
+<h2>SPRNG wrappers<h2>
+
+<h3>Header <code>&lt;boost/sprng.hpp&gt;</code></h3>
+
+<pre>
+namespace boost {
+namespace random {
+
+BOOST_PARAMETER_KEYWORD(tag,parameter)
+
+namespace sprng {
+
+class lfg;
+class lcg;
+class lcg64;
+class cmrg;
+class mlfg;
+
+} } }
+</pre>
+
+In addition to the members required for a <a href="parallel.html"> parallel 
+random number generator</A>
+the SPNRG wrappers provide the follwing, where X is the type of a SPRNG 
+generators and v and object of that type:
+<P>
+<table border="1">
+<head><tr><td>Expression</td><td>Notes</td></tr></head>
+<body>
+<tr><td><code>X::sprng_type</code></td>
+<td>the integer SPRNG random numnber generator type</td></tr>
+<tr><td><code>X::max_param</code></td>
+<td>the number of different parameter values allowed for the generator</td></tr>
+</body>
+</table>
+<P>
+The named parameters follow the convention for <a href="parallel.html"> parallel 
+random number generators</A>, with the addition of one extra named parameter.
+
+<P>
+<a name="table1"/>
+<table border="1">
+<tr>
+<td>Parameter name</td><td>Default</td><td>Legal values</td></tr>
+</tr>
+<tr><td><code>parameter</code></td><td>0</td>
+<td> 0 &lt;= <code>parameter</code> < <code>X::max_param</code></td>
+</tr>
+</table>
+<P>
+
+This parameter parametrizes the generators, e.g. by choosing different multipliers
+in a linear congruential generator. Generators with identical seeds, but
+different parameters are guaranteed to provide independent sequences
+of random numbers. Since the value of <code>max_param</code> max_param is
+typically small, the use of this extra parameter is limited, and it is in general
+better to obtain independent sequences by using different values for the
+<code>stream_number</code> parameter.
+
+The following table lists the specific values of the constants for the various
+SPRNG Generators:
+
+<P>
+<a name="table1"/>
+<table border="1">
+<head>
+<tr>
+<td>SPRNG generator</td><td><code>sprng_type</code></td>
+<td><code>max_streams</code></td><td><code>max_param</code></td></tr>
+</tr>
+</head>
+<body>
+<tr><td><code>boost::random::spring::lfg</code></td>
+<td>0</td><td>2<sup>31</sup>-1</td><td>11</td></tr>
+<tr><td><code>boost::random::spring::lcg</code></td>
+<td>1</td><td>2<sup>19</sup></td><td>7</td></tr>
+<tr><td><code>boost::random::spring::lcg64</code></td>
+<td>2</td><td>146138719</td><td>3</td></tr>
+<tr><td><code>boost::random::spring::cmrg</code></td>
+<td>3</td><td>146138719</td><td>3</td></tr>
+<tr><td><code>boost::random::spring::mlfg</code></td>
+<td>4</td><td>2<sup>31</sup>-1</td><td>11</td></tr>
+</tr>
+</body>
+</table>
+<P>
+
+As the members and their semantics are the same as those defined
+in the parallel random number generator concepts, we will refrain from
+documenting them here in detail.
+
+<h2><a name="build">Building the SPRNG library</h2>
+
+The SPRNG wrappers are a header-only library but executables will need
+to be linked with the SPRNG library.
+<P>
+Sources of SPRNG library can be downloaded from the 
+<a href="http://sprng.cs.fsu.edu/">SPRNG web page</a> and built either
+by manually setting up the Makefile provided with the SPRNG library, or
+by using the Boost.build system. To build SPRNG using the Boost build system
+set the environment variable SPRNG_ROOT to point to the root directory of the
+SPRNG library source tree.
+
+<hr>
+Matthias Troyer, 2006-02-07
+
+</body>
+</html>

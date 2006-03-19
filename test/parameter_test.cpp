@@ -21,7 +21,7 @@
 #include <boost/random.hpp>
 #include <boost/config.hpp>
 #include <boost/random/parallel.hpp>
-#include <boost/random/sprng.hpp>
+
 #include <boost/test/test_tools.hpp>
 #include <boost/test/included/test_exec_monitor.hpp>
 
@@ -59,12 +59,7 @@ void test(const std::string & name, const PRNG &)
 
 void test_all()
 {
-  test("sprng::lfg", boost::random::sprng::lfg());
-  test("sprng::lcg", boost::random::sprng::lcg());
-  test("sprng::lcg64", boost::random::sprng::lcg64());
-  test("sprng::cmrg", boost::random::sprng::cmrg());
-  test("sprng::mlfg", boost::random::sprng::mlfg());
-//  test("sprng::pmlcg", boost::random::sprng::pmlcg());
+  test("lcg64", boost::lcg64());
 }
 
 

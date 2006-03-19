@@ -6,4 +6,5 @@
 *
  */
 
+#include <boost/random/parallel/lcg64.hpp>
 #include <boost/random/parallel/keyword.hpp>

@@ -6,7 +6,8 @@
 
 subproject libs/random/build ;
 
-SOURCES = lcg64/lcg64
+SOURCES_SPRNG = 
+          lcg64/lcg64
           lcg/lcg
           cmrg/cmrg
           mlfg/mlfg
@@ -19,9 +20,21 @@ SOURCES = lcg64/lcg64
           checkid
         ;
 
+SOURCES_RANDOM = 
+          primelist_64.cpp
+          get_prime.cpp
+        ;
+        
+lib boost_random
+  : ../src/$(SOURCES_RANDOM)
+  : <include>$(BOOST_ROOT)
+  : debug release
+  ;
+
+        
 if $(SPRNG_ROOT) {
 lib boost_random_sprng
-  : $(SPRNG_ROOT)/SRC/$(SOURCES).c 
+  : $(SPRNG_ROOT)/SRC/$(SOURCES_SPRNG).c 
   :
     <include>$(SPRNG_ROOT)/SRC 
   : debug release
@@ -29,6 +42,6 @@ lib boost_random_sprng
 }
 #else 
 #{
-#  ECHO Set the SPRNG_ROOT environment variable to point to the SPRNG sources;
-#  ECHO if you want to build the SPRNG parallel randum number generators.;
+#  ECHO Set the SPRNG_ROOT environment variable to point to the SPRNG sources
+#  ECHO if you want to build the SPRNG parallel randum number generators.
 #}

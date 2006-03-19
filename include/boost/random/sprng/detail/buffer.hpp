@@ -12,6 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
+#include <vector>
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
 

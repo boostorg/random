@@ -12,7 +12,6 @@
 #include <boost/python.hpp>
 #include <boost/bind/apply.hpp>
 
-#include <vector> // missing include in sprng.hpp
 #include <boost/random/sprng.hpp>
 #include <boost/random/buffered_uniform_01.hpp>
 #include <boost/random/buffered_generator.hpp>

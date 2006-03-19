@@ -6,26 +6,22 @@
 *
  */
 
-#include <boost/parameter/keyword.hpp>
-#include <boost/parameter/parameters.hpp>
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/mpl/placeholders.hpp>
+#include <boost/random/parallel/keyword.hpp>
 
-#ifndef BOOST_RANDOM_PARALLEL_KEYWORD_HPP
-#define BOOST_RANDOM_PARALLEL_KEYWORD_HPP
+#ifndef BOOST_RANDOM_SPRNG_KEYWORD_HPP
+#define BOOST_RANDOM_SPRNG_KEYWORD_HPP
 
 namespace boost { namespace random {
   using mpl::placeholders::_;
   
-  BOOST_PARAMETER_KEYWORD(tag,stream_number)
-  BOOST_PARAMETER_KEYWORD(tag,total_streams)
-  BOOST_PARAMETER_KEYWORD(tag,global_seed)
+  BOOST_PARAMETER_KEYWORD(tag,parameter)
 
   typedef parameter::parameters<
       parameter::optional<tag::stream_number, is_convertible<_,unsigned int> >
     , parameter::optional<tag::total_streams, is_convertible<_,unsigned int> >
     , parameter::optional<tag::global_seed, is_convertible<_,int> >
-  > parallel_seed_params;
+    , parameter::optional<tag::parameter, is_convertible<_,unsigned int> >
+  > sprng_seed_params;
 
 } } // namespace boost::random
 

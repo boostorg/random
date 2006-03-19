@@ -18,6 +18,7 @@
 <code>buffered_generator</code></a>
 <li><a href="#basic_buffered_generator">Class template <code>basic_buffered_generator</code></a>
 <li><a href="#buffered_uniform_01">Class template <code>buffered_uniform_01</code></a>
+<li><a href="#basic_buffered_uniform_01">Class template <code>basic_buffered_uniform_01</code></a>
 </ul>
 
 <h2><a name="intro">Introduction</a></h2>
@@ -66,6 +67,9 @@ namespace boost {
 namespace boost {
   template &lt;class Generator, class ResultType>
   class buffered_uniform_01;
+
+  template &lt;class Generator, class ResultType>
+  class basic_buffered_uniform_01;
 }
 </pre>
 
@@ -171,24 +175,55 @@ with a buffer of the size given as argument. It uses a copy of the given Generat
 <h3>Synopsis</h3>
 
 <pre>
-template <class Engine, class RealType=double> 
+template &lt;class RealType=double> 
 class buffered_uniform_01 
- : public basic_buffered_generator<
-       variate_generator<Engine,uniform_real<RealType> >
-     , double>
- 
+ : public buffered_generator&lt;RealType> 
+{
+public:
+  typedef RealType result_type;
+  
+  buffered_uniform_01(std::size_t buffer_size=8192);
+
+  inline result_type min() const;
+  inline result_type max() const;
+};
+</pre>
+
+<h3>Description</h3>
+
+The <code>buffered_uniform_01</code> class template is an abstract base class template for runtime-polymorphic uniform random
+number generators producing numbers in the interval [0,1). It inherits from <a href="#buffered_generator"><code>buffered_generator&lt;RealType></code></a> and provides
+<code>min()</code> and <code>max()</code> member functions returning 0. and 1. respectively, which makes this class template a model of UniformRandomNumberGenerator.
+
+<h3>Members</h3>
+
+<pre>buffered_uniform_01(std::size_t buffer_size=8192)</pre>
+
+<strong>Effects:</strong> Constructs a <code>buffered_uniform_01</code>
+with a buffer of the size given as argument
+
+<pre>result_type min() const</pre>
+<strong>Returns</strong> 0.
+
+<pre>result_type max() const</pre>
+<strong>Returns</strong> 1.
+
+<h2><a name="basoc_buffered_uniform_01">Class template
+<code>basic_buffered_uniform_01</code></a></h2>
+
+<h3>Synopsis</h3>
+
+<pre>
+template &lt;class Engine, class RealType=double> 
+class basic_buffered_uniform_01 
+ : public buffered_uniform_01&lt;RealType>
 {
 public:
   typedef RealType result_type;
   typedef Engine engine_type;
-  typedef uniform_real<RealType> distribution_type;
-  typedef variate_generator<engine_type,distribution_type> generator_type;
   
-  buffered_uniform_01(std::size_t buffer_size=8192);
-  buffered_uniform_01(engine_type engine, std::size_t buffer_size=8192);
-
-  inline result_type min() const;
-  inline result_type max() const;
+  basic_buffered_uniform_01(std::size_t buffer_size=8192);
+  basic_buffered_uniform_01(engine_type engine, std::size_t buffer_size=8192);
 };
 </pre>
 
@@ -201,24 +236,18 @@ a reference to the random number engine passed to the constructor is used. Other
 
 <h3>Members</h3>
 
-<pre>buffered_uniform_01(std::size_t buffer_size=8192)</pre>
+<pre>basic_buffered_uniform_01(std::size_t buffer_size=8192)</pre>
 
 <strong>Effects:</strong> Constructs a <code>basic_buffered_generator</code>
 with a buffer of the size given as argument, and uses a default-generated random number generator.
 
-<pre>basic_buffered_generator(generator_type gen, std::size_t buffer_size=8192)</pre>
+<pre>basic_buffered_uniform_01(generator_type gen, std::size_t buffer_size=8192)</pre>
 
 <strong>Effects:</strong> Constructs a <code>buffered_uniform_01</code>
 with a buffer of the size given as argument, and uses a copy of the given random number engine, or a reference if the <code>Generator</code> type is a reference.
 
-<pre>inline result_type min() const</pre>
-<strong>Returns</strong> 0.
-
-<pre>inline result_type max() const</pre>
-<strong>Returns</strong> 1.
-
 <hr>
-Matthias Troyer, 2006-02-07
+Matthias Troyer, 2006-03-18
 
 </body>
 </html>
