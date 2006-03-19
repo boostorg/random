@@ -90,8 +90,13 @@ BOOST_PP_REPEAT_FROM_TO(1, 4, BOOST_LCG64_GENERATOR,~)
   {
     BOOST_ASSERT(stream < num_stream);
     BOOST_ASSERT(num_stream < max_streams);
+    // seed the generator
     c = detail::get_prime_64(stream);
     _x =  (uint64_t(0x2bc6ffffU)<<32 | 0x8cfe166dU)^((uint64_t(s)<<33)|stream);
+    // and advance it a bit
+    for(int i=0; i<127*stream; i++)
+      operator()();
+
   }
 
 
