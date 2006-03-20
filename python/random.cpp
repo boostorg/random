@@ -15,6 +15,7 @@
 #include <boost/random/sprng.hpp>
 #include <boost/random/buffered_uniform_01.hpp>
 #include <boost/random/buffered_generator.hpp>
+#include <boost/random/parallel/lcg64.hpp>
 
 // Generators
 #include <boost/random/linear_congruential.hpp>
@@ -238,5 +239,25 @@ BOOST_PYTHON_MODULE(_random)
 #undef MAKE_PYTHON_CLASS
 #undef SPRNG_CLASSES
 
+    typedef mpl::vector3<
+        boost::random::tag::stream_number*
+      , boost::random::tag::total_streams*
+      , boost::random::tag::global_seed*
+    > lcg64_keywords;
+        
+    buffered_uniform_01_class<boost::lcg64>("lcg64_01")
+            .def(
+                boost::parameter::python::init<
+                    lcg64_keywords
+                  , mpl::vector3<int,int,int> 
+                >()
+            )
+            .def("seed",
+                boost::parameter::python::function<
+                    seed_fwd
+                  , lcg64_keywords
+                  , mpl::vector4<void,int,int,int> 
+                >()
+            );
 }
 
