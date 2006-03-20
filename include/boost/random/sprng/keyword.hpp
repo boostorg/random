@@ -14,13 +14,13 @@
 namespace boost { namespace random {
   using mpl::placeholders::_;
   
-  BOOST_PARAMETER_KEYWORD(tag,parameter)
+  BOOST_PARAMETER_KEYWORD(random_tag,parameter)
 
   typedef parameter::parameters<
-      parameter::optional<tag::stream_number, is_convertible<_,unsigned int> >
-    , parameter::optional<tag::total_streams, is_convertible<_,unsigned int> >
-    , parameter::optional<tag::global_seed, is_convertible<_,int> >
-    , parameter::optional<tag::parameter, is_convertible<_,unsigned int> >
+      parameter::optional<random_tag::stream_number, is_convertible<_,unsigned int> >
+    , parameter::optional<random_tag::total_streams, is_convertible<_,unsigned int> >
+    , parameter::optional<random_tag::global_seed, is_convertible<_,int> >
+    , parameter::optional<random_tag::parameter, is_convertible<_,unsigned int> >
   > sprng_seed_params;
 
 } } // namespace boost::random

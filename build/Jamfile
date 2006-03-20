@@ -12,7 +12,6 @@ SOURCES_SPRNG =
           cmrg/cmrg
           mlfg/mlfg
           lfg/lfg
-          pmlcg/pmlcg
           memory
           primes_32
           primes_64

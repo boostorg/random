@@ -17,14 +17,14 @@
 namespace boost { namespace random {
   using mpl::placeholders::_;
   
-  BOOST_PARAMETER_KEYWORD(tag,stream_number)
-  BOOST_PARAMETER_KEYWORD(tag,total_streams)
-  BOOST_PARAMETER_KEYWORD(tag,global_seed)
+  BOOST_PARAMETER_KEYWORD(random_tag,stream_number)
+  BOOST_PARAMETER_KEYWORD(random_tag,total_streams)
+  BOOST_PARAMETER_KEYWORD(random_tag,global_seed)
 
   typedef parameter::parameters<
-      parameter::optional<tag::stream_number, is_convertible<_,unsigned int> >
-    , parameter::optional<tag::total_streams, is_convertible<_,unsigned int> >
-    , parameter::optional<tag::global_seed, is_convertible<_,int> >
+      parameter::optional<random_tag::stream_number, is_convertible<_,unsigned int> >
+    , parameter::optional<random_tag::total_streams, is_convertible<_,unsigned int> >
+    , parameter::optional<random_tag::global_seed, is_convertible<_,int> >
   > parallel_seed_params;
 
 } } // namespace boost::random
