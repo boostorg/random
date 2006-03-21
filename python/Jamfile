@@ -3,9 +3,10 @@ subproject libs/random/python ;
 #   Include definitions needed for Python modules
 import python ;
 
-extension _random
+extension _boost_random
   : random.cpp
     <template>@boost/libs/python/build/extension
+    <lib>../build/boost_random
   : <include>../../../
   ;
 

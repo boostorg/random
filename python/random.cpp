@@ -174,7 +174,7 @@ struct buffered_uniform_01_class
     }
 };
 
-BOOST_PYTHON_MODULE(_random)
+BOOST_PYTHON_MODULE(_boost_random)
 {
     typedef boost::buffered_uniform_01<boost::mt11213b> rng;
 
