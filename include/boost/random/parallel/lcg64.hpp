@@ -94,7 +94,7 @@ BOOST_PP_REPEAT_FROM_TO(1, 4, BOOST_LCG64_GENERATOR,~)
     c = detail::get_prime_64(stream);
     _x =  (uint64_t(0x2bc6ffffU)<<32 | 0x8cfe166dU)^((uint64_t(s)<<33)|stream);
     // and advance it a bit
-    for(int i=0; i<127*stream; i++)
+    for(uint64_t i=0; i<127*stream; i++)
       operator()();
 
   }
@@ -203,10 +203,12 @@ const uint64_t lcg64<a,val>::max_streams;
 
 // the three tested versions, validation still missing
 
-typedef random::lcg64<uint64_t(0x87b0b0fdU)|uint64_t(0x27bb2ee6U)<<32,0> lcg64_1;
-typedef random::lcg64<uint64_t(0xe78b6955U)|uint64_t(0x2c6fe96eU)<<32,0> lcg64_2;
-typedef random::lcg64<uint64_t(0x31a53f85U)|uint64_t(0x369dea0fU)<<32,0> lcg64_3;
-typedef lcg64_1 lcg64;
+typedef random::lcg64<uint64_t(0x87b0b0fdU)|uint64_t(0x27bb2ee6U)<<32,
+                      uint64_t( 481823773Ul)+(uint64_t(3380683238Ul)<<32)> lcg64;
+typedef random::lcg64<uint64_t(0xe78b6955U)|uint64_t(0x2c6fe96eU)<<32,
+                      uint64_t(3274024413Ul)+(uint64_t(3475904802Ul)<<32)> lcg64a;
+typedef random::lcg64<uint64_t(0x31a53f85U)|uint64_t(0x369dea0fU)<<32,
+                      uint64_t( 950651229Ul)+(uint64_t(3996309981Ul)<<32)> lcg64b;
 
 } // namespace boost
 

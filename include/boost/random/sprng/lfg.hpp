@@ -14,6 +14,7 @@
 #define BOOST_SPRNG_TYPE        0
 #define BOOST_SPRNG_MAX_STREAMS 0x7fffffff
 #define BOOST_SPRNG_MAX_PARAMS  11
+#define BOOST_SPRNG_VALIDATION 0.045600365747203677746
 
 #include <boost/random/sprng/detail/implementation.hpp>
 
@@ -21,5 +22,6 @@
 #undef BOOST_SPRNG_TYPE
 #undef BOOST_SPRNG_MAX_STREAMS
 #undef BOOST_SPRNG_MAX_PARAMS
+#undef BOOST_SPRNG_VALIDATION
 
 #endif // BOOST_RANDOM_SPRNG_LFG_HPP

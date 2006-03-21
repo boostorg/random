@@ -14,6 +14,8 @@
 #define BOOST_SPRNG_TYPE        3
 #define BOOST_SPRNG_MAX_STREAMS 146138719
 #define BOOST_SPRNG_MAX_PARAMS  3
+#define BOOST_SPRNG_VALIDATION 0.23551060704332388296
+
 
 #include <boost/random/sprng/detail/implementation.hpp>
 
@@ -21,5 +23,6 @@
 #undef BOOST_SPRNG_TYPE
 #undef BOOST_SPRNG_MAX_STREAMS
 #undef BOOST_SPRNG_MAX_PARAMS
+#undef BOOST_SPRNG_VALIDATION
 
 #endif // BOOST_RANDOM_SPRNG_CMRG_HPP

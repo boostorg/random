@@ -28,6 +28,7 @@
 #error Please set BOOST_SPRNG_MAX_PARAMS to the maximum number of parameters supported by the SPRNG generator
 #else
 
+
 #define BOOST_SPRNG_CALL(FUN) BOOST_PP_CAT(BOOST_SPRNG_GENERATOR,BOOST_PP_CAT(_,FUN))
 
 #include <boost/random/sprng/detail/interface.hpp>
@@ -147,9 +148,13 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
     return BOOST_SPRNG_CALL(get_rn_dbl)(sprng_ptr);
   }
 
+#ifndef BOOST_SPRNG_VALIDATION
+#define BOOST_SPRNG_VALIDATION 0.
+#endif
+
   static bool validation(result_type x) 
   {
-    return false; // MISSING
+    return std::abs(x-BOOST_SPRNG_VALIDATION) < 1e-6;
   }
 
 #ifdef BOOST_NO_OPERATORS_IN_NAMESPACE
