@@ -36,7 +36,7 @@
 
 // validation value not yet obtained
 template <class RNG>
-bool check(double x, const RNG&) { return true; }
+bool check(double x, const RNG& r) { return r.validation(x); }
 
 template<class PRNG>
 void validate(const std::string & name, const PRNG &)
