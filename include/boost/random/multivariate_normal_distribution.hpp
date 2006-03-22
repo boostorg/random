@@ -59,7 +59,6 @@ public:
     , ptr_(buffer_.end())
   {
     BOOST_ASSERT(mean_.size()==cholesky_.size1() && mean_.size()==cholesky_.size2());
-    std::cerr << &ptr_() << " " << &buffer_.begin()() << "\n";
   }
 
   /// @brief the constructor of the multi-variate normal distribution with zero mean
