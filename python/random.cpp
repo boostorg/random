@@ -48,10 +48,10 @@ struct seed_fwd
 struct sprng_visitor : def_visitor<sprng_visitor>
 {
     typedef mpl::vector4<
-        boost::random::tag::stream_number*
-      , boost::random::tag::total_streams*
-      , boost::random::tag::global_seed*
-      , boost::random::tag::parameter*
+        boost::random::random_tag::stream_number*
+      , boost::random::random_tag::total_streams*
+      , boost::random::random_tag::global_seed*
+      , boost::random::random_tag::parameter*
     > keywords;
 
     template <class C>
@@ -240,9 +240,9 @@ BOOST_PYTHON_MODULE(_boost_random)
 #undef SPRNG_CLASSES
 
     typedef mpl::vector3<
-        boost::random::tag::stream_number*
-      , boost::random::tag::total_streams*
-      , boost::random::tag::global_seed*
+        boost::random::random_tag::stream_number*
+      , boost::random::random_tag::total_streams*
+      , boost::random::random_tag::global_seed*
     > lcg64_keywords;
         
     buffered_uniform_01_class<boost::lcg64>("lcg64_01")
