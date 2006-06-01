@@ -27,13 +27,17 @@ test-suite random_parallel
       <lib>../build/boost_random
       : : : : parameter_test ]
 
-  [ run buffered_generator_test.cpp 
-        <lib>../build/boost_random
-        : : : : buffered_generator_test ]
+[ run buffered_generator_test.cpp 
+      <lib>../build/boost_random
+      : : : : buffered_generator_test ]
 
-  [ run buffered_uniform_01_test.cpp 
-        <lib>../build/boost_random
-        : : : : buffered_uniform_01_test ]
+[ run buffered_uniform_01_test.cpp 
+      <lib>../build/boost_random
+      : : : : buffered_uniform_01_test ]
+
+[ run random_test.cpp 
+      <lib>../build/boost_random
+      : : : : random_test ]
 ;
 
 if $(SPRNG_ROOT)
