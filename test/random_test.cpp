@@ -90,7 +90,7 @@ bool check(double x, const boost::ranlux64_4_01&)
 { return std::abs(x-0.59839) < 1e-6; }
 
 /*************WELL******************/
-bool check(unsigned int x, const well512a&) { return x == 178010050; }
+bool check(unsigned int x, const boost::well512a&) { return x == 178010050; }
 /*************************************/
 
 template<class PRNG>
@@ -393,7 +393,7 @@ void instantiate_all()
   instantiate_urng("taus88", taus88(), 0u);
   
   /*************WELL******************/
-  //instantiate_urng("well512a", well512a(), 0u);
+  instantiate_urng("well512a", well512a(), 0u);
   /*************************************/
 
 }
@@ -491,7 +491,7 @@ INSTANT(boost::hellekalek1995)
 INSTANT(boost::mt19937)
 INSTANT(boost::mt11213b)
 /*************WELL******************/
-INSTANT(well512a)
+INSTANT(boost::well512a)
 /*************************************/
 
 

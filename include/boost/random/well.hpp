@@ -19,7 +19,7 @@ class mat0pos
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
 			return (v^(v>>shift)); 
 		}
@@ -32,7 +32,7 @@ class mat0neg
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
 			return v^(v <<(-(shift)));
 		}
@@ -44,7 +44,7 @@ class maF3neg
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
 			return (v<<(-(shift)));
 		}
@@ -56,9 +56,9 @@ class maF4neg
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
-			return (v ^ ((v<<(-(shift))) & 0xda442d24U));   // Maske immer gleich für maF4neg?
+			return (v ^ ((v<<(-(shift))) & 0xda442d24U));   // Maske immer gleich für mat4neg?
 		}
 
 };
@@ -67,7 +67,7 @@ class identity
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
 			return v;		
 		}
@@ -78,7 +78,7 @@ class zero
 {
 	public: 
 		template<class UIntType>
-		UIntType f(UIntType  v)
+		static UIntType f(UIntType  v)
 		{
 			return 0;		
 		}
@@ -193,12 +193,12 @@ class well
 			return is;
 		}
 		
-		result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+		result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const
 		{
 			return min_value;
 		}
 		
-		result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+		result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const
 		{
 			result_type res = 0;
 			for(int i = 0; i < 32; ++i)
@@ -213,12 +213,12 @@ class well
 		
 		result_type operator()()
 		{
-			z0 = state[(state_i + (statesize - 1) )& mask];
-			z1 = F1::fF2::f(state[state_i])^F2()(state[(state_i + p1) & mask]);
-			z2 = F3::f(state[(state_i + p2)& mask])^F4::f(state[(state_i + p3) & mask]);
-			z3 = z1^z2;
+			result_type z0 = state[(state_i + (statesize - 1) )& mask];
+			result_type z1 = F1::f(state[state_i])^F2::f(state[(state_i + p1) & mask]);
+			result_type z2 = F3::f(state[(state_i + p2)& mask])^F4::f(state[(state_i + p3) & mask]);
+			result_type z3 = z1^z2;
 			state[state_i] = z3;
-			z4 = F5::f(z0)^F6::f(z1)^F7::f(z2)^F8::f(z3);
+			result_type z4 = F5::f(z0)^F6::f(z1)^F7::f(z2)^F8::f(z3);
 			state[(state_i + (statesize - 1) )& mask] = z4;
 			state_i = (state_i + (statesize - 1) ) & mask;
 			return state[state_i];
@@ -227,11 +227,6 @@ class well
 	private:
 		result_type state[statesize];
 		UIntType state_i;
-		result_type z0;
-		result_type z1;
-		result_type z2;
-		result_type z3;
-		result_type z4;
 };
 
 #ifndef BOOST_NO_INCLASS_MEMBER_INITIALIZATION
@@ -256,7 +251,7 @@ typedef well<uint32_t,32,1573116597,identity, mat0pos<8>, mat0neg<-19>,
 } // end namespace random
 		
 using random::well512a;
-using random::well10245a;
+using random::well1024a;
 
 
 } // end namespace boost
