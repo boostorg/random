@@ -28,6 +28,7 @@
 
 namespace boost {
 namespace random {
+namespace parallel {
 
 // 64-bit parallel lineacr congruential generator, 
 // following the SPRNG implementation
@@ -55,9 +56,9 @@ public:
   template<class It>
   lcg64(It& first, It last) { seed(first, last); }
 
-#define BOOST_LCG64_GENERATOR(z, n, unused)                 \
+#define BOOST_LCG64_GENERATOR(z, n, unused)                          \
   template <BOOST_PP_ENUM_PARAMS(n,class T)>                         \
-  lcg64(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))   \
+  lcg64(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                   \
   {                                                                  \
     seed(BOOST_PP_ENUM_PARAMS(n,x) );                                \
   }
@@ -75,14 +76,14 @@ BOOST_PP_REPEAT_FROM_TO(1, 4, BOOST_LCG64_GENERATOR,~)
   // compiler-generated copy constructor and assignment operator are fine
   void seed()
   {
-   seed_implementation();
+    seed_implementation();
   }
 
   template<class It>
   void seed(It& first, It last)
   {
     if(first == last)
-      throw std::invalid_argument("boost::sprng::BOOST_SPRNG_GENERATOR::seed");
+      throw std::invalid_argument("boost::sprng::parallel::lcg64::seed");
     seed(global_seed=*first++);
   }
 
@@ -199,15 +200,15 @@ template<uint64_t a, uint64_t val>
 const uint64_t lcg64<a,val>::max_streams;
 #endif
 
-} // namespace random
+} } // namespace random::parallel
 
 // the three tested versions, validation still missing
 
-typedef random::lcg64<uint64_t(0x87b0b0fdU)|uint64_t(0x27bb2ee6U)<<32,
+typedef random::parallel::lcg64<uint64_t(0x87b0b0fdU)|uint64_t(0x27bb2ee6U)<<32,
                       uint64_t( 481823773Ul)+(uint64_t(3380683238Ul)<<32)> lcg64;
-typedef random::lcg64<uint64_t(0xe78b6955U)|uint64_t(0x2c6fe96eU)<<32,
+typedef random::parallel::lcg64<uint64_t(0xe78b6955U)|uint64_t(0x2c6fe96eU)<<32,
                       uint64_t(3274024413Ul)+(uint64_t(3475904802Ul)<<32)> lcg64a;
-typedef random::lcg64<uint64_t(0x31a53f85U)|uint64_t(0x369dea0fU)<<32,
+typedef random::parallel::lcg64<uint64_t(0x31a53f85U)|uint64_t(0x369dea0fU)<<32,
                       uint64_t( 950651229Ul)+(uint64_t(3996309981Ul)<<32)> lcg64b;
 
 } // namespace boost

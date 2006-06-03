@@ -1,3 +1,12 @@
+/* 
+ * Copyright Brigitte Surer and Matthias Troyer 2006
+ * Distributed under the Boost Software License, Version 1.0. (See
+ * accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
+*
+ */
+
+
 #ifndef BOOST_RANDOM_WELL_HPP
 #define BOOST_RANDOM_WELL_HPP
 
@@ -91,7 +100,7 @@ class well
         typedef UIntType result_type;
 
         BOOST_STATIC_CONSTANT(result_type, min_value = 0);
-        BOOST_STATIC_CONSTANT(result_type, max_value);
+        BOOST_STATIC_CONSTANT(result_type, max_value = integer_traits<UIntType>::const_max);
         BOOST_STATIC_CONSTANT(bool, has_fixed_range = true);
                 
         //constructor
@@ -185,10 +194,7 @@ class well
         
         result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const
         {
-            result_type res = 0;
-            for(int i = 0; i < 32; ++i)
-            res |= (1u << i);
-            return res;
+            return max_value;
         }
         
         static bool validation(result_type value)

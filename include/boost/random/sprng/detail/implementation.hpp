@@ -89,6 +89,8 @@ public:
    
 BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
 
+#undef BOOST_RANDOM_SPRNG_CONSTRUCTOR
+
   BOOST_SPRNG_GENERATOR const& operator=(BOOST_SPRNG_GENERATOR const& rhs)
   {
     free();
@@ -127,17 +129,26 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
   // forwarding seed functions
   BOOST_PARAMETER_MEMFUN(void,seed,1,4,sprng_seed_params)
   {
-    seed_implementation(p[stream_number|0u], p[total_streams|1u], p[global_seed|0], p[parameter|0u]);
+    seed_implementation(
+        p[stream_number|0u]
+      , p[total_streams|1u]
+      , p[global_seed|0]
+      , p[parameter|0u]
+    );
   }
-  
-  /// seed with a range of unsigned int values
+
+  /// seed from a range of unsigned int values
   template<class It>
-  void seed(It& first, It const& last)
+  void seed(It& first, It last)
   {
     if(first == last)
-      throw std::invalid_argument("boost::sprng::BOOST_SPRNG_GENERATOR::seed");
+      throw std::invalid_argument("SPRNG seeding invalid arg");
     seed(global_seed=*first++);
   }
+
+
+  
+
 
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0.; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 1.; }
@@ -148,14 +159,14 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
     return BOOST_SPRNG_CALL(get_rn_dbl)(sprng_ptr);
   }
 
-#ifndef BOOST_SPRNG_VALIDATION
-#define BOOST_SPRNG_VALIDATION 0.
-#endif
+#ifdef BOOST_SPRNG_VALIDATION
 
   static bool validation(result_type x) 
   {
     return std::abs(x-BOOST_SPRNG_VALIDATION) < 1e-6;
   }
+
+#endif
 
 #ifdef BOOST_NO_OPERATORS_IN_NAMESPACE
     

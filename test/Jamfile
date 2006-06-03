@@ -35,6 +35,10 @@ test-suite random_parallel
       <lib>../build/boost_random
       : : : : buffered_uniform_01_test ]
 
+[ run mpi_test.cpp 
+      <lib>../build/boost_random
+      : : : : mpi_test ]
+
 [ run random_test.cpp 
       <lib>../build/boost_random
       : : : : random_test ]
