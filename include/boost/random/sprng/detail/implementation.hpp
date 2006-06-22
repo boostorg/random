@@ -16,7 +16,7 @@
 #include <boost/random/sprng/detail/buffer.hpp>
 #include <boost/random/sprng/keyword.hpp>
 #include <boost/parameter/macros.hpp>
-#include <boost/preprocessor/cat.hpp>
+#include <boost/random/parallel/detail/seed_macros.hpp>
 
 #if !defined(BOOST_SPRNG_GENERATOR)
 #error Please set BOOST_SPRNG_GENERATOR to the name of one of the SPRNG generators before including this header file
@@ -50,14 +50,6 @@ public:
   enum { max_param = BOOST_SPRNG_MAX_PARAMS };
 
   
-  BOOST_SPRNG_GENERATOR()
-   : sprng_ptr(0)
-  {
-    seed();
-  }
-
-  
-
 
   // we need custom copy constructor, destructor and assignment operators
   BOOST_SPRNG_GENERATOR(BOOST_SPRNG_GENERATOR const& rhs)
@@ -71,51 +63,18 @@ public:
     free();
   }
 
-  template<class It>
-  BOOST_SPRNG_GENERATOR(It& first, It const& last)
-   : sprng_ptr(0)
-  {
-    seed(first,last);
-  }
-
-
-#define BOOST_RANDOM_SPRNG_CONSTRUCTOR(z, n, unused)                 \
-  template <BOOST_PP_ENUM_PARAMS(n,class T)>                         \
-  BOOST_SPRNG_GENERATOR(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))   \
-   : sprng_ptr(0)                                                    \
-  {                                                                  \
-    seed(BOOST_PP_ENUM_PARAMS(n,x) );                                \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
-
-#undef BOOST_RANDOM_SPRNG_CONSTRUCTOR
-
-#undef BOOST_LCG64_GENERATOR
-
-// forward seeding functions to named versions
-#define BOOST_RANDOM_SPRNG_SEED(z, n, unused)                    \
-  template <BOOST_PP_ENUM_PARAMS(n,class T)>                     \
-  void seed(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))           \
-  {                                                              \
-    seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                      \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED,~)
-
-#undef BOOST_RANDOM_SPRNG_SEED
-
 // forward seeding functions with iterator buffers to named versions
 #define BOOST_RANDOM_SPRNG_SEED_IT(z, n, unused)                                  \
-  template <class It, BOOST_PP_ENUM_PARAMS(n,class T)>                            \
-  void seed(It& first, It const& last, BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x)) \
+  template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>        \
+  void seed(It& first, It const& last BOOST_PP_COMMA_IF(n)                        \
+                BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                        \
   {                                                                               \
     if(first == last)                                                             \
       throw std::invalid_argument("SPRNG seeding invalid argument");              \
-    seed(global_seed=*first++,BOOST_PP_ENUM_PARAMS(n,x) );                        \
+    seed(global_seed=*first++ BOOST_PP_COMMA_IF(n)BOOST_PP_ENUM_PARAMS(n,x) );    \
   }
    
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
+BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
 
 #undef BOOST_RANDOM_SPRNG_SEED_IT
 
@@ -137,9 +96,13 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
   /// the random number streams specified by stream (0 <= stream < num_stream) are independent and non-overlapping.
   /// Changing eiher global_seed or the param will lead to different random number streams
 
-  void seed_implementation(unsigned int stream=0, unsigned int num_stream=1, int s=0, unsigned int param=0)
+  BOOST_RANDOM_PARALLEL_SEED_PARAMS(BOOST_SPRNG_GENERATOR,sprng_seed_params,: sprng_ptr(0))
   {
-    free();
+    unsigned int stream=p[stream_number|0u];
+    unsigned int num_stream=p[total_streams|1u];
+    int s=p[global_seed|0];
+    unsigned int param=p[parameter|0u];
+
     BOOST_ASSERT(stream < num_stream);
     BOOST_ASSERT(num_stream < max_streams);
     BOOST_ASSERT(param < max_param);
@@ -147,36 +110,6 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
     if (sprng_ptr==0)
       boost::throw_exception(std::runtime_error("Failed initializing SPRNG generator"));
   }
-  
-  /// seed with the default.
-  void seed()
-  {
-    seed_implementation();
-  }
-
-  // forwarding seed functions
-  BOOST_PARAMETER_MEMFUN(void,seed_named,1,BOOST_RANDOM_MAXARITY,sprng_seed_params)
-  {
-    seed_implementation(
-        p[stream_number|0u]
-      , p[total_streams|1u]
-      , p[global_seed|0]
-      , p[parameter|0u]
-    );
-  }
-
-  /// seed from a range of unsigned int values
-  template<class It>
-  void seed(It& first, It last)
-  {
-    if(first == last)
-      throw std::invalid_argument("SPRNG seeding invalid arg");
-    seed(global_seed=*first++);
-  }
-
-
-  
-
 
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0.; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 1.; }

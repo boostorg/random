@@ -19,6 +19,7 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/random/parallel/keyword.hpp>
 #include <boost/random/parallel/detail/get_prime.hpp>
+#include <boost/random/parallel/detail/seed_macros.hpp>
 #include <boost/parameter/macros.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/assert.hpp>
@@ -48,79 +49,23 @@ public:
   BOOST_STATIC_CONSTANT(result_type, max_streams = 146138719);
 #endif
 
-  lcg64()
-  {
-    seed();
-  }
-
-  template<class It>
-  lcg64(It& first, It last) { seed(first, last); }
-
-#define BOOST_LCG64_GENERATOR(z, n, unused)                          \
-  template <BOOST_PP_ENUM_PARAMS(n,class T)>                         \
-  lcg64(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                   \
-  {                                                                  \
-    seed(BOOST_PP_ENUM_PARAMS(n,x) );                                \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_GENERATOR,~)
-
-#undef BOOST_LCG64_GENERATOR
-
-#define BOOST_LCG64_GENERATOR_IT(z, n, unused)                                \
-  template <class It,BOOST_PP_ENUM_PARAMS(n,class T)>                         \
-  lcg64(It& first, It const& last, BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x)) \
-  {                                                                           \
-    seed(first,last,BOOST_PP_ENUM_PARAMS(n,x) );                              \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_GENERATOR_IT,~)
-
-#undef BOOST_LCG64_GENERATOR_IT
-
-// forward seeding functions to named versions
-#define BOOST_LCG64_SEED(z, n, unused)                           \
-  template <BOOST_PP_ENUM_PARAMS(n,class T)>                     \
-  void seed(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))           \
-  {                                                              \
-    seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                      \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED,~)
-
-#undef BOOST_LCG64_SEED
-
 // forward seeding functions with iterator buffers to named versions
 #define BOOST_LCG64_SEED_IT(z, n, unused)                                         \
-  template <class It, BOOST_PP_ENUM_PARAMS(n,class T)>                            \
-  void seed(It& first, It const& last, BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x)) \
+  template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>        \
+  void seed(It& first, It const& last BOOST_PP_COMMA_IF(n)                        \
+               BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                         \
   {                                                                               \
     if(first == last)                                                             \
       throw std::invalid_argument("boost::sprng::parallel::lcg64::seed");         \
-    seed(global_seed=*first++,BOOST_PP_ENUM_PARAMS(n,x) );                        \
+    seed(global_seed=*first++ BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,x) );   \
   }
    
-BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
+BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
 
 #undef BOOST_LCG64_SEED_IT
 
-  // compiler-generated copy constructor and assignment operator are fine
-  void seed()
-  {
-    seed_named();
-  }
-
-  template<class It>
-  void seed(It& first, It last)
-  {
-    if(first == last)
-      throw std::invalid_argument("boost::sprng::parallel::lcg64::seed");
-    seed(global_seed=*first++);
-  }
-
-
   // forwarding named seeding functions
-  BOOST_PARAMETER_MEMFUN(void,seed_named,0,BOOST_RANDOM_MAXARITY,parallel_seed_params)
+  BOOST_RANDOM_PARALLEL_SEED(lcg64)
   {
     unsigned int stream = p[stream_number|0u];
     unsigned int num_stream=p[total_streams|1u];
