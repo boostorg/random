@@ -1,0 +1,39 @@
+# (C) Copyright 2006: Eric Niebler
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# bring in rules for testing
+import testing ;
+import os ;
+
+sprng = [ os.environ SPRNG_ROOT ] ;
+
+
+project
+    : requirements
+      <library>../build//boost_random
+      <link>static
+      <include>../../..
+    ;
+
+test-suite "random_parallel"
+    :
+      [ run lcg64_test.cpp ]
+      [ run parameter_test.cpp ]
+      [ run buffered_generator_test.cpp ]
+      [ run buffered_uniform_01_test.cpp ]
+      [ run random_test.cpp ]
+    ;
+
+if $(sprng) {
+project
+    : requirements
+      <library>../build//boost_random_sprng
+      <link>static
+      <include>../../..
+    ;
+  test-suite random_sprng
+    : [ run sprng_test.cpp ]
+      [ run sprng_parameter_test.cpp ]
+    ;
+}

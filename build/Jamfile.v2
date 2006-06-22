@@ -4,40 +4,49 @@
 # License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+import os ;
 
-if [ modules.peek : SPRNG_ROOT ]
-{
-project boost/random/sprng
-    : source-location $(SPRNG_ROOT)/SRC
-    : requirements <include>$(SPRNG_ROOT)/SRC 
-    : default-build release
-    ;
+sprng = [ os.environ SPRNG_ROOT ] ;
 
-SOURCES = lcg64/lcg64
+project boost/random
+  : requirements <include>../../.. <include>$(BOOST_ROOT)
+  : source-location ../src
+  ;
+
+SOURCES_SPRNG = 
+          lcg64/lcg64
           lcg/lcg
           cmrg/cmrg
           mlfg/mlfg
           lfg/lfg
-          pmlcg/pmlcg
           memory
           primes_32
           primes_64
           store
           checkid
         ;
-        
 
-lib boost_random_sprng
- :        $(SPRNG_ROOT)/SRC/lcg64/lcg64
-          $(SPRNG_ROOT)/SRC/lcg/lcg.c
-          $(SPRNG_ROOT)/SRC/cmrg/cmrg
-          $(SPRNG_ROOT)/SRC/mlfg/mlfg
-          $(SPRNG_ROOT)/SRC/lfg/lfg
-          $(SPRNG_ROOT)/SRC/pmlcg/pmlcg
-          $(SPRNG_ROOT)/SRC/memory
-          $(SPRNG_ROOT)/SRC/primes_32
-          $(SPRNG_ROOT)/SRC/primes_64
-          $(SPRNG_ROOT)/SRC/store
-          $(SPRNG_ROOT)/SRC/checkid
+SOURCES_RANDOM = 
+          primelist_64.cpp
+          get_prime.cpp
         ;
+        
+lib boost_random
+  : ../src/$(SOURCES_RANDOM)
+  : <include>$(BOOST_ROOT)
+  : debug release
+  ;
+
+        
+if $(sprng) {
+lib boost_random_sprng
+  : $(sprng)/SRC/$(SOURCES_SPRNG).c
+  : <include>$(sprng)/SRC <link>static
+  : debug release
+  ;
+}
+else 
+{
+  ECHO Set the SPRNG_ROOT environment variable to point to the SPRNG sources
+  ECHO if you want to build the SPRNG parallel randum number generators. ;
 }

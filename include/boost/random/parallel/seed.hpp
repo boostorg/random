@@ -21,10 +21,20 @@ namespace boost { namespace random { namespace parallel {
           PRNG& prng
         , unsigned int num
         , unsigned int total
-        , unsigned int seed=0u
       )
   {
-    prng.seed(global_seed=seed, stream_number=num, total_streams=total);
+    prng.seed(stream_number=num, total_streams=total);
+  }
+
+  template <class PRNG, class SeedType>
+  void seed(
+          PRNG& prng
+        , unsigned int num
+        , unsigned int total
+        , SeedType const& s
+      )
+  {
+    prng.seed(global_seed=s, stream_number=num, total_streams=total);
   }
 
   template <class PRNG, class Iterator>
@@ -38,7 +48,7 @@ namespace boost { namespace random { namespace parallel {
   {
    if(first == last)
       throw_exception(std::invalid_argument("parallel_seed"));
-    seed(prng, num, total, *first++);
+    prng.seed(first,last,stream_number=num, total_streams=total);
   }
 
 

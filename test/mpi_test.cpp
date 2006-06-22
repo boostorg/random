@@ -55,23 +55,14 @@ void test(const std::string & name, const PRNG &)
     rng3();
   typename PRNG::result_type val3 = rng3();
 
-  PRNG rng4;
-  std::vector<unsigned int> buffer(1,0);
-  std::vector<unsigned int>::iterator it=buffer.begin();
-  parallel::broadcast_seed(rng4,comm,0,it,buffer.end());
-  for(int i = 0; i < 10000; i++)
-    rng4();
-  typename PRNG::result_type val4 = rng4();
-  
-  
-  bool result = (val==val2) && (val == val3) && (val==val4);
-  std::cout << val << " " << val2 << " " << val3 << " " << val4 <<  std::endl;
+  bool result = (val==val2) && (val == val3);
+  std::cout << val << " " << val2 << " " << val3 <<  std::endl;
   BOOST_CHECK(result);
 }
 
 void test_all()
 {
-  test("lcg64", boost::lcg64());
+  test("lcg64a", boost::lcg64a());
 }
 
 

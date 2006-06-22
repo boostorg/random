@@ -58,9 +58,9 @@ void validate(const std::string & name, const PRNG &)
 void validate_all()
 {
   using namespace boost;
-  validate("lcg64", boost::lcg64());
   validate("lcg64a", boost::lcg64a());
   validate("lcg64b", boost::lcg64b());
+  validate("lcg64c", boost::lcg64c());
 }
 
 
@@ -281,9 +281,9 @@ void instantiate_urng(const std::string & s, const URNG &, const ResultType &)
 void instantiate_all()
 {
   using namespace boost;
-  instantiate_urng("lcg64", lcg64(),uint64_t(0));
   instantiate_urng("lcg64a", lcg64a(),uint64_t(0));
   instantiate_urng("lcg64b", lcg64b(),uint64_t(0));
+  instantiate_urng("lcg64c", lcg64c(),uint64_t(0));
 }
 
 
@@ -304,9 +304,9 @@ template class boost::normal_distribution<x>; \
 template class boost::uniform_on_sphere<x>; \
 template class boost::lognormal_distribution<x>;
 
-INSTANT(boost::lcg64)
 INSTANT(boost::lcg64a)
 INSTANT(boost::lcg64b)
+INSTANT(boost::lcg64c)
 
 #undef INSTANT
 #endif

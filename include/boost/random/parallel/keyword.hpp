@@ -14,6 +14,10 @@
 #ifndef BOOST_RANDOM_PARALLEL_KEYWORD_HPP
 #define BOOST_RANDOM_PARALLEL_KEYWORD_HPP
 
+#ifndef BOOST_RANDOM_MAXARITY
+#define BOOST_RANDOM_MAXARITY 5
+#endif
+
 namespace boost { namespace random {
   using mpl::placeholders::_;
   
@@ -24,7 +28,7 @@ namespace boost { namespace random {
   typedef parameter::parameters<
       parameter::optional<random_tag::stream_number, is_convertible<_,unsigned int> >
     , parameter::optional<random_tag::total_streams, is_convertible<_,unsigned int> >
-    , parameter::optional<random_tag::global_seed, is_convertible<_,int> >
+    , parameter::optional<random_tag::global_seed>
   > parallel_seed_params;
 
 } } // namespace boost::random

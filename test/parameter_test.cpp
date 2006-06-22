@@ -68,7 +68,7 @@ void test(const std::string & name, const PRNG &)
 
 void test_all()
 {
-  test("lcg64", boost::lcg64());
+  test("lcg64a", boost::lcg64a());
 }
 
 

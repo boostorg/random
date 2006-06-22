@@ -87,9 +87,37 @@ public:
     seed(BOOST_PP_ENUM_PARAMS(n,x) );                                \
   }
    
-BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
+BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
 
 #undef BOOST_RANDOM_SPRNG_CONSTRUCTOR
+
+#undef BOOST_LCG64_GENERATOR
+
+// forward seeding functions to named versions
+#define BOOST_RANDOM_SPRNG_SEED(z, n, unused)                    \
+  template <BOOST_PP_ENUM_PARAMS(n,class T)>                     \
+  void seed(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))           \
+  {                                                              \
+    seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                      \
+  }
+   
+BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED,~)
+
+#undef BOOST_RANDOM_SPRNG_SEED
+
+// forward seeding functions with iterator buffers to named versions
+#define BOOST_RANDOM_SPRNG_SEED_IT(z, n, unused)                                  \
+  template <class It, BOOST_PP_ENUM_PARAMS(n,class T)>                            \
+  void seed(It& first, It const& last, BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x)) \
+  {                                                                               \
+    if(first == last)                                                             \
+      throw std::invalid_argument("SPRNG seeding invalid argument");              \
+    seed(global_seed=*first++,BOOST_PP_ENUM_PARAMS(n,x) );                        \
+  }
+   
+BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
+
+#undef BOOST_RANDOM_SPRNG_SEED_IT
 
   BOOST_SPRNG_GENERATOR const& operator=(BOOST_SPRNG_GENERATOR const& rhs)
   {
@@ -127,7 +155,7 @@ BOOST_PP_REPEAT_FROM_TO(1, 5, BOOST_RANDOM_SPRNG_CONSTRUCTOR,~)
   }
 
   // forwarding seed functions
-  BOOST_PARAMETER_MEMFUN(void,seed,1,4,sprng_seed_params)
+  BOOST_PARAMETER_MEMFUN(void,seed_named,1,BOOST_RANDOM_MAXARITY,sprng_seed_params)
   {
     seed_implementation(
         p[stream_number|0u]

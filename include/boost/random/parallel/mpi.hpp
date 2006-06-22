@@ -20,22 +20,19 @@ namespace boost { namespace random { namespace parallel {
   void seed(
           PRNG& prng
         , boost::parallel::mpi::communicator const& c
-        , unsigned int seed=0u
       )
   {
-    prng.seed(global_seed=seed, stream_number=c.rank(), total_streams=c.size());
+    seed(prng, c.rank(), c.size());
   }
 
-  template <class PRNG>
-  void broadcast_seed(
+  template <class PRNG, class SeedType>
+  void seed(
           PRNG& prng
         , boost::parallel::mpi::communicator const& c
-        , int root
-        , unsigned int seed=0u
+        , SeedType const& s
       )
   {
-    boost::parallel::mpi::broadcast(c,seed,root);
-    prng.seed(global_seed=seed, stream_number=c.rank(), total_streams=c.size());
+    seed(prng, c.rank(), c.size(), s);
   }
 
   template <class PRNG, class Iterator>
@@ -46,9 +43,19 @@ namespace boost { namespace random { namespace parallel {
         , Iterator const& last
       )
   {
-    if(first == last)
-      throw_exception(std::invalid_argument("parallel_seed"));
-    seed(prng, c, *first++);
+    seed(prng, c.rank(), c.size(), first, last);
+  }
+
+  template <class PRNG, class SeedType>
+  void broadcast_seed(
+          PRNG& prng
+        , boost::parallel::mpi::communicator const& c
+        , int root
+        , SeedType s
+      )
+  {
+    boost::parallel::mpi::broadcast(c,s,root);
+    seed(prng, c.rank(), c.size(), s);
   }
 
   template <class PRNG, class Iterator>
@@ -61,7 +68,7 @@ namespace boost { namespace random { namespace parallel {
       )
   {
     // read a seed value only if I'm the root rank
-    int seed=0;
+    typename std::iterator_traits<Iterator>::value_type seed;
     if (c.rank()==root) {
       if(first == last)
         throw_exception(std::invalid_argument("parallel_seed"));
@@ -69,7 +76,6 @@ namespace boost { namespace random { namespace parallel {
     }
     broadcast_seed(prng, c, root, seed);
   }
-
 
 } } } // namespace boost::random::parallel
 

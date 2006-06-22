@@ -51,8 +51,23 @@ void test(const std::string & name, const PRNG &)
   for(int i = 0; i < 9999; i++)
     rng4();
   typename PRNG::result_type val4 = rng4();
+
+  PRNG rng5;
+  parallel::seed(rng5,1,2,0);
+  for(int i = 0; i < 10000; i++)
+    rng4();
+  typename PRNG::result_type val5 = rng5();
   
-  bool result = (val==val2) && (val != val3) && (val3==val4);
+  PRNG rng6;
+  std::vector<unsigned int> buffer(1,0);
+  std::vector<unsigned int>::iterator it=buffer.begin();
+  parallel::seed(rng6,1,2,it,buffer.end());
+  for(int i = 0; i < 10000; i++)
+    rng6();
+  typename PRNG::result_type val6 = rng6();
+
+  bool result = (val==val2) && (val != val3) && (val3==val4) && 
+                (val4==val5) && (val5==val6) ;
   std::cout << val << " " << val2 << " " << val3 << " " << val4 <<  std::endl;
   BOOST_CHECK(result);
 }

@@ -245,7 +245,7 @@ BOOST_PYTHON_MODULE(_boost_random)
       , boost::random::random_tag::global_seed*
     > lcg64_keywords;
         
-    buffered_uniform_01_class<boost::lcg64>("lcg64_01")
+    buffered_uniform_01_class<boost::lcg64a>("lcg64_01")
             .def(
                 boost::parameter::python::init<
                     lcg64_keywords
