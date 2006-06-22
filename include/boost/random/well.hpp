@@ -167,7 +167,7 @@ class well
         
         template<class CharT, class Traits>
         friend std::basic_ostream<CharT,Traits>&
-        operator<<(std::basic_ostream<CharT,Traits>& os, well& w)
+        operator<<(std::basic_ostream<CharT,Traits>& os, well const& w)
         {
             for(int j = 0; j < statesize; j++)
               os << w.state[j] << " ";
