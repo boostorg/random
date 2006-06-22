@@ -32,42 +32,36 @@ void test(const std::string & name, const PRNG &)
   using namespace boost::random;
   std::cout << "Testing " << name << ": ";
   PRNG rng;  // default ctor
-  for(int i = 0; i < 9999; i++)
+  for(int i = 0; i < 10000; i++)
     rng();
   typename PRNG::result_type val = rng();
   
   PRNG rng2(stream_number=0, global_seed=0, total_streams=1);
-  for(int i = 0; i < 9999; i++)
+  for(int i = 0; i < 10000; i++)
     rng2();
   typename PRNG::result_type val2 = rng2();
 
   PRNG rng3(stream_number=1, total_streams=2);
-  for(int i = 0; i < 9999; i++)
+  for(int i = 0; i < 10000; i++)
     rng3();
   typename PRNG::result_type val3 = rng3();
 
   PRNG rng4;
-  rng4.seed_implementation(1,2);
-  for(int i = 0; i < 9999; i++)
+  parallel::seed(rng4,1,2,0);
+  for(int i = 0; i < 10000; i++)
     rng4();
   typename PRNG::result_type val4 = rng4();
-
-  PRNG rng5;
-  parallel::seed(rng5,1,2,0);
-  for(int i = 0; i < 10000; i++)
-    rng4();
-  typename PRNG::result_type val5 = rng5();
   
-  PRNG rng6;
+  PRNG rng5;
   std::vector<unsigned int> buffer(1,0);
   std::vector<unsigned int>::iterator it=buffer.begin();
-  parallel::seed(rng6,1,2,it,buffer.end());
+  parallel::seed(rng5,1,2,it,buffer.end());
   for(int i = 0; i < 10000; i++)
-    rng6();
-  typename PRNG::result_type val6 = rng6();
+    rng5();
+  typename PRNG::result_type val5 = rng5();
 
   bool result = (val==val2) && (val != val3) && (val3==val4) && 
-                (val4==val5) && (val5==val6) ;
+                (val4==val5);
   std::cout << val << " " << val2 << " " << val3 << " " << val4 <<  std::endl;
   BOOST_CHECK(result);
 }
