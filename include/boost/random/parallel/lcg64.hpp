@@ -67,17 +67,28 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_GENERATOR,~)
 
 #undef BOOST_LCG64_GENERATOR
 
+#define BOOST_LCG64_GENERATOR_IT(z, n, unused)                                \
+  template <class It,BOOST_PP_ENUM_PARAMS(n,class T)>                         \
+  lcg64(It& first, It const& last, BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x)) \
+  {                                                                           \
+    seed(first,last,BOOST_PP_ENUM_PARAMS(n,x) );                              \
+  }
+   
+BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_GENERATOR_IT,~)
+
+#undef BOOST_LCG64_GENERATOR_IT
+
 // forward seeding functions to named versions
 #define BOOST_LCG64_SEED(z, n, unused)                           \
   template <BOOST_PP_ENUM_PARAMS(n,class T)>                     \
   void seed(BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))           \
   {                                                              \
-    seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                     \
+    seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                      \
   }
    
 BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED,~)
 
-#undef BOOST_LCG64_SEED_IT
+#undef BOOST_LCG64_SEED
 
 // forward seeding functions with iterator buffers to named versions
 #define BOOST_LCG64_SEED_IT(z, n, unused)                                         \
@@ -93,17 +104,10 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
 
 #undef BOOST_LCG64_SEED_IT
 
-
-  // forwarding named seeding functions
-  BOOST_PARAMETER_MEMFUN(void,seed_named,1,BOOST_RANDOM_MAXARITY,parallel_seed_params)
-  {
-    seed_implementation(p[stream_number|0u], p[total_streams|1u], p[global_seed|0]);
-  }
-
   // compiler-generated copy constructor and assignment operator are fine
   void seed()
   {
-    seed_implementation();
+    seed_named();
   }
 
   template<class It>
@@ -114,8 +118,13 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
     seed(global_seed=*first++);
   }
 
-  void seed_implementation(unsigned int stream=0, unsigned int num_stream=1, int s=0)
+
+  // forwarding named seeding functions
+  BOOST_PARAMETER_MEMFUN(void,seed_named,0,BOOST_RANDOM_MAXARITY,parallel_seed_params)
   {
+    unsigned int stream = p[stream_number|0u];
+    unsigned int num_stream=p[total_streams|1u];
+    unsigned int s=p[global_seed|0u];
     BOOST_ASSERT(stream < num_stream);
     BOOST_ASSERT(num_stream < max_streams);
     // seed the generator
@@ -124,9 +133,7 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
     // and advance it a bit
     for(uint64_t i=0; i<127*stream; i++)
       operator()();
-
   }
-
 
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return std::numeric_limits<result_type>::max(); }
