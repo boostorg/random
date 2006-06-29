@@ -49,6 +49,7 @@ public:
   BOOST_STATIC_CONSTANT(result_type, max_streams = 146138719);
 #endif
 
+/*
 // forward seeding functions with iterator buffers to named versions
 #define BOOST_LCG64_SEED_IT(z, n, unused)                                         \
   template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>        \
@@ -63,6 +64,7 @@ public:
 BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
 
 #undef BOOST_LCG64_SEED_IT
+*/
 
   // forwarding named seeding functions
   BOOST_RANDOM_PARALLEL_SEED(lcg64)
@@ -79,6 +81,8 @@ BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
     for(uint64_t i=0; i<127*stream; i++)
       operator()();
   }
+
+  BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT()
 
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return std::numeric_limits<result_type>::max(); }
@@ -132,24 +136,7 @@ private:
   uint64_t c;
 };
 
-// probably needs the "no native streams" caveat for STLPort
-#if !defined(__SGI_STL_PORT) && BOOST_WORKAROUND(__GNUC__, == 2)
-template<uint64_t a, uint64_t val>
-std::ostream&
-operator<<(std::ostream& os,
-           const lcg64<a,val>& lcg)
-{
-    return os << lcg._x << " " << lcg.c;
-}
-
-template<uint64_t a, uint64_t val>
-std::istream&
-operator>>(std::istream& is,
-           lcg64<a,val>& lcg)
-{
-    return is >> lcg._x >> lcg.c;
-}
-#elif defined(BOOST_NO_OPERATORS_IN_NAMESPACE) || defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS) || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
+#if defined(BOOST_NO_OPERATORS_IN_NAMESPACE) || defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS) || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
 template<class CharT, class Traits, uint64_t a, unit64_t val>
 std::basic_ostream<CharT,Traits>&
 operator<<(std::basic_ostream<CharT,Traits>& os,

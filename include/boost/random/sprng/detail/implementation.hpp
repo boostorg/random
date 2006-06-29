@@ -63,21 +63,6 @@ public:
     free();
   }
 
-// forward seeding functions with iterator buffers to named versions
-#define BOOST_RANDOM_SPRNG_SEED_IT(z, n, unused)                                  \
-  template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>        \
-  void seed(It& first, It const& last BOOST_PP_COMMA_IF(n)                        \
-                BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                        \
-  {                                                                               \
-    if(first == last)                                                             \
-      throw std::invalid_argument("SPRNG seeding invalid argument");              \
-    seed(global_seed=*first++ BOOST_PP_COMMA_IF(n)BOOST_PP_ENUM_PARAMS(n,x) );    \
-  }
-   
-BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
-
-#undef BOOST_RANDOM_SPRNG_SEED_IT
-
   BOOST_SPRNG_GENERATOR const& operator=(BOOST_SPRNG_GENERATOR const& rhs)
   {
     free();
@@ -110,6 +95,8 @@ BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_SPRNG_SEED_IT,~)
     if (sprng_ptr==0)
       boost::throw_exception(std::runtime_error("Failed initializing SPRNG generator"));
   }
+
+  BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT()
 
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0.; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 1.; }
@@ -190,24 +177,8 @@ private:
   int *sprng_ptr;    
 };
 
-// probably needs the "no native streams" caveat for STLPort
-#if !defined(__SGI_STL_PORT) && BOOST_WORKAROUND(__GNUC__, == 2)
-inline std::ostream& operator<<(std::ostream& os, const BOOST_SPRNG_GENERATOR& lcg)
-{
-    detail::buffer buf(lcg.sprng_ptr,&BOOST_SPRNG_CALL(pack_rng));
-    buf.write(os);
-    return os;
-}
 
-inline std::istream& operator>>(std::istream& is, BOOST_SPRNG_GENERATOR& lcg)
-{
-    detail::buffer buf;
-    buf.read(is);
-    lcg.sprng_ptr = buf.unpack(&BOOST_SPRNG_CALL(unpack_rng));
-    return is;
-}
-
-#elif defined(BOOST_NO_OPERATORS_IN_NAMESPACE) || defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS) || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
+#if defined(BOOST_NO_OPERATORS_IN_NAMESPACE) || defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS) || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
 template<class CharT, class Traits>
 std::basic_ostream<CharT,Traits>& operator<<(std::basic_ostream<CharT,Traits>& os, const BOOST_SPRNG_GENERATOR& lcg)
 {
