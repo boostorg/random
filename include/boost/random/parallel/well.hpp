@@ -12,12 +12,12 @@
 
 #include <boost/random/parallel/keyword.hpp>
 #include <boost/random/parallel/detail/seed_macros.hpp>
+#include <boost/random/mersenne_twister.hpp>
 #include <boost/config.hpp>
 #include <boost/limits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/integer_traits.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/random.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/parameter/macros.hpp>
 #include <boost/preprocessor/cat.hpp>
@@ -53,7 +53,7 @@ class mat0neg
 };
 
 template<int shift>
-class maF3neg
+class mat3neg
 {
     public: 
         template<class UIntType>
@@ -64,7 +64,7 @@ class maF3neg
 };
 
 template<int shift>
-class maF4neg
+class mat4neg
 {
     public: 
         template<class UIntType>
@@ -97,7 +97,7 @@ class zero
 
 template<class UIntType, int statesize, UIntType val, class F1, class F2
        , class F3, class F4, class F5, class F6, class F7, class F8
-       , int p1,  int p2,  int p3, UIntType mask, class RNG>
+       , int p1,  int p2,  int p3, UIntType mask=statesize-1, class RNG=mt19937>
 class well
 {
     public:
@@ -239,12 +239,12 @@ const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1
 #endif
 
 typedef well<uint32_t,16,178010050,mat0neg<-16>, mat0neg<-15>, mat0pos<11>, 
-            zero, mat0neg<-2>, mat0neg<-18>, maF3neg<-28>, maF4neg<-5>,
-            13,9,1, 0x0000000fU, boost::mt19937 > well512a;
+            zero, mat0neg<-2>, mat0neg<-18>, mat3neg<-28>, mat4neg<-5>,
+            13,9,1> well512a;
 
 typedef well<uint32_t,32,1573116597,identity, mat0pos<8>, mat0neg<-19>, 
              mat0neg<-14>, mat0neg<-11>, mat0neg<-7>, mat0neg<-13>, zero,
-             3,24,10, 0x0000001fU,  boost::mt19937 > well1024a;
+             3,24,10> well1024a;
 
 } } // end namespace random::parallel
         
