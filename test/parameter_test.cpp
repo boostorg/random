@@ -29,7 +29,7 @@
 template<class PRNG>
 void test(const std::string & name, const PRNG &)
 {
-  using namespace boost::random;
+  using namespace boost::random::parallel;
   std::cout << "Testing " << name << ": ";
   PRNG rng;  // default ctor
   for(int i = 0; i < 10000; i++)
@@ -47,7 +47,7 @@ void test(const std::string & name, const PRNG &)
   typename PRNG::result_type val3 = rng3();
 
   PRNG rng4;
-  parallel::seed(rng4,1,2,0);
+  seed(rng4,1,2,0);
   for(int i = 0; i < 10000; i++)
     rng4();
   typename PRNG::result_type val4 = rng4();
@@ -55,7 +55,7 @@ void test(const std::string & name, const PRNG &)
   PRNG rng5;
   std::vector<unsigned int> buffer(1,0);
   std::vector<unsigned int>::iterator it=buffer.begin();
-  parallel::seed(rng5,1,2,it,buffer.end());
+  seed(rng5,1,2,it,buffer.end());
   for(int i = 0; i < 10000; i++)
     rng5();
   typename PRNG::result_type val5 = rng5();
