@@ -11,7 +11,7 @@
 #ifndef BOOST_RANDOM_SPRNG_KEYWORD_HPP
 #define BOOST_RANDOM_SPRNG_KEYWORD_HPP
 
-namespace boost { namespace random {
+namespace boost { namespace random { namespace parallel {
   using mpl::placeholders::_;
   
   BOOST_PARAMETER_KEYWORD(random_tag,parameter)
@@ -23,6 +23,6 @@ namespace boost { namespace random {
     , parameter::optional<random_tag::parameter, is_convertible<_,unsigned int> >
   > sprng_seed_params;
 
-} } // namespace boost::random
+} } } // namespace boost::random
 
 #endif // BOOST_RANDOM_PARALLEL_KEYWORD_HPP

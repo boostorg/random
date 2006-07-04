@@ -17,6 +17,7 @@
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/array/elem.hpp>
+#include <boost/preprocessor/arithmetic/sub.hpp>
 
 #define BOOST_RANDOM_PARALLEL_CONSTRUCTOR(z, n, P)                          \
   BOOST_PP_IF(n,template <, BOOST_PP_EMPTY())                               \
@@ -42,27 +43,42 @@
     seed_named(BOOST_PP_ENUM_PARAMS(n,x) );                                 \
   }
 
-#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_IMPL(z, n, unused)              \
+#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT_IMPL(z, n, unused)      \
   template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>  \
   void seed(It& f, It const& l BOOST_PP_COMMA_IF(n)                         \
                BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))                   \
   {                                                                         \
     if(f == l)                                                              \
       throw std::invalid_argument("invalid seeding argument");              \
-    seed(global_seed=*f++ BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,x) ); \
+    seed(boost::random::parallel::global_seed=*f++                          \
+         BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,x) );                  \
   }
    
-
+#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_IMPL(z, n, unused)               \
+  template <class It BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,class T)>   \
+  void seed(It& f, It const& l BOOST_PP_COMMA_IF(n)                          \
+               BOOST_PP_ENUM_BINARY_PARAMS(n,T,const& x))    {               \
+	 iterator_seed_named(boost::random::parallel::first=f                    \
+                        , boost::random::parallel::last=l                    \
+                        BOOST_PP_COMMA_IF(n) BOOST_PP_ENUM_PARAMS(n,x) );    \
+  }					  					                                     \
+	   
 
 #define BOOST_RANDOM_PARALLEL_SEED_PARAMS(RNG,PARAMS,INIT)                                            \
   BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_PARALLEL_CONSTRUCTOR,(2,(RNG,INIT))) \
   BOOST_PARAMETER_MEMFUN(void,seed_named,0,BOOST_RANDOM_MAXARITY,PARAMS)     
 
 #define BOOST_RANDOM_PARALLEL_SEED(RNG) \
-  BOOST_RANDOM_PARALLEL_SEED_PARAMS(RNG, boost::random::parallel_seed_params,BOOST_PP_EMPTY()) 
+  BOOST_RANDOM_PARALLEL_SEED_PARAMS(RNG, boost::random::parallel::seed_params,BOOST_PP_EMPTY()) 
 
+#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_PARAMS(PARAMS)                                      \
+  BOOST_PP_REPEAT_FROM_TO(0, BOOST_PP_SUB(BOOST_RANDOM_MAXARITY,2), BOOST_RANDOM_PARALLEL_ITERATOR_SEED_IMPL,~) \
+  BOOST_PARAMETER_MEMFUN(void,iterator_seed_named,2,BOOST_RANDOM_MAXARITY,PARAMS)     
 
-#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT()                                             \
-  BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_RANDOM_PARALLEL_ITERATOR_SEED_IMPL,~)
+#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED() \
+  BOOST_RANDOM_PARALLEL_ITERATOR_SEED_PARAMS(boost::random::parallel::iterator_seed_params) 
+
+#define BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT() \
+  BOOST_PP_REPEAT_FROM_TO(0, BOOST_PP_SUB(BOOST_RANDOM_MAXARITY,1), BOOST_RANDOM_PARALLEL_ITERATOR_SEED_DEFAULT_IMPL,~)
 
 #endif // BOOST_RANDOM_PARALLEL_DETAIL_SEED_MACROS_HPP

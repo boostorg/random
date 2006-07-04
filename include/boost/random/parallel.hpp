@@ -7,4 +7,5 @@
  */
 
 #include <boost/random/parallel/lcg64.hpp>
+#include <boost/random/parallel/well.hpp>
 #include <boost/random/parallel/seed.hpp>

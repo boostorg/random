@@ -18,19 +18,28 @@
 #define BOOST_RANDOM_MAXARITY 5
 #endif
 
-namespace boost { namespace random {
+namespace boost { namespace random { namespace parallel {
   using mpl::placeholders::_;
   
   BOOST_PARAMETER_KEYWORD(random_tag,stream_number)
   BOOST_PARAMETER_KEYWORD(random_tag,total_streams)
   BOOST_PARAMETER_KEYWORD(random_tag,global_seed)
+  BOOST_PARAMETER_KEYWORD(random_tag,first)
+  BOOST_PARAMETER_KEYWORD(random_tag,last)
 
   typedef parameter::parameters<
       parameter::optional<random_tag::stream_number, is_convertible<_,unsigned int> >
     , parameter::optional<random_tag::total_streams, is_convertible<_,unsigned int> >
     , parameter::optional<random_tag::global_seed>
-  > parallel_seed_params;
+  > seed_params;
 
-} } // namespace boost::random
+  typedef parameter::parameters<
+      parameter::optional<random_tag::stream_number, is_convertible<_,unsigned int> >
+    , parameter::optional<random_tag::total_streams, is_convertible<_,unsigned int> >
+    , parameter::required<random_tag::first>
+    , parameter::required<random_tag::last>
+  > iterator_seed_params;
+
+} } } // namespace boost::random::parallel
 
 #endif // BOOST_RANDOM_PARALLEL_KEYWORD_HPP

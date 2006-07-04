@@ -1,27 +1,25 @@
-/* 
- * Copyright Brigitte Surer and Matthias Troyer 2006
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
-*
- */
+#ifndef BOOST_RANDOM_PARALLEL_WELL_HPP
+#define BOOST_RANDOM_PARALLEL_WELL_HPP
 
-
-#ifndef BOOST_RANDOM_WELL_HPP
-#define BOOST_RANDOM_WELL_HPP
-
-#include<iostream>
-#include <stdexcept>
+#include <boost/random/parallel/keyword.hpp>
+#include <boost/random/parallel/detail/seed_macros.hpp>
 #include <boost/config.hpp>
 #include <boost/limits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/integer_traits.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/random/linear_congruential.hpp>
+#include <boost/random.hpp>
 #include <boost/detail/workaround.hpp>
-#include <limits>
+#include <boost/parameter/macros.hpp>
+#include <boost/preprocessor/cat.hpp>
+#include <boost/assert.hpp>
 
-namespace boost { namespace random {
+#include <iostream>
+#include <stdexcept>
+#include <cassert>
+
+
+namespace boost { namespace random { namespace parallel {
 
 template<int shift>
 class mat0pos
@@ -32,8 +30,6 @@ class mat0pos
         {
             return (v^(v>>shift)); 
         }
-    
-
 };
 
 template<int shift>
@@ -45,7 +41,6 @@ class mat0neg
         {
             return v^(v <<(-(shift)));
         }
-
 };
 
 template<int shift>
@@ -57,7 +52,6 @@ class maF3neg
         {
             return (v<<(-(shift)));
         }
-
 };
 
 template<int shift>
@@ -67,9 +61,9 @@ class maF4neg
         template<class UIntType>
         static UIntType f(UIntType  v)
         {
-            return (v ^ ((v<<(-(shift))) & 0xda442d24U));   // Maske immer gleich für mat4neg?
+              // always the same mask?
+            return (v ^ ((v<<(-(shift))) & 0xda442d24U)); 
         }
-
 };
 
 class identity
@@ -80,7 +74,6 @@ class identity
         {
             return v;        
         }
-
 };
 
 class zero
@@ -93,60 +86,62 @@ class zero
         }
 };
 
-template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask>
+template<class UIntType, int statesize, UIntType val, class F1, class F2
+       , class F3, class F4, class F5, class F6, class F7, class F8
+       , int p1,  int p2,  int p3, UIntType mask, class RNG>
 class well
 {
     public:
         typedef UIntType result_type;
 
         BOOST_STATIC_CONSTANT(result_type, min_value = 0);
-        BOOST_STATIC_CONSTANT(result_type, max_value = integer_traits<UIntType>::const_max);
+        BOOST_STATIC_CONSTANT(result_type, max_value);
         BOOST_STATIC_CONSTANT(bool, has_fixed_range = true);
-                
-        //constructor
-        well()
-        {
-            seed();
-        }
-        
-        explicit well(UIntType value)
-        {
-            seed(value);
-        }
-        
-        template<class It> well(It & first, It last)
-        {
-            seed(first,last);
-        }
-        
-        //default seed
-        
-        void seed(result_type value = 5489)
-        {
-            UIntType seedmask = ~0u;
-            state[0] = value & seedmask;
-            for (int i = 1; i < statesize; i++) 
-            {
-                state[i] = (1812433253UL * (state[i-1] ^ (state[i-1] >> (statesize -2))) + i) & seedmask;
-            }
-            state_i = 0;
-            
-        }
-        
-        //seed wenn Iterator übergeben
-        
-        template<class It>
-        void seed(It& first, It last)
-        {  
-            int j;
-            for(j = 0; j < statesize && first != last; ++j, ++first)
-              state[j] = *first;
-            if(first == last && j < statesize)
-              throw std::invalid_argument("well::seed");
-            state_i = 0;
-        }
-        
-        
+	
+	// forward seeding functions with iterator buffers to named versions
+  BOOST_RANDOM_PARALLEL_ITERATOR_SEED()
+  {
+    unsigned int num = p[stream_number|0u];
+    unsigned int total=p[total_streams|1u];
+	BOOST_ASSERT(num < total);
+  
+	p[first] += num*statesize; 						  
+	unsigned int j;						  			  
+	for(j = 0; j < statesize && p[first] != p[last]; ++j, ++p[first])  
+      state[j] = *p[first];
+    if(p[first] == p[last] && j < statesize*total)			  
+      throw std::invalid_argument("well::seed");			  
+    state_i = 0;
+  }
+
+  
+// forwarding named seeding functions
+  BOOST_RANDOM_PARALLEL_SEED(well)
+  {
+    unsigned int stream = p[stream_number|0u];
+    unsigned int num_stream=p[total_streams|1u];
+    unsigned int s=p[global_seed|5489u];
+    BOOST_ASSERT(stream < num_stream);
+
+    
+    //seeds the seeder, which in turn gives the seedvalue for the well-rng
+	RNG seeder(s);
+    for(unsigned int i = 0; i < stream; i++)
+    	seeder();
+    result_type value = seeder();
+      
+     // seed the generator
+     UIntType seedmask = ~0u;
+     state[0] = value & seedmask;
+     for (int i = 1; i < statesize; i++) 
+     {
+     	state[i] = (1812433253UL * 
+          (state[i-1] ^ (state[i-1] >> (statesize -2))) + i) & seedmask;
+     }
+     	state_i = 0;
+    
+  }
+
         
         // ==
         
@@ -167,7 +162,7 @@ class well
         
         template<class CharT, class Traits>
         friend std::basic_ostream<CharT,Traits>&
-        operator<<(std::basic_ostream<CharT,Traits>& os, well const& w)
+        operator<<(std::basic_ostream<CharT,Traits>& os,  const well& w)
         {
             for(int j = 0; j < statesize; j++)
               os << w.state[j] << " ";
@@ -179,7 +174,7 @@ class well
         
         template<class CharT, class Traits>
         friend std::basic_istream<CharT,Traits>&
-        operator>>(std::basic_istream<CharT,Traits>& is, well& w)
+        operator>>(std::basic_istream<CharT,Traits>& is, well& w)	
         {
             for(int j = 0; j < statesize; j++)
               is >> w.state[j] >> std::ws;
@@ -194,7 +189,10 @@ class well
         
         result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const
         {
-            return max_value;
+            result_type res = 0;
+            for(int i = 0; i < 32; ++i)
+            res |= (1u << i);
+            return res;
         }
         
         static bool validation(result_type value)
@@ -221,32 +219,32 @@ class well
 };
 
 #ifndef BOOST_NO_INCLASS_MEMBER_INITIALIZATION
-template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask>
-const bool well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask>::has_fixed_range;
+template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask, class RNG>
+const bool well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask, RNG>::has_fixed_range;
 
-template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask>
-const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask>::min_value;
+template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask, class RNG>
+const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask, RNG>::min_value;
 
-template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask>
-const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask>::max_value;
+template<class UIntType, int statesize, UIntType val, class F1, class F2, class F3, class F4, class F5, class F6, class F7, class F8, int p1,  int p2,  int p3, UIntType mask, class RNG>
+const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask, RNG>::max_value;
 #endif
 
 typedef well<uint32_t,16,178010050,mat0neg<-16>, mat0neg<-15>, mat0pos<11>, 
             zero, mat0neg<-2>, mat0neg<-18>, maF3neg<-28>, maF4neg<-5>,
-            13,9,1, 0x0000000fU > well512a; // 10001 element : 417608049
+            13,9,1, 0x0000000fU, boost::mt19937 > well512a;
 
 typedef well<uint32_t,32,1573116597,identity, mat0pos<8>, mat0neg<-19>, 
              mat0neg<-14>, mat0neg<-11>, mat0neg<-7>, mat0neg<-13>, zero,
-             3,24,10, 0x0000001fU > well1024a;  // 10001 element : 1808838631
+             3,24,10, 0x0000001fU,  boost::mt19937 > well1024a;
 
-} // end namespace random
+} } // end namespace random::parallel
         
-using random::well512a;
-using random::well1024a;
+using random::parallel::well512a;
+using random::parallel::well1024a;
 
 
 } // end namespace boost
 
 
-#endif /*BOOST_RANDOM_WELL_HPP*/
+#endif /*BOOST_RANDOM_PARALLEL_WELL_HPP*/
 

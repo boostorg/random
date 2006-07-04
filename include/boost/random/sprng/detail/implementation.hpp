@@ -34,10 +34,12 @@
 #include <boost/random/sprng/detail/interface.hpp>
 
 namespace boost { namespace random { namespace sprng {
+using namespace boost::random::parallel;
 
 /// wrapper for the 64-bit linear congruential generator of the SPRNG library
 class BOOST_SPRNG_GENERATOR
 {
+
 public:
   /// SPRNG generators are all floating point generators at the moment
   typedef double result_type;
