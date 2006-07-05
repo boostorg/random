@@ -31,4 +31,8 @@ test-suite random_parallel
       <lib>../build/boost_random
       : : : : buffered_examples ]
 
+[ run multivariate_normal_example.cpp 
+      <lib>../build/boost_random
+      : : : : multivariate_normal_example ]
+
 ;

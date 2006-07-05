@@ -34,8 +34,7 @@ public:
   typedef numeric::ublas::vector&lt;RealType> vector_type;
   typedef numeric::ublas::matrix&lt;RealType> matrix_type;
 
-  explicit multivariate_normal_distribution(const vector_type&amp; m,
-                               const matrix_type&amp; c);
+  multivariate_normal_distribution(const vector_type&amp; m, const matrix_type&amp; c);
                                
   explicit multivariate_normal_distribution(const matrix_type&amp; c)
 
@@ -68,8 +67,7 @@ variance and then calculates the multivariate randim numbers using the equation 
 <h3>Members</h3>
 
 <pre>
-  explicit multivariate_normal_distribution(const vector_type&amp; m,
-                               const matrix_type&amp; c);
+  multivariate_normal_distribution(const vector_type&amp; m, const matrix_type&amp; c);
 </pre>
 
 <strong>Requires:</strong> m.size() == c.size1() &amp;&amp; c.size1() == c.size2()
@@ -108,8 +106,60 @@ of multivariate normally distributed random numbers.
 <strong>Effects:</strong> Clears the cache of multivariate normally distributed random numbers. 
 The next call to <code>operator()(UniformRandomNumberGenerator&amp; urng)</code> will create a new vector
 of multivariate normally distributed random numbers.
-
 <p>
+<h3>Example</h3>
+
+In the example we print 100 pairs of correlated Gaussian random numbers, with mean
+<blockquote>
+<table><tr><td>-1</td></tr><tr><td>1</td></tr></table>
+</blockquote>
+and covariance matrix
+<blockquote>
+<table><tr><td>2</td><td>2</td></tr><tr><td>2</td><td>2</td></tr></table>
+</blockquote>
+The Cholesky decomposition (square root) of the covariance matrix in this case is
+<blockquote>
+<table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table>
+</blockquote>
+
+<pre>
+#include &lt;boost/random/multivariate_normal_distribution.hpp>
+#include &lt;boost/random.hpp>
+#include &lt;iostream>
+
+int main()
+{
+
+  // Create multivariate correlated Gaussians with mean (-1, 1) and covariance
+  // matrix ((2,2),(2,2))
+  
+  typedef boost::multivariate_normal_distribution&lt;double> distribution_type;
+  
+  // the square root (Cholesky decomposition) of the covariance matrix
+  distribution_type::matrix_type cholesky(2,2);
+  cholesky(0,0)=1.;
+  cholesky(0,1)=1.;
+  cholesky(1,0)=1.;
+  cholesky(1,1)=1.;
+  
+  // the vector of mean values
+  distribution_type::vector_type mean(2);
+  mean(0)=-1.;
+  mean(1)=1.;
+  
+  // create the engine, distribution, and variate generator
+  boost::mt19937 engine;
+  distribution_type dist(cholesky,mean);
+  boost::variate_generator&lt;boost::mt19937,distribution_type>
+    gen(engine,dist);
+    
+  // print 100 pairs of correlated normally distributed random numbers
+  for (int i=0; i&lt;100; ++i)
+    std::cout &lt;&lt; gen() &lt;&lt; " " &lt;&lt; gen() &lt;&lt; "\n";
+}
+
+</pre>
+
 <hr>
 Matthias Troyer, 2006-02-06
 </body>
