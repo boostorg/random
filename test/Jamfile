@@ -44,6 +44,12 @@ test-suite random_parallel
       : : : : random_test ]
 ;
 
+[ run buffered_generator_timings.cpp
+      <lib>../build/boost_random
+      : : : : buffered_generator_timings : release ]
+;
+
+
 if $(SPRNG_ROOT)
 {
 

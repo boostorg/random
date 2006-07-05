@@ -61,7 +61,7 @@ number type as the <code>result_type</code>. Hence, n succesive calls are requir
 normal numbers. This removes the need to choose a specific container type as <code>result_type</code>, while still
 allowing any container to be filled using, for example, <code>std::generate</code>.
 
-The constructor of the distributiuon takes the Cholesky decomposition C of the covariance matrix Cov = C<SUP>T</SUP>C, and the vector of
+The constructor of the distribution takes the Cholesky decomposition C of the covariance matrix Cov = C<SUP>T</SUP>C, and the vector of
 mean values M. The algoritm used first creates a vector v of n normally distributed random numbers with 0 mean and unit 
 variance and then calculates the multivariate randim numbers using the equation m + C * v.
 

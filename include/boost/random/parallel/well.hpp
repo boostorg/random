@@ -128,9 +128,8 @@ class well
   BOOST_RANDOM_PARALLEL_SEED(well)
   {
     unsigned int stream = p[stream_number|0u];
-    unsigned int num_stream=p[total_streams|1u];
     unsigned int s=p[global_seed|5489u];
-    BOOST_ASSERT(stream < num_stream);
+    BOOST_ASSERT(stream < p[total_streams|1u]);
 
     
     //seeds the seeder, which in turn gives the seedvalue for the well-rng
@@ -238,11 +237,11 @@ template<class UIntType, int statesize, UIntType val, class F1, class F2, class 
 const UIntType well<UIntType, statesize, val, F1, F2, F3, F4, F5, F6, F7, F8, p1, p2, p3, mask, RNG>::max_value;
 #endif
 
-typedef well<uint32_t,16,178010050,mat0neg<-16>, mat0neg<-15>, mat0pos<11>, 
+typedef well<uint32_t,16,2786466371u,mat0neg<-16>, mat0neg<-15>, mat0pos<11>, 
             zero, mat0neg<-2>, mat0neg<-18>, mat3neg<-28>, mat4neg<-5>,
             13,9,1> well512a;
 
-typedef well<uint32_t,32,1573116597,identity, mat0pos<8>, mat0neg<-19>, 
+typedef well<uint32_t,32,2520997523u,identity, mat0pos<8>, mat0neg<-19>, 
              mat0neg<-14>, mat0neg<-11>, mat0neg<-7>, mat0neg<-13>, zero,
              3,24,10> well1024a;
 

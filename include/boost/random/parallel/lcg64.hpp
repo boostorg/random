@@ -70,10 +70,9 @@ BOOST_PP_REPEAT_FROM_TO(0, BOOST_RANDOM_MAXARITY, BOOST_LCG64_SEED_IT,~)
   BOOST_RANDOM_PARALLEL_SEED(lcg64)
   {
     unsigned int stream = p[stream_number|0u];
-    unsigned int num_stream=p[total_streams|1u];
     unsigned int s=p[global_seed|0u];
-    BOOST_ASSERT(stream < num_stream);
-    BOOST_ASSERT(num_stream < max_streams);
+    BOOST_ASSERT(stream < p[total_streams|1u]);
+    BOOST_ASSERT(p[total_streams|1u] < max_streams);
     // seed the generator
     c = detail::get_prime_64(stream);
     _x =  (uint64_t(0x2bc6ffffU)<<32 | 0x8cfe166dU)^((uint64_t(s)<<33)|stream);
