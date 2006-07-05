@@ -14,6 +14,7 @@
 #include <cassert>
 #include <iostream>
 #include <boost/limits.hpp>
+#include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -52,7 +53,7 @@ public:
   /// has to be the same as that of the mean vector. Instead of a Cholesky
   /// decomposition any other square root of the covariance matrix could be passed.
   
-  explicit multivariate_normal_distribution(const matrix_type& cholesky, const vector_type& mean)
+  multivariate_normal_distribution(const matrix_type& cholesky, const vector_type& mean)
     : mean_(mean)
     , cholesky_(cholesky)
     , buffer_(mean_.size())
