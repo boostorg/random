@@ -8,16 +8,21 @@
  * $Id$
  */
 
-#include <boost/random/buffered_generator.hpp>
+#include <boost/random/buffered_uniform_01.hpp>
 #include <boost/random.hpp>
 #include <iostream>
 
 // A simple example simulation - usually it will be much more complex
-double simulate(boost::buffered_generator<double>& gen)
+double simulate(boost::buffered_uniform_01<double>& gen)
 {
   double sum=0;
   for (int i=0;i<100000;i++)
     sum += gen();
+    
+  typedef boost::variate_generator<boost::buffered_uniform_01<double>&,boost::normal_distribution<> > gen_type;
+  gen_type gauss(gen,boost::normal_distribution<>());
+  for (int i=0;i<100000;i++)
+    sum += gauss();
   return sum;
 }
 
@@ -25,11 +30,7 @@ double simulate(boost::buffered_generator<double>& gen)
 template <class RNG>
 void simulate_it()
 {
-  typedef boost::variate_generator<RNG&,boost::normal_distribution<> > gen_type;
-  RNG engine;
-  boost::basic_buffered_generator<gen_type,double> 
-    gen(gen_type(engine,boost::normal_distribution<>()));
-    
+  boost::basic_buffered_uniform_01<RNG> gen;
   std::cout << simulate(gen) << "\n";
 }
 

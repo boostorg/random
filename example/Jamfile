@@ -23,5 +23,12 @@ test-suite random_parallel
       <lib>../build/boost_random
       : : : : buffered_generator_example ]
 
- :
+[ run buffered_uniform_01_example.cpp 
+      <lib>../build/boost_random
+      : : : : buffered_uniform_01_example ]
 
+[ run buffered_examples.cpp 
+      <lib>../build/boost_random
+      : : : : buffered_examples ]
+
+;

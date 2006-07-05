@@ -247,6 +247,88 @@ with a buffer of the size given as argument, and uses a default-generated random
 <strong>Effects:</strong> Constructs a <code>buffered_uniform_01</code>
 with a buffer of the size given as argument, and uses a copy of the given random number engine, or a reference if the <code>Generator</code> type is a reference.
 
+<h2><a name="examples">Examples</h2>
+<h3>A buffered generator</h3>
+The first example shows how a buffered generator can be created and used in
+a simulation.
+<pre>
+#include &lt;boost/random/buffered_generator.hpp>
+#include &lt;boost/random.hpp>
+#include &lt;iostream>
+
+// A simple example simulation - usually it will be much more complex
+double simulate(boost::buffered_generator&lt;double>&amp; gen)
+{
+  double sum=0;
+  for (int i=0;i&lt;100000;i++)
+    sum += gen();
+  return sum;
+}
+
+// create a buffered_generator
+template &lt;class RNG>
+void simulate_it()
+{
+  typedef boost::variate_generator&lt;RNG&amp;,boost::normal_distribution&lt;> > gen_type;
+  RNG engine;
+  boost::basic_buffered_generator&lt;gen_type,double> 
+    gen(gen_type(engine,boost::normal_distribution&lt;>()));
+    
+  std::cout &lt;&lt; simulate(gen) &lt;&lt; "\n";
+}
+
+// call the simulation with two different generators
+int main()
+{
+  simulate_it&lt;boost::mt11213b>();
+  simulate_it&lt;boost::mt19937>();
+}
+
+
+</pre>
+
+<h3>A buffered engine</h3>
+The next example uses a polymorphic <code>buffered_uniform_01</code> generator 
+as a uniform random number generation engine to create variates with different
+distributions: uniform and normally distributed. Note that the 
+<code>buffered_generator</code> is a model of Generator but not of
+UniformRandomNumberGenerator and can thus not be used as an engine in a
+<code>variate_generator</code>.
+<pre>
+#include &lt;boost/random/buffered_uniform_01.hpp>
+#include &lt;boost/random.hpp>
+#include &lt;iostream>
+
+// A simple example simulation - usually it will be much more complex
+double simulate(boost::buffered_uniform_01&lt;double>&amp; gen)
+{
+  double sum=0;
+  for (int i=0;i&lt;100000;i++)
+    sum += gen();
+    
+  typedef boost::variate_generator&lt;boost::buffered_uniform_01&lt;double>&amp;,boost::normal_distribution&lt;> > gen_type;
+  gen_type gauss(gen,boost::normal_distribution&lt;>());
+  for (int i=0;i&lt;100000;i++)
+    sum += gauss();
+  return sum;
+}
+
+// create a buffered_generator
+template &lt;class RNG>
+void simulate_it()
+{
+  boost::basic_buffered_uniform_01&lt;RNG> gen;
+  std::cout &lt;&lt; simulate(gen) &lt;&lt; "\n";
+}
+
+// call the simulation with two different generators
+int main()
+{
+  simulate_it&lt;boost::mt11213b>();
+  simulate_it&lt;boost::mt19937>();
+}
+
+
 <hr>
 Matthias Troyer, 2006-03-18
 
