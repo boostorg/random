@@ -27,21 +27,20 @@ machines with 65536 CPUs exist, this can be a formidable challenge.
 <P>
 The <A HREF="http://sprng.cs.fsu.edu/">
 Scalable Parallel Pseuo Random Number Generators Library (SPRNG)</A> is a 
-C-library that was designed to solve this challenge. As explained in more
+C-library that was designed to solve this challenge. As explained in 
 detail in the <a href="http://sprng.cs.fsu.edu/Version1.0/paper/node7.html">
 SPRNG paper</a>, there are several methods of creating independent parallel
 random number streams, using parametrization of the generator, or cycle
 division techniques.
 <P>
 Since the method to create independent streams depends on the choice of
-generator, no generic version of parallel seeding can be implemented, but the
+generator, no generic seeding can be implemented, but the
 seeding mechanism is specific to the generator. However, a common interface
-to all generators is possible, and we follow the design of the SPRNG library
-by requiring the the following parameters
+is possible, and we follow the design of the SPRNG library
+by requiring the the following two parameters next to a global seed
 <ul>
-<li><code>total_streams</code>: the total number of streams required</li>
 <li><code>stream_number</code>: the number of the current stream</li>
-<li><code>global_seed</code>: a global seed shared by all streams</li>
+<li><code>total_streams</code>: the total number of streams required</li>
 </ul>
 
 Any parallel random number generator has to guarantee that generators created 
@@ -52,15 +51,57 @@ the node number is chosen as <code>stream_number</code> and the total number
 of nodes as <code>total_streams</code>.
 
 
+
 <h2><a name="parallel-uniform-rng">Parallel Uniform Random Number Generator</a></h2>
 
 A parallel uniform random number generator is a UniformRandomNumberGenerator 
 that provides not one but many independent streams (sequences) of uniform random
-numbers.
+numbers. To enable a non-intrusive refinement of the
+<code>UniformRandomNumberGenerator</code> concept to a 
+<code>ParallelUniformRandomNumberGenerator</code>
+
 <p>
-In the following table, <code>X</code> denotes a model of the concept
-ParallelUniformRandomNumberGenerator, and <code>v</code> is
+In the following table, 
+<UL>
+<LI><code>X</code> denotes a model of the concept
+ParallelUniformRandomNumberGenerator.
+<LI> <code>v</code> is
 an object of type <code>X</code>.
+<LI> <code>num</code> and <code>total</code>
+are unsigned integral values saitsfying <code> num &lt; total</code>.
+<LI><code>first</code> and <code>last</code> 
+input iterators with a value type convertible to <code>unsigned int</code>. 
+<code>first</code> is required to be non-const.
+</UL>
+
+Furthermore, parallel uniform random number generators seeded 
+with the same values of <code>num</code>, <code>total</code> must produce independent
+non-overlapping sequences of random numbers, if all other arguments besides 
+<code>v</code>are equal, including where
+applicable, the
+values of the range [<code>first</code>,<code>last</code>).
+
+<p>
+
+<table border=1>
+<tr><th colspan=3 align=center><code>ParallelUniformRandomNumberGenerator</code>
+requirements</th></tr>
+<tr><td>Expression</td><td>Return&nbsp;type</td>
+<td>Note</td></tr>
+<tr><td><code>seed(v,num,total)</code></td><td><code>void</code></td>
+<td>default parallel seeding of <code>v</code></td></tr>
+<tr><td><code>seed(v,num,total,first,last)</code></td><td><code>void</code></td>
+<td>parallel seeding of <code>v</code> from two iterators. The semantics is
+identical to that of the seeding of a <code>UniformRandomNumberGenerator</code> from
+a pair of iterators, with the only distinction that for identical elements in the range
+[<code>first</code>,<code>last</code>) and identical values of <code>total</code>
+but different values of <code>num</code>, independent
+non-overlapping sequences of random numbers will be produced by the generator.
+</table>
+
+<p>
+
+<h2><a name="named">Named parameter interface</a></h2>
 
 <p>
 
@@ -102,7 +143,6 @@ with the same values of <code>total_streams</code>, <code>global_seed</code>
 but different values for <code>stream_number</code> must produce independent
 non-overlapping sequences of random numbers.
 
-<h2><a name="named">Named parameter interface</a></h2>
 
 <h3>Header <code>&lt;boost/parallel.hpp&gt;</code></h3>
 
