@@ -58,25 +58,6 @@ namespace boost { namespace random { namespace parallel {
     seed(prng, c.rank(), c.size(), s);
   }
 
-  template <class PRNG, class Iterator>
-  void broadcast_seed(
-          PRNG& prng
-        , boost::parallel::mpi::communicator const& c
-        , int root
-        , Iterator& first
-        , Iterator const& last
-      )
-  {
-    // read a seed value only if I'm the root rank
-    typename std::iterator_traits<Iterator>::value_type seed;
-    if (c.rank()==root) {
-      if(first == last)
-        throw_exception(std::invalid_argument("parallel_seed"));
-      seed = *first++;
-    }
-    broadcast_seed(prng, c, root, seed);
-  }
-
 } } } // namespace boost::random::parallel
 
 #endif // BOOST_RANDOM_PARALLEL_MPI_HPP
