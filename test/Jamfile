@@ -42,7 +42,6 @@ test-suite random_parallel
 [ run random_test.cpp 
       <lib>../build/boost_random
       : : : : random_test ]
-;
 
 [ run buffered_generator_timings.cpp
       <lib>../build/boost_random
