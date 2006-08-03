@@ -17,7 +17,7 @@
 <li><a href="#named">Named parameters</a>
 <li><a href="#seed">Parallel seeding functions</a>
 <li><a href="#lcg64">A 64-bit parallel linear congruential generator <code>lcg64</code></a>
-<li><a href="#well">The WELL generastors</a>
+<li><a href="#well">The WELL generators </a>
 </ul>
 
 <h2><a name="intro">Introduction</a></h2>
@@ -39,7 +39,7 @@ Since the method to create independent streams depends on the choice of
 generator, no generic seeding can be implemented, but the
 seeding mechanism is specific to the generator. However, a common interface
 is possible, and we follow the design of the SPRNG library
-by requiring the the following two parameters next to a global seed
+by requiring the following two parameters next to a global seed
 <ul>
 <li><code>stream_number</code>: the number of the current stream</li>
 <li><code>total_streams</code>: the total number of streams required</li>
@@ -79,7 +79,7 @@ input iterators with a value type convertible to <code>unsigned int</code>.
 Furthermore, parallel uniform random number generators seeded 
 with the same values of <code>num</code>, <code>total</code> must produce independent
 non-overlapping sequences of random numbers, if all other arguments besides 
-<code>v</code>are equivalent, including where
+<code>v</code> are equivalent, including where
 applicable, the
 values of the range [<code>first</code>,<code>last</code>).
 
@@ -219,12 +219,12 @@ by asssuming a named parameter seeding interface. It is implemented as
 template &lt;class PRNG, class SeedType>
 void seed(PRNG&amp; prng, unsigned int num, unsigned int total, SeedType const&amp; s);
 </pre>
-provides a convenience function for parallel seeding from a single global
+provides a convenience function for parallel seeding from a single global seed
 by asssuming a named parameter seeding interface. It is implemented as
 <code>prng.seed(global_seed=s, stream_number=num, total_streams=total);</code>.
 
 <h3>Header <code>&lt;boost/random/parallel/mpi.hpp&gt;</code></h3>
-provides cinvenience seeding functions for applications based on the candidate 
+provides convenience seeding functions for applications based on the candidate 
 Boost.MPI library. The <code>num</code>
 and <code>total</code> parameters are obtained from a 
 <code>boost::parallel::mpi::communicator</code>.
@@ -265,7 +265,7 @@ template &lt;class PRNG, class SeedType>
 void broadcast_seed( PRNG&amp; prng, boost::parallel::mpi::communicator const&amp; c, int root, SeedType s)
 </pre>
 broadcasts the global seed <code>s</code> from the root rank given by the <code>root</code> argument and then
-calls the seed function with thge same arguments.
+calls the seed function with the same arguments.
 
 <h2><a name="lcg64"/>64-bit linear congruential generator <code>lcg64</code><h2>
 
@@ -285,7 +285,7 @@ class lcg64
   static const result_type max_streams = 146138719;
   
   lcg64(<i>optional named parameters</i>);
-  template<class It> lcg64(It&amp; first, It last,<i>optional named parameters</i>);
+  template&lt;class It> lcg64(It&amp; first, It last,<i>optional named parameters</i>);
 
   void seed(<i>optional named parameters</i>);
   template&lt;class It> void seed(It&amp; first, It last,<i>optional named parameters</i>);
@@ -300,6 +300,8 @@ typedef random::lcg64&lt; /* ... */> lcg64c;
 }
 </pre>
 
+<h3>Description</h3>
+
 This header provides a parallel 64-bit linear congruential generator template,
 and three well-tested choices of multipliers. As for other linear
 congruential generators, the recursion relation (n+1) := (a * x(n) + c) mod m
@@ -307,9 +309,55 @@ is used. In this implementation, m=2<SUP>64</sup> and the multiplier <code>a</co
 which is given as template parameter is different for the three generators . The prime additive constant c is chosen depending
 on the stream number, thus giving independent sequences for each stream.
 
-<h2><a name="#well"/>The WELL generastors><h2>
+<h2><a name="well"/>The WELL generators <h2>
 
 <h3>Header <code>&lt;boost/random/parallel/well.hpp&gt;</code></h3>
+
+<pre>
+namespace boost {
+namespace random {
+
+template&lt;class UIntType, int statesize, UIntType val, class F1, class F2
+       , class F3, class F4, class F5, class F6, class F7, class F8
+       , int p1,  int p2,  int p3, UIntType mask=statesize-1, class RNG=mt19937>
+class well
+{
+  typedef UIntType result_type;
+  static const bool has_fixed_range = true;
+  static const result_type min_value;
+  static const result_type max_value;
+ 
+  well(<i>optional named parameters</i>);
+  template&lt;class It> well(It&amp; first, It last,<i>optional named parameters</i>);
+
+  void seed(<i>optional named parameters</i>);
+  template&lt;class It> void seed(It&amp; first, It last,<i>optional named parameters</i>);
+  result_type operator()();
+  static bool validation(result_type);
+};
+typedef well&lt; /* ... */> well512a;
+typedef well&lt; /* ... */> well1024a;
+}
+}
+</pre>
+<h3>Description</h3>
+
+Instantiations of class template <code>well</code> model a pseudo-random number
+generator, whose algorithm is described in
+
+<blockquote>
+<a href="http://www.iro.umontreal.ca/~panneton/WELLRNG.html"> "Improved Long-Period Generators Based on Linear Recurrences Modulo 2" </a>, F. Panneton, P. L'Ecuyer and M. Matsumoto,
+submitted to ACM TOMS  
+
+</blockquote>
+
+Two well-tested and validated generators <code>well512a</code> and <code>well1024a</code> are provided as specializations. 
+<p>
+The parallel seeding is based on cycle division:
+<ul>
+<li>The single seed method calls a pseudo-random number generator (default: <code>mt19937</code>), which provides the random seeds for <code>total_streams</code> WELL generators.</li>
+<li>In the iterator method the state vector of all <code>total_streams</code> WELL generators is filled by a buffer.</li>
+</ul>  
 
 
 <hr>
