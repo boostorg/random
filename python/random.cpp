@@ -10,12 +10,12 @@
 #include <boost/preprocessor/stringize.hpp>
 
 #include <boost/python.hpp>
+#include <boost/python/stl_iterator.hpp>
 #include <boost/bind/apply.hpp>
 
-#include <boost/random/sprng.hpp>
+//#include <boost/random/parallel.hpp>
 #include <boost/random/buffered_uniform_01.hpp>
 #include <boost/random/buffered_generator.hpp>
-#include <boost/random/parallel/lcg64.hpp>
 
 // Generators
 #include <boost/random/linear_congruential.hpp>
@@ -28,6 +28,8 @@
 #include <boost/parameter/python.hpp>
 
 #include <boost/utility/base_from_member.hpp>
+
+#include <boost/random/multivariate_normal_distribution.hpp>
 
 using namespace boost::python;
 namespace mpl = boost::mpl;
@@ -44,7 +46,7 @@ struct seed_fwd
 #define BOOST_PP_LOCAL_LIMITS (0, 4)
 #include BOOST_PP_LOCAL_ITERATE()
 };
-
+/*
 struct sprng_visitor : def_visitor<sprng_visitor>
 {
     typedef mpl::vector4<
@@ -77,7 +79,7 @@ struct sprng_visitor : def_visitor<sprng_visitor>
             );
     }
 };
-
+*/
 template <class Distribution>
 struct variate_generator_class
   : class_<
@@ -116,6 +118,26 @@ struct variate_generator_class
     }
 };
 
+template <class Distribution>
+struct distribution_class
+  : class_<Distribution>
+{
+    static typename Distribution::result_type call(
+        Distribution& d, boost::buffered_uniform_01<>& rng
+    )
+    {
+        return d(rng);
+    }
+
+    template <class Init>
+    distribution_class(char const* name, Init init)
+      : class_<Distribution>(name, init)
+    {
+        this->def("reset", &Distribution::reset);
+//        this->def("__call__", &call);
+    }
+};
+
 template <class Engine>
 struct rng_wrapper
   : boost::base_from_member<Engine>
@@ -126,6 +148,11 @@ struct rng_wrapper
 
     rng_wrapper()
       : buffered_base(this->member)
+    {}
+
+    rng_wrapper(rng_wrapper<Engine> const& other)
+      : member_base(other.member)
+      , buffered_base(this->member)
     {}
 
 #define BOOST_PP_LOCAL_MACRO(n) \
@@ -174,6 +201,44 @@ struct buffered_uniform_01_class
     }
 };
 
+template <class R, class A0>
+R(*unary_function(R(*f)(A0)))(A0)
+{
+    return f;
+}
+
+boost::multivariate_normal_distribution<>* 
+  make_multivariate_normal_distribution(object const& c, object const& m)
+{
+    Py_ssize_t size = len(m);
+
+    if (len(c) != size)
+    {
+        PyErr_SetString(PyExc_IndexError, "cholesky matrix must be square with the same size as the mean vector");
+    }
+
+    boost::multivariate_normal_distribution<>::matrix_type cholesky(size,size);
+    boost::multivariate_normal_distribution<>::matrix_type::array_type::iterator out(
+        cholesky.data().begin());
+
+    for (stl_input_iterator<object> i(c); i != stl_input_iterator<object>(); ++i)
+    {
+        object inner(*i);
+
+        if (len(inner) != size)
+        {
+            PyErr_SetString(PyExc_IndexError, "cholesky matrix must be square with the same size as the mean vector");
+        }
+
+        out = std::copy(stl_input_iterator<double>(inner), stl_input_iterator<double>(), out);
+    }
+
+    boost::multivariate_normal_distribution<>::vector_type mean(size);
+    std::copy(stl_input_iterator<double>(m), stl_input_iterator<double>(), mean.begin());
+
+    return new boost::multivariate_normal_distribution<>(cholesky, mean);
+}
+
 BOOST_PYTHON_MODULE(_boost_random)
 {
     typedef boost::buffered_uniform_01<boost::mt11213b> rng;
@@ -191,32 +256,205 @@ BOOST_PYTHON_MODULE(_boost_random)
         boost::buffered_uniform_01<>, bases<boost::buffered_generator<double> >, boost::noncopyable
     >("buffered_uniform_01", no_init);
 
-#define RNG_CLASSES \
-    (minstd_rand0)(minstd_rand) \
-    (rand48) \
-    (ecuyer1988) \
-    (kreutzer1986) \
-    (hellekalek1995) \
-    (mt11213b)(mt19937) \
-    (lagged_fibonacci607)(lagged_fibonacci1279)(lagged_fibonacci2281) \
-    (lagged_fibonacci3217)(lagged_fibonacci4423)(lagged_fibonacci9689) \
-    (lagged_fibonacci19937)(lagged_fibonacci23209)(lagged_fibonacci44497)
+    buffered_uniform_01_class<boost::minstd_rand0>("minstd_rand0")
+        .def(init<boost::minstd_rand0::result_type>(arg("x0")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::minstd_rand0>::*)(boost::minstd_rand0::result_type))
+              &rng_wrapper<boost::minstd_rand0>::seed
+          , arg("x0")
+        );
 
-#define MAKE_PYTHON_CLASS(r, _, rng) \
-    buffered_uniform_01_class<boost::rng>(BOOST_PP_STRINGIZE(rng) "_01");
+    buffered_uniform_01_class<boost::minstd_rand>("minstd_rand")
+        .def(init<boost::minstd_rand::result_type>(arg("x0")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::minstd_rand>::*)(boost::minstd_rand::result_type))
+              &rng_wrapper<boost::minstd_rand>::seed
+          , arg("x0")
+        );
 
-    BOOST_PP_SEQ_FOR_EACH(MAKE_PYTHON_CLASS, ~, RNG_CLASSES)
+    buffered_uniform_01_class<boost::ecuyer1988>("ecuyer1988")
+        .def(init<boost::ecuyer1988::result_type, boost::ecuyer1988::result_type>( (arg("x0"), arg("x1")) ))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::ecuyer1988>::*)(boost::ecuyer1988::result_type, boost::ecuyer1988::result_type))
+              &rng_wrapper<boost::ecuyer1988>::seed
+          , (arg("x0"), arg("x1"))
+        );
 
-#undef MAKE_PYTHON_CLASS
-#undef RNG_CLASSES
+    buffered_uniform_01_class<boost::kreutzer1986>("kreutzer1986")
+        .def(init<boost::kreutzer1986::result_type>(arg("s")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::kreutzer1986>::*)(boost::kreutzer1986::result_type))
+              &rng_wrapper<boost::kreutzer1986>::seed
+          , arg("s")
+        );
 
-    class_<boost::uniform_int<> >("uniform_int", init<optional<int,int> >());
-    class_<boost::bernoulli_distribution<> >("bernoulli_distribution", init<optional<double> >());
-    class_<boost::geometric_distribution<> >("geometric_distribution", init<optional<double> >());
-    class_<boost::triangle_distribution<> >("triangle_distribution", init<optional<double,double,double> >());
-    class_<boost::exponential_distribution<> >("exponential_distribution", init<optional<double> >());
-    class_<boost::normal_distribution<> >("normal_distribution", init<optional<double,double> >());
-    class_<boost::lognormal_distribution<> >("lognormal_distribution", init<optional<double,double> >());
+    buffered_uniform_01_class<boost::hellekalek1995>("hellekalek1995")
+        .def(init<boost::hellekalek1995::result_type>(arg("y0")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::hellekalek1995>::*)(boost::hellekalek1995::result_type))
+              &rng_wrapper<boost::hellekalek1995>::seed
+          , arg("y0")
+        );
+
+    buffered_uniform_01_class<boost::mt11213b>("mt11213b")
+        .def(init<boost::mt11213b::result_type>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::mt11213b>::*)(boost::mt11213b::result_type))
+              &rng_wrapper<boost::mt11213b>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::mt19937>("mt19937")
+        .def(init<boost::mt19937::result_type>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::mt19937>::*)(boost::mt19937::result_type))
+              &rng_wrapper<boost::mt19937>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci607>("lagged_fibonacci607")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci607>::*)(boost::uint32_t))
+                &rng_wrapper<boost::lagged_fibonacci607>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci1279>("lagged_fibonacci1279")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci1279>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci1279>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci2281>("lagged_fibonacci2281")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci2281>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci2281>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci3217>("lagged_fibonacci3217")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci3217>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci3217>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci4423>("lagged_fibonacci4423")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci4423>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci4423>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci9689>("lagged_fibonacci9689")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci9689>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci9689>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci19937>("lagged_fibonacci19937")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci19937>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci19937>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci23209>("lagged_fibonacci23209")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci23209>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci23209>::seed
+          , arg("value")
+        );
+
+    buffered_uniform_01_class<boost::lagged_fibonacci44497>("lagged_fibonacci44497")
+        .def(init<boost::uint32_t>(arg("value")))
+        .def(
+            "seed"
+          , (void(rng_wrapper<boost::lagged_fibonacci44497>::*)(boost::uint32_t))
+              &rng_wrapper<boost::lagged_fibonacci44497>::seed
+          , arg("value")
+        );
+
+
+    distribution_class<boost::uniform_int<> >(
+        "uniform_int"
+      , init<int, int>( (arg("min")=0, arg("max")=9) )
+    )
+      .def("max", &boost::uniform_int<>::max)
+      .def("min", &boost::uniform_int<>::min);
+
+    distribution_class<boost::bernoulli_distribution<> >(
+        "bernoulli_distribution"
+      , init<double>(arg("p")=0.5)
+    )
+      .def("p", &boost::bernoulli_distribution<>::p);
+
+    distribution_class<boost::geometric_distribution<> >(
+        "geometric_distribution"
+      , init<double>(arg("p")=0.5)
+    )
+      .def("p", &boost::geometric_distribution<>::p);
+
+    distribution_class<boost::triangle_distribution<> >(
+        "triangle_distribution"
+      , init<double, double, double>( (arg("a"), arg("b"), arg("c")) )
+    )
+      .def("a", &boost::triangle_distribution<>::a)
+      .def("b", &boost::triangle_distribution<>::b)
+      .def("c", &boost::triangle_distribution<>::c);
+
+    distribution_class<boost::exponential_distribution<> >(
+        "exponential_distribution"
+      , init<double>(arg("lambda_"))
+    )
+      .def("lambda_", &boost::exponential_distribution<>::lambda);
+
+    distribution_class<boost::normal_distribution<> >(
+        "normal_distribution"
+      , init<double, double>( (arg("mean")=0.0, arg("sigma")=1.0) )
+    )
+      .def("mean", &boost::normal_distribution<>::mean)
+      .def("sigma", &boost::normal_distribution<>::sigma);
+
+    distribution_class<boost::lognormal_distribution<> >(
+        "lognormal_distribution"
+      , init<double, double>( (arg("mean")=0.0, arg("sigma")=1.0) )
+    )
+      .def("mean", &boost::lognormal_distribution<>::mean)
+      .def("sigma", &boost::lognormal_distribution<>::sigma);
+
+    distribution_class<boost::multivariate_normal_distribution<> >(
+        "multivariate_normal_distribution"
+      , no_init
+    )
+      .def("__init__", make_constructor(make_multivariate_normal_distribution));
+//      .def("mean", &boost::multivariate_normal_distribution<>::mean);
+//      .def("cholesky", &boost::multivariate_normal_distribution<>::cholesky);
 
     variate_generator_class<boost::uniform_int<> >("uniform_int_variate");
     variate_generator_class<boost::bernoulli_distribution<> >("bernoulli_distribution_variate");
@@ -225,7 +463,8 @@ BOOST_PYTHON_MODULE(_boost_random)
     variate_generator_class<boost::exponential_distribution<> >("exponential_distribution_variate");
     variate_generator_class<boost::normal_distribution<> >("normal_distribution_variate");
     variate_generator_class<boost::lognormal_distribution<> >("lognormal_distribution_variate");
-
+    variate_generator_class<boost::multivariate_normal_distribution<> >("multivariate_normal_distribution_variate");
+/*
 #define SPRNG_CLASSES \
     (cmrg)(lcg)(lcg64)(lfg)(mlfg)
     //(pmlcg)
@@ -258,6 +497,6 @@ BOOST_PYTHON_MODULE(_boost_random)
                   , lcg64_keywords
                   , mpl::vector4<void,int,int,int> 
                 >()
-            );
+            );*/
 }
 

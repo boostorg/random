@@ -1,9 +1,17 @@
 from _boost_random import *
 
-class variate_generator:
-    def __init__(self, rng, distribution):
-        self.base = distribution_variate_map[distribution.__class__](rng, distribution)
+class UnknownVariateGenerator(Exception):
+    def __init__(self, engine, dist):
+        self.engine = engine
+        self.dist = dist
 
-    def __getattr__(self, key):
-        return getattr(self.base, key)
+    def __str__(self):
+        return 'No variate_generator combination for "%s" and "%s"' \
+            % (self.engine.__name__, self.dist.__name__)
+
+def variate_generator(engine, dist):
+    try:
+        return distribution_variate_map[dist.__class__](engine, distribution)
+    except KeyError:
+        raise UnknownVariateGenerator(engine.__class__, dist.__class__)
 
