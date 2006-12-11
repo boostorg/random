@@ -48,11 +48,7 @@
  */
 
 
-// values by experiment
-/*************WELL******************/
-bool check(unsigned int x, const boost::well512a&) { return x == 178010050; }
-bool check(unsigned int x, const boost::well1024a&) { return x == 1573116597; }
-/*************************************/
+// values by experiment with original implementation
 
 template<class PRNG>
 void validate(const std::string & name, const PRNG &)
@@ -60,10 +56,10 @@ void validate(const std::string & name, const PRNG &)
   std::cout << "validating " << name << ": ";
   PRNG rng;  // default ctor
   for(int i = 0; i < 9999; i++)
-    rng();
+      rng();
   typename PRNG::result_type val = rng();
   // make sure the validation function is a static member
-  bool result = check(val, rng);
+  bool result = PRNG::validation(val);
   
   // allow for a simple eyeball check for MSVC instantiation brokenness
   // (if the numbers for all generators are the same, it's obviously broken)
@@ -75,7 +71,7 @@ void validate_all()
 {
   using namespace boost;
   validate("well512a", well512a());
-  validate("well512a", well1024a());
+  validate("well1024a", well1024a());
 
 }
 

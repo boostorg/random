@@ -4,32 +4,18 @@
 # License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-import os ;
-
-sprng = [ os.environ SPRNG_ROOT ] ;
+import sprng ;
 
 project boost/random
-  : requirements <include>../../.. <include>$(BOOST_ROOT)
+  : requirements <include>../../..
   : source-location ../src
   ;
-
-SOURCES_SPRNG = 
-          lcg64/lcg64
-          lcg/lcg
-          cmrg/cmrg
-          mlfg/mlfg
-          lfg/lfg
-          memory
-          primes_32
-          primes_64
-          store
-          checkid
-        ;
-
+  
 SOURCES_RANDOM = 
           primelist_64.cpp
           get_prime.cpp
         ;
+
         
 lib boost_random
   : ../src/$(SOURCES_RANDOM)
@@ -37,16 +23,81 @@ lib boost_random
   : debug release
   ;
 
-        
-if $(sprng) {
-lib boost_random_sprng
-  : $(sprng)/SRC/$(SOURCES_SPRNG).c
-  : <include>$(sprng)/SRC <link>static
-  : debug release
-  ;
+if ! [ sprng.initialized ]
+{
+    ECHO "warning: SPRNG not initialized in user-config.jam" ;
+    ECHO "warning: Trying location given by SPRNG_ROOT variable." ;
+    using sprng ;
+}
+if ! [ sprng.initialized ]
+{
+  ECHO warning: SPRNG initialization failed. SPRNG wrapper cannot be used. ;
+}
+else if [ sprng.fromsource ] 
+{
+    sprng_dir = [ sprng.prefix ] ;
+    if [ sprng.havegmp ]
+    {
+        SOURCES_SPRNG = 
+            lcg64/lcg64
+            lcg/lcg
+            cmrg/cmrg
+            mlfg/mlfg
+            lfg/lfg
+            pmlcg/pmlcg
+            memory
+            primes_32
+            primes_64
+            store
+            checkid
+          ;
+
+        gmp_dir = [ sprng.gmpprefix ] ;
+        lib sprng
+          : $(sprng_dir)/SRC/$(SOURCES_SPRNG).c
+          : <include>$(sprng_dir)/SRC <link>static
+          : debug release
+          : <search>$(gmp_dir) <lib>gmp
+        ;
+    }
+    else
+    {
+        SOURCES_SPRNG = 
+            lcg64/lcg64
+            lcg/lcg
+            cmrg/cmrg
+            mlfg/mlfg
+            lfg/lfg
+            memory
+            primes_32
+            primes_64
+            store
+            checkid
+        ;
+        lib sprng
+          : $(sprng_dir)/SRC/$(SOURCES_SPRNG).c
+          : <include>$(sprng_dir)/SRC <link>static
+          : debug release
+        ;
+    }
 }
 else 
 {
-  ECHO Set the SPRNG_ROOT environment variable to point to the SPRNG sources
-  ECHO if you want to build the SPRNG parallel randum number generators. ;
+    sprng_dir = [ sprng.prefix ] ;
+    if [ sprng.havegmp ]
+    {
+        gmp_dir = [ sprng.gmpprefix ] ;
+        lib sprng 
+          : 
+          : <search>$(sprng_dir) <name>sprng 
+          : 
+          : <search>$(gmp_dir) <lib>gmp
+        ;
+    }
+    else
+    {
+        lib sprng : : <search>$(sprng_dir) <name>sprng ;
+    }
 }
+
+

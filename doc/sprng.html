@@ -109,28 +109,41 @@ SPRNG Generators:
 <tr><td><code>boost::random::spring::mlfg</code></td>
 <td>4</td><td>2<sup>31</sup>-1</td><td>11</td></tr>
 </tr>
+<tr><td><code>boost::random::spring::pmlcg</code></td>
+<td>5</td><td>2<sup>30</sup></td><td>1</td></tr>
+</tr>
 </body>
 </table>
 <P>
 
-As the members and their semantics are the same as those defined
-in the parallel random number generator concepts, we will refrain from
-documenting them here in detail.
+The class members and their semantics are the same as those defined
+in the parallel random number generator concepts.
 
 <h2><a name="build">Building the SPRNG library</h2>
 
 The SPRNG wrappers are a header-only library but executables will need
-to be linked with the SPRNG library.
+to be linked with the SPRNG library, which can be downloaded in source form
+from the <a href="http://sprng.cs.fsu.edu/">SPRNG web page</a>.
+
+The path to the SPRNG library needs to be specified by either a statement
+<pre>
+using sprng : <i>path-to-sprng-library</i> ;
+</pre>
+in the user-config.jam file or by setting the environment variable 
+<CODE>SPRNG_ROOT</CODE>. The path can point either to a compiled library or 
+alternatively to the source distribution. In the latter case the SPRNG library
+is built from source when needed.
 <P>
-Sources of SPRNG library can be downloaded from the 
-<a href="http://sprng.cs.fsu.edu/">SPRNG web page</a> and built either
-by manually setting up the Makefile provided with the SPRNG library, or
-by using the Boost.build system. To build SPRNG using the Boost build system
-set the environment variable SPRNG_ROOT to point to the root directory of the
-SPRNG library source tree.
+The PMLCG generator additionally needs the 
+<a href="http://www.gnu.org/software/gmp/">GMP</a> library. To use this generator
+the GMP library needs to be installed, and its path specified as the optional second argument to
+<pre>
+using sprng : <i>path-to-sprng-library</i> : <i>path-to-gmp-library</i> ;
+</pre>
+
 
 <hr>
-Matthias Troyer, 2006-02-07
+Matthias Troyer, 2006-10-20
 
 </body>
 </html>

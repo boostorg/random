@@ -20,7 +20,7 @@ local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
 test-suite random_parallel
  :
 [ run lcg64_test.cpp 
-      <lib>../build/boost_random
+      <lib>../build/boost_random 
       : : : : lcg64_test ]
       
 [ run parameter_test.cpp 

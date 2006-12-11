@@ -4,10 +4,9 @@
 
 # bring in rules for testing
 import testing ;
-import os ;
+import sprng ;
 
-sprng = [ os.environ SPRNG_ROOT ] ;
-
+# sprng.init ; 
 
 project
     : requirements
@@ -23,17 +22,47 @@ test-suite "random_parallel"
       [ run buffered_generator_test.cpp ]
       [ run buffered_uniform_01_test.cpp ]
       [ run random_test.cpp ]
+      [ run buffered_generator_timings.cpp ]
     ;
 
-if $(sprng) {
+# [ run mpi_test.cpp 
+#      <lib>../build/boost_random
+#      : : : : mpi_test ]
+
+
+
+if ! [ sprng.initialized ]
+{
+    ECHO "warning: SPRNG not initialized in user-config.jam" ;
+    ECHO "warning: Trying location given by SPRNG_ROOT variable." ;
+    using sprng ;
+}
+
+if [ sprng.initialized ] {
 project
     : requirements
-      <library>../build//boost_random_sprng
+      <library>../build//sprng
       <link>static
       <include>../../..
     ;
-  test-suite random_sprng
-    : [ run sprng_test.cpp ]
-      [ run sprng_parameter_test.cpp ]
-    ;
+    
+  if [ sprng.havegmp ] 
+  {
+      test-suite random_sprng
+        : [ run sprng_test.cpp ]
+          [ run pmlcg_test.cpp ]
+          [ run sprng_parameter_test.cpp ]
+        ;
+  }
+  else
+  {
+      test-suite random_sprng
+        : [ run sprng_test.cpp ]
+          [ run sprng_parameter_test.cpp ]
+        ;
+  }
+}
+else
+{
+  ECHO "warning: SPRNG initialization failed. Skipping SPRNG tests." ;
 }
