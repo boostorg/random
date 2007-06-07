@@ -43,10 +43,10 @@ namespace detail {
     template<class IntType>
     static IntType add(IntType m, IntType x, IntType c)
     {
-      if (x < m - c)
-        return x + c;
-      else
-        return x - (m-c);
+      x += (c-m);
+      if(x < 0)
+        x += m;
+      return x;
     }
   };
 
