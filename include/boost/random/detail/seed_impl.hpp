@@ -27,6 +27,7 @@
 #include <boost/random/detail/const_mod.hpp>
 #include <boost/random/detail/integer_log2.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
+#include <boost/random/detail/generator_bits.hpp>
 
 #include <boost/random/detail/disable_warnings.hpp>
 
@@ -85,8 +86,9 @@ inline T pow2(int n)
 template<class Engine, class Iter>
 void generate_from_real(Engine& eng, Iter begin, Iter end)
 {
+    using std::fmod;
     typedef typename Engine::result_type RealType;
-    const int Bits = Engine::precision();
+    const int Bits = detail::generator_bits<Engine>::value();
     int remaining_bits = 0;
     boost::uint_least32_t saved_bits = 0;
     RealType multiplier = pow2<RealType>( Bits);
@@ -106,7 +108,7 @@ void generate_from_real(Engine& eng, Iter begin, Iter end)
             if(Bits < 32 || remaining_bits != 0) {
                 boost::uint_least32_t divisor =
                     (boost::uint_least32_t(1) << (32 - remaining_bits));
-                boost::uint_least32_t extra_bits = boost::uint_least32_t(val) & (divisor - 1);
+                boost::uint_least32_t extra_bits = boost::uint_least32_t(fmod(val, mult32)) & (divisor - 1);
                 val = val / divisor;
                 *begin++ = saved_bits | (extra_bits << remaining_bits);
                 if(begin == end) return;
@@ -116,7 +118,7 @@ void generate_from_real(Engine& eng, Iter begin, Iter end)
             // If Bits < 32 we should never enter this loop
             if(Bits >= 32) {
                 for(; available_bits >= 32; available_bits -= 32) {
-                    boost::uint_least32_t word = boost::uint_least32_t(val);
+                    boost::uint_least32_t word = boost::uint_least32_t(fmod(val, mult32));
                     val /= mult32;
                     *begin++ = word;
                     if(begin == end) return;
@@ -331,10 +333,9 @@ inline void fill_array_int(Iter& first, Iter last, IntType (&x)[n])
 template<int w, std::size_t n, class RealType>
 void seed_array_real_impl(const boost::uint_least32_t* storage, RealType (&x)[n])
 {
-    using std::pow;
     boost::uint_least32_t mask = ~((~boost::uint_least32_t(0)) << (w%32));
     RealType two32 = 4294967296.0;
-    const RealType divisor = pow(RealType(2), -w);
+    const RealType divisor = RealType(1)/detail::pow2<RealType>(w);
     unsigned int j;
     for(j = 0; j < n; ++j) {
         RealType val = RealType(0);
@@ -364,10 +365,9 @@ void seed_array_real(SeedSeq& seq, RealType (&x)[n])
 template<int w, std::size_t n, class Iter, class RealType>
 void fill_array_real(Iter& first, Iter last, RealType (&x)[n])
 {
-    using std::pow;
     boost::uint_least32_t mask = ~((~boost::uint_least32_t(0)) << (w%32));
     RealType two32 = 4294967296.0;
-    const RealType divisor = pow(RealType(2), -w);
+    const RealType divisor = RealType(1)/detail::pow2<RealType>(w);
     unsigned int j;
     for(j = 0; j < n; ++j) {
         RealType val = RealType(0);

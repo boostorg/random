@@ -21,6 +21,7 @@
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/math/special_functions.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
+#include <boost/random/detail/generator_bits.hpp>
 
 namespace boost {
 namespace random {
@@ -35,7 +36,9 @@ RealType generate_canonical_impl(URNG& g, boost::mpl::true_ /*is_integral*/)
     std::size_t digits = std::numeric_limits<RealType>::digits;
     RealType R = RealType((g.max)()) - RealType((g.min)()) + 1;
     RealType mult = R;
-    RealType limit = pow(RealType(2), RealType((std::min)(bits, digits)));
+    RealType limit =
+        pow(RealType(2),
+            RealType((std::min)(static_cast<std::size_t>(bits), digits)));
     RealType S = RealType(detail::subtract<base_result>()(g(), (g.min)()));
     while(mult < limit) {
         RealType inc = RealType(detail::subtract<base_result>()(g(), (g.min)()));
@@ -54,7 +57,7 @@ RealType generate_canonical_impl(URNG& g, boost::mpl::false_ /*is_integral*/)
     BOOST_ASSERT((g.max)() == 1);
     typedef typename URNG::result_type base_result;
     std::size_t digits = std::numeric_limits<RealType>::digits;
-    std::size_t engine_bits = g.precision();
+    std::size_t engine_bits = detail::generator_bits<URNG>::value();
     std::size_t b = (std::min)(bits, digits);
     RealType R = pow(RealType(2), RealType(engine_bits));
     RealType mult = R;

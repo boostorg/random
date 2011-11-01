@@ -26,7 +26,7 @@ namespace detail {
 #define BOOST_RANDOM_DETAIL_CONSTEXPR constexpr
 #elif defined(BOOST_MSVC)
 #define BOOST_RANDOM_DETAIL_CONSTEXPR __forceinline
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && __GNUC__ >= 4
 #define BOOST_RANDOM_DETAIL_CONSTEXPR __attribute__((const)) __attribute__((always_inline))
 #else
 #define BOOST_RANDOM_DETAIL_CONSTEXPR inline
@@ -36,10 +36,11 @@ template<int Shift>
 struct integer_log2_impl
 {
     template<class T>
-    BOOST_RANDOM_DETAIL_CONSTEXPR static int apply(T t, int accum)
+    BOOST_RANDOM_DETAIL_CONSTEXPR static int apply(T t, int accum,
+            int update = 0)
     {
-        int update = ((t >> Shift) != 0) * Shift;
-        return integer_log2_impl<Shift / 2>::apply(t >> update, accum + update);
+        return update = ((t >> Shift) != 0) * Shift,
+            integer_log2_impl<Shift / 2>::apply(t >> update, accum + update);
     }
 };
 
