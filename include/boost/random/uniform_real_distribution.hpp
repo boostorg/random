@@ -18,6 +18,7 @@
 #include <iosfwd>
 #include <ios>
 #include <istream>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/config.hpp>
 #include <boost/random/detail/config.hpp>
@@ -34,6 +35,13 @@ T generate_uniform_real(
     Engine& eng, T min_value, T max_value,
     boost::mpl::false_  /** is_integral<Engine::result_type> */)
 {
+    unsigned short bound_divisor = 1;
+    if(max_value - min_value == std::numeric_limits<T>::infinity()) {
+        bound_divisor = 2;
+        min_value /= bound_divisor;
+        max_value /= bound_divisor;
+    }
+
     for(;;) {
         typedef T result_type;
         typedef typename Engine::result_type base_result;
@@ -42,7 +50,7 @@ T generate_uniform_real(
         BOOST_ASSERT(divisor > 0);
         BOOST_ASSERT(numerator >= 0 && numerator <= divisor);
         T result = numerator / divisor * (max_value - min_value) + min_value;
-        if(result < max_value) return result;
+        if(result < max_value) return bound_divisor * result;
     }
 }
 
@@ -51,6 +59,13 @@ T generate_uniform_real(
     Engine& eng, T min_value, T max_value,
     boost::mpl::true_  /** is_integral<Engine::result_type> */)
 {
+    unsigned short bound_divisor = 1;
+    if(max_value - min_value == std::numeric_limits<T>::infinity()) {
+        bound_divisor = 2;
+        min_value /= bound_divisor;
+        max_value /= bound_divisor;
+    }
+
     for(;;) {
         typedef T result_type;
         typedef typename Engine::result_type base_result;
@@ -59,7 +74,7 @@ T generate_uniform_real(
         BOOST_ASSERT(divisor > 0);
         BOOST_ASSERT(numerator >= 0 && numerator <= divisor);
         T result = numerator / divisor * (max_value - min_value) + min_value;
-        if(result < max_value) return result;
+        if(result < max_value) return bound_divisor * result;
     }
 }
 
@@ -221,7 +236,7 @@ public:
      */
     BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(uniform_real_distribution, lhs, rhs)
     { return lhs._min == rhs._min && lhs._max == rhs._max; }
-    
+
     /**
      * Returns true if the two distributions may produce different sequences
      * of values given equal generators.
