@@ -28,6 +28,7 @@ doxygen_files =
     fisher_f_distribution
     gamma_distribution
     geometric_distribution
+    hyperexponential_distribution
     independent_bits
     inversive_congruential
     lagged_fibonacci

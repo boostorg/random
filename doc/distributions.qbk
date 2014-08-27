@@ -72,6 +72,7 @@ statistically to it are not acceptable.
   [[__extreme_value_distribution] [extreme value distribution] [-]]
   [[__beta_distribution] [beta distribution] [-]]
   [[__laplace_distribution] [laplace distribution] [-]]
+  [[__hyperexponential_distribution] [hyperexponential distribution] [service time of k-parallel servers each with a given service rate and probability to be chosen]]
 ]
 
 [table Normal Distributions

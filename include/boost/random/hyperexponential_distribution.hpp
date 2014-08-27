@@ -121,16 +121,34 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
 
 /**
  * The hyperexponential distribution is a real-valued continuous distribution
- * with two parameters, the phase probability vector "probs" and the rate
- * vector "rates".
+ * with two parameters, the <em>phase probability vector</em> \c probs and the
+ * <em>rate vector</em> \c rates.
+ *
+ * A \f$k\f$-phase hyperexponential distribution is a mixture of \f$k\f$
+ * exponential distributions.
+ * For this reason, it is also referred to as <em>mixed exponential
+ * distribution</em> or <em>parallel \f$k\f$-phase exponential
+ * distribution</em>.
  *
  * A \f$k\f$-phase hyperexponential distribution has a probability density
- * function \f$\displaystyle f(x) = \sum_{i=1}^n p_i f_i(x)\f$, where:
- * - \f$n\f$ is the size of the input vectors,
- * - \f$p_i\f$ is the \f$i\f$-th element of the input probability vector "probs",
- * - \f$f_i(x)\f$ is the density function of an exponential distribution with
- *   rate parameter $\lambda_i$,
- * - \f$\lambda_i$ is the \f$i\f$-th element of the input rate vector "rates".
+ * function
+ * \f[
+ *  f(x) = \sum_{i=1}^k \alpha_i \lambda_i e^{-x\lambda_i}
+ * \f]
+ * where:
+ * - \f$k\f$ is the <em>number of phases</em> and also the size of the input
+ *   vector parameters,
+ * - \f$\mathbf{\alpha}=(\alpha_1,\ldots,\alpha_k)\f$ is the <em>phase probability
+ *   vector</em> parameter, and
+ * - \f$\mathbf{\lambda}=(\lambda_1,\ldots,\lambda_k)\f$ is the <em>rate vector</em>
+ *   parameter.
+ * .
+ *
+ * References:
+ * -# H.T. Papadopolous, C. Heavey and J. Browne, Queueing Theory in Manufacturing Systems Analysis and Design, Chapman & Hall/CRC, 1993, p. 35.
+ * -# A. Feldmann and W. Whitt, Fitting mixtures of exponentials to long-tail distributions to analyze network performance models, Performance Evaluation 31(3-4):245, doi:10.1016/S0166-5316(97)00003-5, 1998.
+ * -# Wikipedia, Hyperexponential Distribution, 2014, Online: http://en.wikipedia.org/wiki/Hyperexponential_distribution
+ * -# Wolfram Mathematica, Hyperexponential Distribution, 2014, Online: http://reference.wolfram.com/language/ref/HyperexponentialDistribution.html
  * .
  */
 template<class RealT = double>
