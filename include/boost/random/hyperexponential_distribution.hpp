@@ -14,6 +14,7 @@
 #define BOOST_RANDOM_HYPEREXPONENTIAL_DISTRIBUTION_HPP
 
 
+#include <boost/config.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/math/tools/precision.hpp>
 #include <boost/random/detail/operators.hpp>
@@ -22,13 +23,17 @@
 #include <boost/random/exponential_distribution.hpp>
 #include <boost/range/begin.hpp>
 #include <boost/range/end.hpp>
+#include <boost/range/size.hpp>
+#include <boost/type_traits/has_pre_increment.hpp>
 #include <cassert>
+#include <iterator>
 #include <cstddef>
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
 # include <initializer_list>
 #endif // BOOST_NO_CXX11_HDR_INITIALIZER_LIST
 #include <iostream>
 #include <limits>
+#include <numeric>
 #include <vector>
 
 
@@ -130,6 +135,33 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
  * distribution</em> or <em>parallel \f$k\f$-phase exponential
  * distribution</em>.
  *
+ * A \f$k\f$-phase hyperexponential distribution is characterized by two
+ * parameters, namely a <em>phase probability vector</em> \f$\mathbf{\alpha}=(\alpha_1,\ldots,\alpha_k)\f$ and a <em>rate vector</em> \f$\mathbf{\lambda}=(\lambda_1,\ldots,\lambda_k)\f$.
+ *
+ * A \f$k\f$-phase hyperexponential distribution is frequently used in
+ * <a href="http://en.wikipedia.org/wiki/Queueing_theory">queueing theory</a> to
+ * model the distribution of the superposition of \f$k\f$ independent events,
+ * like, for instance, the  service time distribution of a queueing station with
+ * \f$k\f$ servers in parallel where the \f$i\f$-th server is chosen with
+ * probability \f$\alpha_i\f$ and its service time distribution is an exponential
+ * distribution with rate \f$\lambda_i\f$ (Allen,1990; Papadopolous et al.,1993; Trivedi,2002).
+ *
+ * For instance, CPUs service-time distribution in a computing system has often
+ * been observed to possess such a distribution (Rosin,1965).
+ * Also, the arrival of different types of customer to a single queueing station
+ * is often modeled as a hyperexponential distribution (Papadopolous et al.,1993).
+ * Similarly, if a product manufactured in several parallel assemply lines and
+ * the outputs are merged, the failure density of the overall product is likely
+ * to be hyperexponential (Trivedi,2002).
+ *
+ * Finally, since the hyperexponential distribution exhibits a high Coefficient
+ * of Variation (CoV), that is a CoV > 1, it is especially suited to fit
+ * empirical data with large CoV (Feitelson,2014; Wolski et al.,2013) and to
+ * approximate <a href="http://en.wikipedia.org/wiki/Long_tail">long-tail
+ * probability distributions</a> (Feldmann et al.,1998).
+ *
+ * See (Boost,2014) for more information and examples.
+ *
  * A \f$k\f$-phase hyperexponential distribution has a probability density
  * function
  * \f[
@@ -144,12 +176,31 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
  *   parameter.
  * .
  *
- * References:
- * -# H.T. Papadopolous, C. Heavey and J. Browne, Queueing Theory in Manufacturing Systems Analysis and Design, Chapman & Hall/CRC, 1993, p. 35.
- * -# A. Feldmann and W. Whitt, Fitting mixtures of exponentials to long-tail distributions to analyze network performance models, Performance Evaluation 31(3-4):245, doi:10.1016/S0166-5316(97)00003-5, 1998.
- * -# Wikipedia, Hyperexponential Distribution, 2014, Online: http://en.wikipedia.org/wiki/Hyperexponential_distribution
- * -# Wolfram Mathematica, Hyperexponential Distribution, 2014, Online: http://reference.wolfram.com/language/ref/HyperexponentialDistribution.html
+ * Given a \f$k\f$-phase hyperexponential distribution with phase probability
+ * vector \f$\mathbf{\alpha}\f$ and rate vector \f$\mathbf{\lambda}\f$, the
+ * random variate generation algorithm consists of the following steps (Tyszer,1999):
+ * -# Generate a random variable \f$U\f$ uniformly distribution on the interval \f$(0,1)\f$.
+ * -# Use \f$U\f$ to select the appropriate \f$\lambda_i\f$ (e.g., the
+ *  <a href="http://en.wikipedia.org/wiki/Alias_method">alias method</a> can
+ *  possibly be used for this step).
+ * -# Generate an exponentially distributed random variable \f$X\f$ with rate parameter \f$\lambda_i\f$.
+ * -# Return \f$X\f$.
  * .
+ *
+ * References:
+ * -# A.O. Allen, <em>Probability, Statistics, and Queuing Theory with Computer Science Applications, Second Edition</em>, Academic Press, 1990.
+ * -# Boost C++ Libraries, <em>Boost.Math / Statistical Distributions: Hyperexponential Distribution</em>, Online: http://www.boost.org/doc/libs/release/libs/math/doc/html/dist.html , 2014.
+ * -# D.G. Feitelson, <em>Workload Modeling for Computer Systems Performance Evaluation</em>, Cambridge University Press, 2014
+ * -# A. Feldmann and W. Whitt, <em>Fitting mixtures of exponentials to long-tail distributions to analyze network performance models</em>, Performance Evaluation 31(3-4):245, doi:10.1016/S0166-5316(97)00003-5, 1998.
+ * -# H.T. Papadopolous, C. Heavey and J. Browne, <em>Queueing Theory in Manufacturing Systems Analysis and Design</em>, Chapman & Hall/CRC, 1993, p. 35.
+ * -# R.F. Rosin, <em>Determining a computing center environment</em>, Communications of the ACM 8(7):463-468, 1965.
+ * -# K.S. Trivedi, <em>Probability and Statistics with Reliability, Queueing, and Computer Science Applications</em>, John Wiley & Sons, Inc., 2002.
+ * -# J. Tyszer, <em>Object-Oriented Computer Simulation of Discrete-Event Systems</em>, Springer, 1999.
+ * -# Wikipedia, <em>Hyperexponential Distribution</em>, Online: http://en.wikipedia.org/wiki/Hyperexponential_distribution , 2014.
+ * -# Wolfram Mathematica, <em>Hyperexponential Distribution</em>, Online: http://reference.wolfram.com/language/ref/HyperexponentialDistribution.html , 2014.
+ * .
+ *
+ * \author Marco Guazzone (marco.guazzone@gmail.com)
  */
 template<class RealT = double>
 class hyperexponential_distribution
@@ -158,12 +209,20 @@ class hyperexponential_distribution
     public: typedef RealT input_type;
 
 
+    /**
+     * The parameters of a hyperexponential distribution.
+     *
+     * Stores the <em>phase probability vector</em> and the <em>rate vector</em>
+     * of the hyperexponential distribution.
+     *
+     * \author Marco Guazzone (marco.guazzone@gmail.com)
+     */
     public: class param_type
     {
         public: typedef hyperexponential_distribution distribution_type;
 
         /**
-         * Constructs a @c param_type with the default parameters
+         * Constructs a \c param_type with the default parameters
          * of the distribution.
          */
         public: param_type()
@@ -173,8 +232,21 @@ class hyperexponential_distribution
         }
 
         /**
-         * Constructs a @c param_type from the "probs" and "rates" parameters
-         * of the distribution.
+         * Constructs a \c param_type from the <em>phase probability vector</em>
+         * and <em>rate vector</em> parameters of the distribution.
+         *
+         * The <em>phase probability vector</em> parameter is given by the range
+         * defined by [\a prob_first, \a prob_last) iterator pair, and the
+         * <em>rate vector</em> parameter is given by the range defined by
+         * [\a rate_first, \a rate_last) iterator pair.
+         *
+         * \tparam ProbIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         *
+         * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+         * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+         * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
+         * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
          */
         public: template <typename ProbIterT, typename RateIterT>
                 param_type(ProbIterT prob_first, ProbIterT prob_last,
@@ -188,11 +260,30 @@ class hyperexponential_distribution
         }
 
         /**
-         * Constructs a @c param_type from the "probs" and "rates" parameters
-         * of the distribution.
+         * Constructs a \c param_type from the <em>phase probability vector</em>
+         * and <em>rate vector</em> parameters of the distribution.
+         *
+         * The <em>phase probability vector</em> parameter is given by the range
+         * defined by \a prob_range, and the <em>rate vector</em> parameter is
+         * given by the range defined by \a rate_range.
+         *
+         * \tparam ProbRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+         * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+         *
+         * \param prob_range The range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+         * \param rate_range The range of positive real elements representing the rates.
+         *
+         * \note
+         *  The final \c disable_if parameter is an implementation detail that
+         *  differentiates between this two argument constructor and the
+         *  iterator-based two argument constructor described below.
          */
+        //  We SFINAE this out of existance if either argument type is
+        //  incrementable as in that case the type is probably an iterator:
         public: template <typename ProbRangeT, typename RateRangeT>
-                param_type(ProbRangeT const& prob_range, RateRangeT const& rate_range)
+                param_type(ProbRangeT const& prob_range,
+                           RateRangeT const& rate_range,
+                           typename boost::disable_if_c<boost::has_pre_increment<ProbRangeT>::value || boost::has_pre_increment<RateRangeT>::value>::type* = 0)
         : probs_(boost::begin(prob_range), boost::end(prob_range)),
           rates_(boost::begin(rate_range), boost::end(rate_range))
         {
@@ -201,29 +292,136 @@ class hyperexponential_distribution
             assert( hyperexp_detail::check_params(probs_, rates_) );
         }
 
+        /**
+         * Constructs a \c param_type from the <em>rate vector</em> parameter of
+         * the distribution and with equal phase probabilities.
+         *
+         * The <em>rate vector</em> parameter is given by the range defined by
+         * [\a rate_first, \a rate_last) iterator pair, and the <em>phase
+         * probability vector</em> parameter is set to the equal phase
+         * probabilities (i.e., to a vector of the same length \f$k\f$ of the
+         * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
+         *
+         * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         * \tparam RateIterT2 Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         *
+         * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
+         * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
+         *
+         * \note
+         *  The final \c disable_if parameter is an implementation detail that
+         *  differentiates between this two argument constructor and the
+         *  range-based two argument constructor described above.
+         */
+        //  We SFINAE this out of existance if either argument type is
+        //  incrementable as in that case the type is probably an iterator:
+        //  Note that we allow different argument types here to allow for
+        //  construction from an array plus a pointer into that array.
+        public: template <typename RateIterT, typename RateIterT2>
+                param_type(RateIterT const& rate_first, 
+                           RateIterT2 const& rate_last,  
+                           typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value || boost::has_pre_increment<RateIterT2>::value>::type* = 0)
+        : probs_(std::distance(rate_first, rate_last), 1), // will be normalized below
+          rates_(rate_first, rate_last)
+        {
+            assert(probs_.size() == rates_.size());
+        }
+
+        /**
+         * Constructs a @c param_type from the "rates" parameters
+         * of the distribution and with equal phase probabilities.
+         *
+         * The <em>rate vector</em> parameter is given by the range defined by
+         * \a rate_range, and the <em>phase probability vector</em> parameter is
+         * set to the equal phase probabilities (i.e., to a vector of the same
+         * length \f$k\f$ of the <em>rate vector</em> and with each element set
+         * to \f$1.0/k\f$).
+         *
+         * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+         *
+         * \param rate_range The range of positive real elements representing the rates.
+         */
+        public: template <typename RateRangeT>
+                param_type(RateRangeT const& rate_range)
+        : probs_(boost::size(rate_range), 1), // Will be normalized below
+          rates_(boost::begin(rate_range), boost::end(rate_range))
+        {
+            hyperexp_detail::normalize(probs_);
+
+            assert( hyperexp_detail::check_params(probs_, rates_) );
+        }
+
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
-        public: template <typename ArgT>
-                param_type(std::initializer_list<ArgT> l1, std::initializer_list<ArgT> l2)
+        /**
+         * Constructs a \c param_type from the <em>phase probability vector</em>
+         * and <em>rate vector</em> parameters of the distribution.
+         *
+         * The <em>phase probability vector</em> parameter is given by the
+         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * defined by \a l1, and the <em>rate vector</em> parameter is given by the
+         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * defined by \a l2.
+         *
+         * \param l1 The initializer list for inizializing the phase probability vector.
+         * \param l2 The initializer list for inizializing the rate vector.
+         */
+        public: param_type(std::initializer_list<RealT> l1, std::initializer_list<RealT> l2)
         : probs_(l1.begin(), l1.end()),
           rates_(l2.begin(), l2.end())
         {
-            assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
-        }
-#endif
+            hyperexp_detail::normalize(probs_);
 
-        /** Returns the "probs" parameter of the distribtuion. */
+            assert( hyperexp_detail::check_params(probs_, rates_) );
+        }
+
+        /**
+         * Constructs a \c param_type from the <em>rate vector</em> parameter
+         * of the distribution and with equal phase probabilities.
+         *
+         * The <em>rate vector</em> parameter is given by the
+         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * defined by \a l1, and the <em>phase probability vector</em> parameter is
+         * set to the equal phase probabilities (i.e., to a vector of the same
+         * length \f$k\f$ of the <em>rate vector</em> and with each element set
+         * to \f$1.0/k\f$).
+         *
+         * \param l1 The initializer list for inizializing the rate vector.
+         */
+        public: param_type(std::initializer_list<RealT> l1)
+        : probs_(std::distance(l1.begin(), l1.end()), 1), // Will be normalized below
+          rates_(l1.begin(), l1.end())
+        {
+            hyperexp_detail::normalize(probs_);
+
+            assert( hyperexp_detail::check_params(probs_, rates_) );
+        }
+#endif // BOOST_NO_CXX11_HDR_INITIALIZER_LIST
+
+        /**
+         * Gets the <em>phase probability vector</em> parameter of the distribtuion.
+         *
+         * \return The <em>phase probability vector</em> parameter of the distribution.
+         *
+         * \note
+         *  The returned probabilities are the normalized version of the ones
+         *  passed at construction time.
+         */
         public: std::vector<RealT> probabilities() const
         {
             return probs_;
         }
 
-        /** Returns the "rates" parameter of the distribution. */
+        /**
+         * Gets the <em>rate vector</em> parameter of the distribtuion.
+         *
+         * \return The <em>rate vector</em> parameter of the distribution.
+         */
         public: std::vector<RealT> rates() const
         {
             return rates_;
         }
 
-        /** Writes a @c param_type to a @c std::ostream. */
+        /** Writes a \c param_type to a \c std::ostream. */
         public: BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
         {
             detail::print_vector(os, parm.probs_);
@@ -233,7 +431,7 @@ class hyperexponential_distribution
             return os;
         }
 
-        /** Reads a @c param_type from a @c std::istream. */
+        /** Reads a \c param_type from a \c std::istream. */
         public: BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
         {
             std::vector<RealT> tmp;
@@ -273,13 +471,14 @@ class hyperexponential_distribution
         public: BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
 
 
-        private: std::vector<RealT> probs_;
-        private: std::vector<RealT> rates_;
+        private: std::vector<RealT> probs_; ///< The <em>phase probability vector</em> parameter of the distribution
+        private: std::vector<RealT> rates_; ///< The <em>rate vector</em> parameter of the distribution
     }; // param_type
 
 
     /**
-     * Constructs a @c hyperexponential_distribution with default parameters.
+     * Constructs a 1-phase \c hyperexponential_distribution (i.e., an
+     * exponential distribution) with rate 1.
      */
     public: hyperexponential_distribution()
     : dd_(std::vector<RealT>(1, 1)),
@@ -289,10 +488,26 @@ class hyperexponential_distribution
     }
 
     /**
-     * Constructs a @c hyperexponential_distribution from its "probs" and "rates" parameters.
+     * Constructs a \c hyperexponential_distribution from the <em>phase
+     * probability vector</em> and <em>rate vector</em> parameters of the
+     * distribution.
+     *
+     * The <em>phase probability vector</em> parameter is given by the range
+     * defined by [\a prob_first, \a prob_last) iterator pair, and the
+     * <em>rate vector</em> parameter is given by the range defined by
+     * [\a rate_first, \a rate_last) iterator pair.
+     *
+     * \tparam ProbIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     *
+     * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+     * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+     * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
+     * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
      */
     public: template <typename ProbIterT, typename RateIterT>
-            hyperexponential_distribution(ProbIterT prob_first, ProbIterT prob_last, RateIterT rate_first, RateIterT rate_last)
+            hyperexponential_distribution(ProbIterT prob_first, ProbIterT prob_last,
+                                          RateIterT rate_first, RateIterT rate_last)
     : dd_(prob_first, prob_last),
       rates_(rate_first, rate_last)
     {
@@ -300,19 +515,101 @@ class hyperexponential_distribution
     }
 
     /**
-     * Constructs a @c hyperexponential_distribution from its "probs" and "rates" parameters.
+     * Constructs a \c hyperexponential_distribution from the <em>phase
+     * probability vector</em> and <em>rate vector</em> parameters of the
+     * distribution.
+     *
+     * The <em>phase probability vector</em> parameter is given by the range
+     * defined by \a prob_range, and the <em>rate vector</em> parameter is
+     * given by the range defined by \a rate_range.
+     *
+     * \tparam ProbRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+     * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+     *
+     * \param prob_range The range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
+     * \param rate_range The range of positive real elements representing the rates.
+     *
+     * \note
+     *  The final \c disable_if parameter is an implementation detail that
+     *  differentiates between this two argument constructor and the
+     *  iterator-based two argument constructor described below.
      */
+    //  We SFINAE this out of existance if either argument type is
+    //  incrementable as in that case the type is probably an iterator:
     public: template <typename ProbRangeT, typename RateRangeT>
-            hyperexponential_distribution(ProbRangeT prob_range, RateRangeT const& rate_range)
+            hyperexponential_distribution(ProbRangeT prob_range
+                                          RateRangeT const& rate_range,
+                                          typename boost::disable_if_c<boost::has_pre_increment<ProbRangeT>::value || boost::has_pre_increment<RateRangeT>::value>::type* = 0)
     : dd_(prob_range),
       rates_(boost::begin(rate_range), boost::end(rate_range))
     {
         assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
     }
 
-    /** Constructs a @c hyperexponential_distribution from its parameters. */
+    /**
+     * Constructs a \c hyperexponential_distribution from the <em>rate
+     * vector</em> parameter of the distribution and with equal phase
+     * probabilities.
+     *
+     * The <em>rate vector</em> parameter is given by the range defined by
+     * [\a rate_first, \a rate_last) iterator pair, and the <em>phase
+     * probability vector</em> parameter is set to the equal phase
+     * probabilities (i.e., to a vector of the same length \f$k\f$ of the
+     * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
+     *
+     * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     * \tparam RateIterT2 Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     *
+     * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
+     * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
+     *
+     * \note
+     *  The final \c disable_if parameter is an implementation detail that
+     *  differentiates between this two argument constructor and the
+     *  range-based two argument constructor described above.
+     */
+    //  We SFINAE this out of existance if either argument type is
+    //  incrementable as in that case the type is probably an iterator:
+    //  Note that we allow different argument types here to allow for
+    //  construction from an array plus a pointer into that array.
+    public: template <typename RateIterT, typename RateIterT2>
+            hyperexponential_distribution(RateIterT const& rate_first,
+                                          RateIterT2 const& rate_last,
+                                          typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value || boost::has_pre_increment<RateIterT2>::value>::type* = 0)
+    : dd_(std::vector<RealT>(std::distance(rate_first, rate_last), 1)),
+      rates_(rate_first, rate_last)
+    {
+        assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
+    }
+
+    /**
+     * Constructs a @c param_type from the "rates" parameters
+     * of the distribution and with equal phase probabilities.
+     *
+     * The <em>rate vector</em> parameter is given by the range defined by
+     * \a rate_range, and the <em>phase probability vector</em> parameter is
+     * set to the equal phase probabilities (i.e., to a vector of the same
+     * length \f$k\f$ of the <em>rate vector</em> and with each element set
+     * to \f$1.0/k\f$).
+     *
+     * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+     *
+     * \param rate_range The range of positive real elements representing the rates.
+     */
+    public: template <typename RateRangeT>
+            param_type(RateRangeT const& rate_range)
+    : dd_(std::vector<RealT>(boost::size(rate_range), 1)),
+      rates_(boost::begin(rate_range), boost::end(rate_range))
+    {
+        assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
+    }
+
+    /**
+     * Constructs a \c hyperexponential_distribution from its parameters.
+     *
+     * \param parm The parameters of the distribution.
+     */
     public: explicit hyperexponential_distribution(param_type const& parm)
-    //: dd_(typename boost::random::discrete_distribution<int,RealT>::param_type(parm.probabilities())),
     : dd_(parm.probabilities()),
       rates_(parm.rates())
     {
@@ -320,18 +617,58 @@ class hyperexponential_distribution
     }
 
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
-    public: template <typename ArgT>
-            hyperexponential_distribution(std::initializer_list<ArgT> const& l1, std::initializer_list<ArgT> const& l2)
+    /**
+     * Constructs a \c hyperexponential_distribution from the <em>phase
+     * probability vector</em> and <em>rate vector</em> parameters of the
+     * distribution.
+     *
+     * The <em>phase probability vector</em> parameter is given by the
+     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * defined by \a l1, and the <em>rate vector</em> parameter is given by the
+     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * defined by \a l2.
+     *
+     * \param l1 The initializer list for inizializing the phase probability vector.
+     * \param l2 The initializer list for inizializing the rate vector.
+     */
+    public: hyperexponential_distribution(std::initializer_list<RealT> const& l1, std::initializer_list<RealT> const& l2)
     : dd_(l1.begin(), l1.end()),
       rates_(l2.begin(), l2.end())
+    {
+        assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
+    }
+
+    /**
+     * Constructs a \c hyperexponential_distribution from the <em>rate
+     * vector</em> parameter of the distribution and with equal phase
+     * probabilities.
+     *
+     * The <em>rate vector</em> parameter is given by the
+     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * defined by \a l1, and the <em>phase probability vector</em> parameter is
+     * set to the equal phase probabilities (i.e., to a vector of the same
+     * length \f$k\f$ of the <em>rate vector</em> and with each element set
+     * to \f$1.0/k\f$).
+     *
+     * \param l1 The initializer list for inizializing the rate vector.
+     */
+    public: hyperexponential_distribution(std::initializer_list<RealT> const& l1)
+    : dd_(std::vector<RealT>(std::distance(l1.begin(), l1.end()), 1)),
+      rates_(l1.begin(), l1.end())
     {
         assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
     }
 #endif
 
     /**
-     * Returns a random variate distributed according to the
-     * hyper-exponential distribution.
+     * Gets a random variate distributed according to the
+     * hyperexponential distribution.
+     *
+     * \tparam URNG Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/UniformRandomNumberGenerator">UniformRandomNumberGenerator</a>.
+     *
+     * \param urng A uniform random number generator object.
+     *
+     * \return A random variate distributed according to the hyperexponential distribution.
      */
     public: template<class URNG>
             RealT operator()(URNG& urng) const
@@ -342,8 +679,16 @@ class hyperexponential_distribution
     }
 
     /**
-     * Returns a random variate distributed accordint to the hyper-exponential
-     * distribution with parameters specified by @c param.
+     * Gets a random variate distributed accordint to the hyperexponential
+     * distribution with parameters specified by \c parm.
+     *
+     * \tparam URNG Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/UniformRandomNumberGenerator">UniformRandomNumberGenerator</a>.
+     *
+     * \param urng A uniform random number generator object.
+     * \param parm A distribution parameter object.
+     *
+     * \return A random variate distributed according to the hyperexponential distribution.
+     *  distribution with parameters specified by \c parm.
      */
     public: template<class URNG>
             RealT operator()(URNG& urng, const param_type& parm) const
@@ -357,13 +702,13 @@ class hyperexponential_distribution
         return rates_.size();
     }
 
-    /** Returns the "probs" parameter of the distribution. */
+    /** Returns the <em>phase probability vector</em> parameter of the distribution. */
     public: std::vector<RealT> probabilities() const
     {
         return dd_.probabilities();
     }
 
-    /** Returns the "rates" parameter of the distribution. */
+    /** Returns the <em>rate vector</em> parameter of the distribution. */
     public: std::vector<RealT> rates() const
     {
         return rates_;
@@ -440,9 +785,8 @@ class hyperexponential_distribution
     public: BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(hyperexponential_distribution)
 
 
-    private: boost::random::discrete_distribution<int,RealT> dd_;
-    //private: std::vector<RealT> probs_;
-    private: std::vector<RealT> rates_;
+    private: boost::random::discrete_distribution<int,RealT> dd_; ///< The \c discrete_distribution used to sample the phase probability and choose the rate
+    private: std::vector<RealT> rates_; ///< The <em>rate vector</em> parameter of the distribution
 }; // hyperexponential_distribution
 
 }} // namespace boost::random
