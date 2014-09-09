@@ -53,63 +53,85 @@ BOOST_CONCEPT_ASSERT((boost::random::test::RandomNumberDistribution< boost::rand
 
 BOOST_AUTO_TEST_CASE( test_constructors )
 {
-	const double tol = detail::make_tolerance<double>();
+    const double tol = detail::make_tolerance<double>();
 
-	// Test default ctor
+    // Test default ctor
     boost::random::hyperexponential_distribution<> dist;
+    BOOST_CHECK_EQUAL(dist.num_phases(), 1);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.probabilities(), boost::assign::list_of(1.0), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.rates(), boost::assign::list_of(1.0), tol);
 
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
-	// Test ctor from initializer_list
-    boost::random::hyperexponential_distribution<> dist_il = {{1, 2, 3, 4 }, {1, 2, 3, 4}};
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il.probabilities(), list_of(.1)(.2)(.3)(.4), tol);
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il.rates(), list_of(1.)(2.)(3.)(4.), tol);
+    // Test ctor from initializer_list with probabilities and rates
+    boost::random::hyperexponential_distribution<> dist_il_p_r = {{1, 2, 3, 4 }, {1, 2, 3, 4}};
+    BOOST_CHECK_EQUAL(dist_il_p_r.num_phases(), 4);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_p_r.probabilities(), list_of(.1)(.2)(.3)(.4), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_p_r.rates(), list_of(1.)(2.)(3.)(4.), tol);
+
+    // Test ctor from initializer_list with rates
+    boost::random::hyperexponential_distribution<> dist_il_r = {{1, 2, 3, 4}};
+    BOOST_CHECK_EQUAL(dist_il_r.num_phases(), 4);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.probabilities(), list_of(.25)(.25)(.25)(.25), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.rates(), list_of(1.)(2.)(3.)(4.), tol);
 #endif
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
 
-	// Test ctor from range
+    // Test ctor from range
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
+    BOOST_CHECK_EQUAL(dist_r.num_phases(), 4);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.rates(), rates, tol);
 
-	// Test ctor from iterators
+    // Test ctor from iterators
     boost::random::hyperexponential_distribution<> dist_it(probs.begin(), probs.end(), rates.begin(), rates.end());
+    BOOST_CHECK_EQUAL(dist_it.num_phases(), 4);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_it.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_it.rates(), rates, tol);
 
-	// Test copy ctor
+    // Test ctor from rate iterators
+    boost::random::hyperexponential_distribution<> dist_r_it(rates.begin(), rates.end());
+    BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), rates, tol);
+
+    // Test ctor from rate range
+    boost::random::hyperexponential_distribution<> dist_r_r(rates);
+    BOOST_CHECK_EQUAL(dist_r_r.num_phases(), 4);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_r.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_r.rates(), rates, tol);
+
+    // Test copy ctor
     boost::random::hyperexponential_distribution<> cp(dist);
-	BOOST_CHECK_EQUAL(cp, dist);
+    BOOST_CHECK_EQUAL(cp, dist);
     boost::random::hyperexponential_distribution<> cp_r(dist_r);
-	BOOST_CHECK_EQUAL(cp_r, dist_r);
+    BOOST_CHECK_EQUAL(cp_r, dist_r);
 }
 
 BOOST_AUTO_TEST_CASE( test_param )
 {
-	const double tol = detail::make_tolerance<double>();
+    const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
 
-	// Test param getter
-	boost::random::hyperexponential_distribution<> dist(probs, rates);
-	boost::random::hyperexponential_distribution<>::param_type param = dist.param();
+    // Test param getter
+    boost::random::hyperexponential_distribution<> dist(probs, rates);
+    boost::random::hyperexponential_distribution<>::param_type param = dist.param();
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.probabilities(), param.probabilities(), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.rates(), param.rates(), tol);
 
-	// Test ctor from param
-	boost::random::hyperexponential_distribution<> cp1(param);
-	BOOST_CHECK_EQUAL(cp1, dist);
+    // Test ctor from param
+    boost::random::hyperexponential_distribution<> cp1(param);
+    BOOST_CHECK_EQUAL(cp1, dist);
 
-	// Test param setter
-	boost::random::hyperexponential_distribution<> cp2;
-	cp2.param(param);
-	BOOST_CHECK_EQUAL(cp2, dist);
+    // Test param setter
+    boost::random::hyperexponential_distribution<> cp2;
+    cp2.param(param);
+    BOOST_CHECK_EQUAL(cp2, dist);
 
-	// Test param constructors & operators
+    // Test param constructors & operators
     boost::random::hyperexponential_distribution<>::param_type param_copy = param;
     BOOST_CHECK_EQUAL(param, param_copy);
     BOOST_CHECK(param == param_copy);
@@ -121,8 +143,8 @@ BOOST_AUTO_TEST_CASE( test_param )
     BOOST_CHECK(!(param == param_default));
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
     boost::random::hyperexponential_distribution<>::param_type param_il = {{1, 2, 3, 4 }, {1, 2, 3, 4}};
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, param_il.probabilities(), list_of(.1)(.2)(.3)(.4), tol);
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, param_il.rates(), list_of(1.)(2.)(3.)(4.), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, param_il.probabilities(), boost::assign::list_of(.1)(.2)(.3)(.4), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, param_il.rates(), boost::assign::list_of(1.)(2.)(3.)(4.), tol);
 #endif
     boost::random::hyperexponential_distribution<>::param_type param_r(probs, rates);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, param_r.probabilities(), probs, tol);
@@ -135,7 +157,7 @@ BOOST_AUTO_TEST_CASE( test_param )
 
 BOOST_AUTO_TEST_CASE( test_min_max )
 {
-	//const double tol = detail::make_tolerance<double>();
+    //const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
@@ -151,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_min_max )
 
 BOOST_AUTO_TEST_CASE(test_comparison)
 {
-	//const double tol = detail::make_tolerance<double>();
+    //const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
@@ -172,24 +194,24 @@ BOOST_AUTO_TEST_CASE(test_comparison)
 
 BOOST_AUTO_TEST_CASE( test_streaming )
 {
-	//const double tol = detail::make_tolerance<double>();
+    //const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
 
     boost::random::hyperexponential_distribution<> dist(probs, rates);
-	std::stringstream ss;
-	ss << dist;
+    std::stringstream ss;
+    ss << dist;
     boost::random::hyperexponential_distribution<> restored_dist;
-	ss >> restored_dist;
-	BOOST_CHECK_EQUAL(dist, restored_dist);
+    ss >> restored_dist;
+    BOOST_CHECK_EQUAL(dist, restored_dist);
 }
 
 void use(boost::random::hyperexponential_distribution<>::result_type) {}
 
 BOOST_AUTO_TEST_CASE(test_generation)
 {
-	//const double tol = detail::make_tolerance<double>();
+    //const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
@@ -200,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_generation)
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
     typedef boost::random::hyperexponential_distribution<>::result_type result_type;
     for(std::size_t i = 0; i < 10; ++i)
-	{
+    {
         const result_type value = dist(gen);
         use(value);
         BOOST_CHECK_GE(value, static_cast<result_type>(0));
@@ -218,7 +240,7 @@ BOOST_AUTO_TEST_CASE(test_generation)
 
 BOOST_AUTO_TEST_CASE( test_generation_float )
 {
-	//const double tol = detail::make_tolerance<double>();
+    //const double tol = detail::make_tolerance<double>();
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
@@ -229,7 +251,7 @@ BOOST_AUTO_TEST_CASE( test_generation_float )
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
     typedef boost::random::hyperexponential_distribution<>::result_type result_type;
     for(std::size_t i = 0; i < 10; ++i)
-	{
+    {
         const result_type value = dist(gen);
         use(value);
         BOOST_CHECK_GE(value, static_cast<result_type>(0));
