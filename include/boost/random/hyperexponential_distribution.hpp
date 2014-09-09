@@ -537,7 +537,7 @@ class hyperexponential_distribution
     //  We SFINAE this out of existance if either argument type is
     //  incrementable as in that case the type is probably an iterator:
     public: template <typename ProbRangeT, typename RateRangeT>
-            hyperexponential_distribution(ProbRangeT prob_range
+            hyperexponential_distribution(ProbRangeT const& prob_range,
                                           RateRangeT const& rate_range,
                                           typename boost::disable_if_c<boost::has_pre_increment<ProbRangeT>::value || boost::has_pre_increment<RateRangeT>::value>::type* = 0)
     : dd_(prob_range),
@@ -597,7 +597,7 @@ class hyperexponential_distribution
      * \param rate_range The range of positive real elements representing the rates.
      */
     public: template <typename RateRangeT>
-            param_type(RateRangeT const& rate_range)
+            hyperexponential_distribution(RateRangeT const& rate_range)
     : dd_(std::vector<RealT>(boost::size(rate_range), 1)),
       rates_(boost::begin(rate_range), boost::end(rate_range))
     {
