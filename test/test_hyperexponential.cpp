@@ -30,6 +30,8 @@
 // has been changed for the hyperexponential distribution.
 // We cannot directly use the original test suite since it doesn't work for
 // distributions with vector parameters.
+// Also, this implementation has been inspired by the test unit for the
+// discrete_distribution class.
 
 
 #ifndef BOOST_RANDOM_P_CUTOFF
