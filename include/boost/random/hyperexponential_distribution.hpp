@@ -26,8 +26,9 @@
 #include <boost/range/size.hpp>
 #include <boost/type_traits/has_pre_increment.hpp>
 #include <cassert>
-#include <iterator>
+#include <cmath>
 #include <cstddef>
+#include <iterator>
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
 # include <initializer_list>
 #endif // BOOST_NO_CXX11_HDR_INITIALIZER_LIST
@@ -39,7 +40,7 @@
 
 namespace boost { namespace random {
 
-namespace /*<unnamed>>*/ { namespace hyperexp_detail {
+namespace hyperexp_detail {
 
 template <typename T>
 std::vector<T>& normalize(std::vector<T>& v)
@@ -86,10 +87,18 @@ bool check_probabilities(std::vector<RealT> const& probabilities)
         sum += probabilities[i];
     }
 
-    if (!iszero(sum-RealT(1)))
+    // Taken from boost::math::hyperexponential_distribution
+    // - We try to keep phase probabilities correctly normalized in the distribution constructors
+    // - However in practice we have to allow for a very slight divergence from a sum of exactly 1:
+//    if (!iszero(sum-RealT(1)))
+//    {
+//        return false;
+//    }
+    if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
     {
         return false;
     }
+
 
     return true;
 }
@@ -121,7 +130,7 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
            && check_rates(rates);
 }
 
-}} // Namespace <unnamed>::hyperexp_detail
+} // Namespace hyperexp_detail
 
 
 /**
