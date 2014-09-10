@@ -7,6 +7,10 @@
  *
  * See http://www.boost.org for most recent version including documentation.
  *
+ * Much of the code here taken by boost::math::hyperexponential_distribution.
+ * To this end, we would like to thank Paul Bristow and John Maddock for their
+ * valuable feedback.
+ *
  * \author Marco Guazzone (marco.guazzone@gmail.com)
  */
 
