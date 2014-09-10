@@ -16,7 +16,6 @@
 
 #include <boost/config.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/math/tools/precision.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/vector_io.hpp>
 #include <boost/random/discrete_distribution.hpp>
@@ -45,30 +44,25 @@ namespace hyperexp_detail {
 template <typename T>
 std::vector<T>& normalize(std::vector<T>& v)
 {
-    const T sum = std::accumulate(v.begin(), v.end(), static_cast<T>(0));
+	if (v.size() == 0)
+	{
+		return v;
+	}
 
-    const typename std::vector<T>::iterator end = v.end();
+    const T sum = std::accumulate(v.begin(), v.end(), static_cast<T>(0));
+	T final_sum = 0;
+
+    const typename std::vector<T>::iterator end = --v.end();
     for (typename std::vector<T>::iterator it = v.begin();
          it != end;
          ++it)
     {
         *it /= sum;
+		final_sum += *it;
     }
+	*end = 1-final_sum; // avoids round off errors thus ensuring the probabilities really sum to 1
 
     return v;
-}
-
-template <typename T>
-bool iszero(T x)
-{
-#ifdef FP_ZERO
-    return (boost::math::fpclassify)(x) == FP_ZERO;
-    // Alternatively, we could use std::fpclassify (but this is available from ISO C99)
-    //return std::fpclassify(x) == FP_ZERO;
-#else
-    return ((x < 0) ? bool(-x < (std::numeric_limits<T>::min)())
-                    : bool(+x < (std::numeric_limits<T>::min)()));
-#endif // FP_ZERO
 }
 
 template <typename RealT>
@@ -87,13 +81,8 @@ bool check_probabilities(std::vector<RealT> const& probabilities)
         sum += probabilities[i];
     }
 
-    // Taken from boost::math::hyperexponential_distribution
     // - We try to keep phase probabilities correctly normalized in the distribution constructors
     // - However in practice we have to allow for a very slight divergence from a sum of exactly 1:
-//    if (!iszero(sum-RealT(1)))
-//    {
-//        return false;
-//    }
     if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
     {
         return false;
