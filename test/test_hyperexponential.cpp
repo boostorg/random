@@ -52,21 +52,28 @@ namespace /*<unnamed>*/ { namespace detail {
 template <typename T>
 std::vector<T>& normalize(std::vector<T>& v)
 {
-    const T sum = std::accumulate(v.begin(), v.end(), static_cast<T>(0));
+	if (v.size() == 0)
+	{
+		return v;
+	}
 
-    const typename std::vector<T>::iterator end = v.end();
+    const T sum = std::accumulate(v.begin(), v.end(), static_cast<T>(0));
+	T final_sum = 0;
+
+    const typename std::vector<T>::iterator end = --v.end();
     for (typename std::vector<T>::iterator it = v.begin();
          it != end;
          ++it)
     {
         *it /= sum;
     }
+	*end = 1 - final_sum;  // avoids round off errors, ensures the probs really do sum to 1.
 
     return v;
 }
 
 template <typename T>
-std::vector<T> normalize(std::vector<T> const& v)
+std::vector<T> normalize_copy(std::vector<T> const& v)
 {
 	std::vector<T> vv(v);
 
@@ -126,7 +133,7 @@ bool do_tests(int repeat, int max_num_phases, double max_rate, long long trials)
         boost::random::uniform_real_distribution<> prob_dist(BOOST_RANDOM_HYPEREXP_PROBABILITY_MIN, BOOST_RANDOM_HYPEREXP_PROBABILITY_MAX);
         boost::random::uniform_real_distribution<> rate_dist(BOOST_RANDOM_HYPEREXP_RATE_MIN, max_rate);
 
-        const std::vector<double> probabilities = detail::normalize(detail::make_random_vector<double>(num_phases, prob_dist, gen));
+        const std::vector<double> probabilities = detail::normalize_copy(detail::make_random_vector<double>(num_phases, prob_dist, gen));
         const std::vector<double> rates = detail::make_random_vector<double>(num_phases, rate_dist, gen);
 
         if (!do_test(probabilities, rates, trials, gen))
