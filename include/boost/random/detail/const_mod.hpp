@@ -190,7 +190,7 @@ private:
     IntType p = m;
     IntType max = (std::numeric_limits<IntType>::max)();
     IntType q = max / n;
-    BOOST_ASSERT(max % n != n - 1 && "c must be relatively prime to m.");
+    BOOST_ASSERT_MSG(max % n != n - 1, "c must be relatively prime to m.");
     l1 += q * l2;
     p = max - q * n + 1;
     for(;;) {
