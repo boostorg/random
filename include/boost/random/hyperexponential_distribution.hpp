@@ -681,7 +681,7 @@ class hyperexponential_distribution
     }
 
     /**
-     * Gets a random variate distributed accordint to the hyperexponential
+     * Gets a random variate distributed according to the hyperexponential
      * distribution with parameters specified by \c parm.
      *
      * \tparam URNG Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/UniformRandomNumberGenerator">UniformRandomNumberGenerator</a>.
