@@ -22,6 +22,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
+#include <boost/type_traits/is_integral.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/integer_log2.hpp>
 #include <boost/random/detail/operators.hpp>
@@ -43,9 +44,21 @@ namespace random {
 template<class Engine, std::size_t w, class UIntType>
 class independent_bits_engine
 {
+private:
+   static UIntType max_imp(const boost::true_type&)
+   {
+      return boost::low_bits_mask_t<w>::sig_bits;
+   }
+   static UIntType max_imp(const boost::false_type&)
+   {
+      // We have a multiprecision integer type:
+      BOOST_STATIC_ASSERT(std::numeric_limits<UIntType>::is_specialized);
+      return w < std::numeric_limits<UIntType>::digits ? (UIntType(1) << w) - 1 : (((UIntType(1) << (w-1)) - 1) << 1) | 1u;
+   }
 public:
     typedef Engine base_type;
     typedef UIntType result_type;
+    typedef typename Engine::result_type base_result_type;
 
     // Required by old Boost.Random concept
     BOOST_STATIC_CONSTANT(bool, has_fixed_range = false);
@@ -55,7 +68,7 @@ public:
     { return 0; }
     /** Returns the largest value that the generator can produce. */
     static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
-    { return boost::low_bits_mask_t<w>::sig_bits; }
+    { return max_imp(boost::is_integral<UIntType>()); }
 
     /**
      * Constructs an @c independent_bits_engine using the
@@ -68,7 +81,7 @@ public:
      * the constructor argument for both base generators.
      */
     BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(independent_bits_engine,
-        result_type, seed_arg)
+       base_result_type, seed_arg)
     {
         _base.seed(seed_arg);
     }
@@ -108,7 +121,7 @@ public:
      * seed for the base generator.
      */
     BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(independent_bits_engine,
-        result_type, seed_arg)
+        base_result_type, seed_arg)
     { _base.seed(seed_arg); }
 
     /**
