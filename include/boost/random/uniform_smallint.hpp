@@ -239,10 +239,10 @@ private:
         // but guarantees no overflow.
         typedef typename Engine::result_type base_result;
         typedef typename boost::random::traits::make_unsigned<base_result>::type base_unsigned;
-        typedef typename boost::random::traits::make_unsigned<result_type>::type range_type;
+        typedef typename boost::random::traits::make_unsigned_or_unbounded<result_type>::type range_type;
         range_type range = random::detail::subtract<result_type>()(_max, _min);
         base_unsigned base_range =
-            random::detail::subtract<result_type>()((eng.max)(), (eng.min)());
+           random::detail::subtract<base_result>()((eng.max)(), (eng.min)());
         base_unsigned val =
             random::detail::subtract<base_result>()(eng(), (eng.min)());
         if(range >= base_range) {
