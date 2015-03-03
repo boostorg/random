@@ -24,7 +24,7 @@ namespace detail {
  * Compute x - y, we know that x >= y, return an unsigned value.
  */
 
-template<class T, bool sgn = std::numeric_limits<T>::is_signed>
+template<class T, bool sgn = std::numeric_limits<T>::is_signed && std::numeric_limits<T>::is_bounded>
 struct subtract { };
 
 template<class T>
