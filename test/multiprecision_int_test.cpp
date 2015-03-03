@@ -9,12 +9,12 @@
 * $Id$
 *
 * Tests all integer related generators and distributions with multiprecision types:
-* binomial_distribution, discard_block, discrete_distribution, independent_bits_engine,
-* negative_binomial_distribution, poisson_distribution, random_number_generator,
+* discard_block, independent_bits_engine, random_number_generator,
 * xor_combine_engine, uniform_int_distribution, uniform_smallint.
 *
-* Not supported, but could be with more work (but probably not worth while:
-* shuffle_order_engine
+* Not supported, but could be with more work (but probably not worth while):
+* shuffle_order_engine, binomial_distribution, discrete_distribution, negative_binomial_distribution,
+* poisson_distribution
 */
 
 #define BOOST_TEST_MAIN
@@ -26,6 +26,8 @@
 #include <boost/random/xor_combine.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/random_number_generator.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/uniform_smallint.hpp>
 #include <sstream>
 
 typedef boost::mpl::list <
@@ -118,4 +120,44 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(random_number_generator, generator_type, generator
       BOOST_CHECK(gen(lim) < lim);
 }
 
+typedef boost::mpl::list <
+   boost::random::uniform_int_distribution<boost::multiprecision::cpp_int>,
+   boost::random::uniform_int_distribution<boost::multiprecision::uint1024_t>,
+   boost::random::uniform_int_distribution<boost::multiprecision::checked_uint1024_t>,
+   boost::random::uniform_smallint<boost::multiprecision::cpp_int>,
+   boost::random::uniform_smallint<boost::multiprecision::uint1024_t>,
+   boost::random::uniform_smallint<boost::multiprecision::checked_uint1024_t>
+> uniform_distributions;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(binomial, distribution_type, uniform_distributions)
+{
+   typedef typename distribution_type::result_type  result_type;
+   typedef typename distribution_type::input_type   input_type;
+
+   result_type a = 20;
+   result_type b = 1;
+   b <<= 1000;
+
+   distribution_type d(a, b);
+   boost::random::mt19937 gen;
+
+   BOOST_CHECK_EQUAL(d.a(), a);
+   BOOST_CHECK_EQUAL(d.b(), b);
+   BOOST_CHECK_EQUAL((d.min)(), a);
+   BOOST_CHECK_EQUAL((d.max)(), b);
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(gen);
+      BOOST_CHECK(r <= b);
+      BOOST_CHECK(r >= a);
+   }
+
+   std::stringstream ss;
+   ss << d;
+   distribution_type d2;
+   ss >> d2;
+   BOOST_CHECK(d == d2);
+}
 
