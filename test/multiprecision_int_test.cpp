@@ -159,5 +159,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(binomial, distribution_type, uniform_distributions
    distribution_type d2;
    ss >> d2;
    BOOST_CHECK(d == d2);
+
+   boost::random::independent_bits_engine<boost::random::mt19937, std::numeric_limits<boost::multiprecision::uint1024_t>::digits, boost::multiprecision::uint1024_t > big_random;
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(big_random);
+      BOOST_CHECK(r <= b);
+      BOOST_CHECK(r >= a);
+   }
 }
 
