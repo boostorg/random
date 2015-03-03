@@ -51,7 +51,7 @@ T generate_uniform_int(
     typedef T result_type;
     typedef typename boost::random::traits::make_unsigned_or_unbounded<T>::type range_type;
     typedef typename Engine::result_type base_result;
-    // ranges are always unsigned
+    // ranges are always unsigned or unbounded
     typedef typename boost::random::traits::make_unsigned_or_unbounded<base_result>::type base_unsigned;
     const range_type range = random::detail::subtract<result_type>()(max_value, min_value);
     const base_result bmin = (eng.min)();
