@@ -326,7 +326,7 @@ inline void fill_array_int_impl(Iter& first, Iter last, IntType (&x)[n], boost::
 template<int w, std::size_t n, class Iter, class IntType>
 inline void fill_array_int(Iter& first, Iter last, IntType (&x)[n])
 {
-    fill_array_int_impl<w>(first, last, x, boost::is_signed_helper<IntType>());
+    fill_array_int_impl<w>(first, last, x, boost::random::traits::is_signed<IntType>());
 }
 
 template<int w, std::size_t n, class RealType>
