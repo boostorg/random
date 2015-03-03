@@ -194,7 +194,7 @@ public:
     result_type operator()(Engine& eng) const
     {
         typedef typename Engine::result_type base_result;
-        return generate(eng, boost::is_integral<base_result>());
+        return generate(eng, boost::random::traits::is_integral<base_result>());
     }
 
     /** Returns a value uniformly distributed in the range [param.a(), param.b()]. */
