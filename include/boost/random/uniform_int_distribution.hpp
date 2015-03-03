@@ -28,8 +28,7 @@
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/uniform_int_float.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/is_integral.hpp>
+#include <boost/random/detail/traits.hpp>
 #include <boost/mpl/bool.hpp>
 
 namespace boost {
@@ -50,10 +49,10 @@ T generate_uniform_int(
     boost::mpl::true_ /** is_integral<Engine::result_type> */)
 {
     typedef T result_type;
-    typedef typename make_unsigned<T>::type range_type;
+    typedef typename boost::random::traits::make_unsigned_or_unbounded<T>::type range_type;
     typedef typename Engine::result_type base_result;
     // ranges are always unsigned
-    typedef typename make_unsigned<base_result>::type base_unsigned;
+    typedef typename boost::random::traits::make_unsigned_or_unbounded<base_result>::type base_unsigned;
     const range_type range = random::detail::subtract<result_type>()(max_value, min_value);
     const base_result bmin = (eng.min)();
     const base_unsigned brange =
@@ -166,7 +165,7 @@ T generate_uniform_int(
                 static_cast<range_type>(0),
                 static_cast<range_type>(range/mult),
                 boost::mpl::true_());
-        if((std::numeric_limits<range_type>::max)() / mult < result_increment) {
+        if(std::numeric_limits<range_type>::is_bounded && ((std::numeric_limits<range_type>::max)() / mult < result_increment)) {
           // The multiplcation would overflow.  Reject immediately.
           continue;
         }

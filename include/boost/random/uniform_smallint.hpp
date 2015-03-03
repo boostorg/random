@@ -238,8 +238,8 @@ private:
         // equivalent to (eng() - eng.min()) % (_max - _min + 1) + _min,
         // but guarantees no overflow.
         typedef typename Engine::result_type base_result;
-        typedef typename boost::make_unsigned<base_result>::type base_unsigned;
-        typedef typename boost::make_unsigned<result_type>::type range_type;
+        typedef typename boost::random::traits::make_unsigned<base_result>::type base_unsigned;
+        typedef typename boost::random::traits::make_unsigned<result_type>::type range_type;
         range_type range = random::detail::subtract<result_type>()(_max, _min);
         base_unsigned base_range =
             random::detail::subtract<result_type>()((eng.max)(), (eng.min)());
@@ -259,7 +259,7 @@ private:
     result_type generate(Engine& eng, boost::mpl::false_) const
     {
         typedef typename Engine::result_type base_result;
-        typedef typename boost::make_unsigned<result_type>::type range_type;
+        typedef typename boost::random::traits::make_unsigned<result_type>::type range_type;
         range_type range = random::detail::subtract<result_type>()(_max, _min);
         base_result val = boost::uniform_01<base_result>()(eng);
         // what is the worst that can possibly happen here?

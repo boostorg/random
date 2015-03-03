@@ -37,7 +37,7 @@ struct subtract<T, /* signed */ false>
 template<class T>
 struct subtract<T, /* signed */ true>
 {
-  typedef typename make_unsigned<T>::type result_type;
+  typedef typename boost::random::traits::make_unsigned_or_unbounded<T>::type result_type;
   result_type operator()(T x, T y)
   {
     if (y >= 0)   // because x >= y, it follows that x >= 0, too

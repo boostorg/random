@@ -21,8 +21,7 @@
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/type_traits/is_integral.hpp>
+#include <boost/random/detail/traits.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/integer_log2.hpp>
 #include <boost/random/detail/operators.hpp>
@@ -152,7 +151,7 @@ public:
         // every time, both msvc and gcc can propagate
         // constants, resolving this at compile time.
         base_unsigned range =
-            detail::subtract<base_result>()((_base.max)(), (_base.min)());
+           detail::subtract<base_result_type>()((_base.max)(), (_base.min)());
         std::size_t m =
             (range == (std::numeric_limits<base_unsigned>::max)()) ?
                 std::numeric_limits<base_unsigned>::digits :
@@ -174,14 +173,14 @@ public:
         for(std::size_t k = 0; k < n0; ++k) {
             base_unsigned u;
             do {
-                u = detail::subtract<base_result>()(_base(), (_base.min)());
+               u = detail::subtract<base_result_type>()(_base(), (_base.min)());
             } while(u > base_unsigned(y0 - 1));
             S = (S << w0) + (u & y0_mask);
         }
         for(std::size_t k = 0; k < (n - n0); ++k) {
             base_unsigned u;
             do {
-                u = detail::subtract<base_result>()(_base(), (_base.min)());
+               u = detail::subtract<base_result_type>()(_base(), (_base.min)());
             } while(u > base_unsigned(y1 - 1));
             S = (S << (w0 + 1)) + (u & y1_mask);
         }
@@ -239,8 +238,7 @@ public:
 private:
 
     /// \cond show_private
-    typedef typename base_type::result_type base_result;
-    typedef typename make_unsigned<base_result>::type base_unsigned;
+    typedef typename boost::random::traits::make_unsigned<base_result_type>::type base_unsigned;
 
     void calc_params(
         std::size_t n, base_unsigned range,
