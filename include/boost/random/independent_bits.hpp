@@ -52,7 +52,7 @@ private:
    {
       // We have a multiprecision integer type:
       BOOST_STATIC_ASSERT(std::numeric_limits<UIntType>::is_specialized);
-      return w < std::numeric_limits<UIntType>::digits ? (UIntType(1) << w) - 1 : (((UIntType(1) << (w-1)) - 1) << 1) | 1u;
+      return w < std::numeric_limits<UIntType>::digits ? UIntType((UIntType(1) << w) - 1) : UIntType((((UIntType(1) << (w - 1)) - 1) << 1) | 1u);
    }
 public:
     typedef Engine base_type;
