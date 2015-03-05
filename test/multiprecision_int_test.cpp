@@ -31,8 +31,16 @@
 #include <sstream>
 
 typedef boost::mpl::list <
-   boost::random::independent_bits_engine<boost::random::mt19937, std::numeric_limits<boost::multiprecision::uint1024_t>::digits, boost::multiprecision::uint1024_t >,
-   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, std::numeric_limits<boost::multiprecision::uint1024_t>::digits, boost::multiprecision::uint1024_t >, 20, 10>
+   boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::uint1024_t >,
+   boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::int1024_t >,
+   boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::checked_uint1024_t >,
+   boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::checked_int1024_t >,
+   boost::random::independent_bits_engine<boost::random::mt19937, 30000, boost::multiprecision::cpp_int >,
+   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::uint1024_t >, 20, 10>,
+   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::int1024_t >, 20, 10>,
+   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::checked_uint1024_t >, 20, 10>,
+   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::checked_int1024_t >, 20, 10>,
+   boost::random::discard_block_engine<boost::random::independent_bits_engine<boost::random::mt19937, 600, boost::multiprecision::cpp_int >, 20, 10>
 > engines;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(generator_test, engine_type, engines)
@@ -45,7 +53,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(generator_test, engine_type, engines)
    test_type b = gen.max();
    BOOST_CHECK(a < b);
    a = gen();
-   gen.generate(&b, &b + 1);
+   //
+   // This extracts 32-bit values for use in seeding other sequences,
+   // not really applicable here, and not functional for signed types anyway.
+   //gen.generate(&b, &b + 1);
    gen.discard(20);
 
    typename engine_type::base_type base(gen.base());
