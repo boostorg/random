@@ -20,6 +20,8 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
+#include <boost/multiprecision/debug_adaptor.hpp>
+#include <boost/multiprecision/cpp_bin_float.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/random/independent_bits.hpp>
 #include <boost/random/discard_block.hpp>
@@ -28,6 +30,7 @@
 #include <boost/random/random_number_generator.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/uniform_smallint.hpp>
+#include <boost/random/discrete_distribution.hpp>
 #include <sstream>
 
 typedef boost::mpl::list <
@@ -143,10 +146,9 @@ typedef boost::mpl::list <
 > uniform_distributions;
 
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(binomial, distribution_type, uniform_distributions)
+BOOST_AUTO_TEST_CASE_TEMPLATE(distributions, distribution_type, uniform_distributions)
 {
    typedef typename distribution_type::result_type  result_type;
-   typedef typename distribution_type::input_type   input_type;
 
    result_type a = 20;
    result_type b = 1;
@@ -182,3 +184,40 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(binomial, distribution_type, uniform_distributions
    }
 }
 
+#ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
+
+typedef boost::mpl::list <
+   boost::random::discrete_distribution < boost::multiprecision::cpp_int, double>,
+   boost::random::discrete_distribution <unsigned int, boost::multiprecision::cpp_bin_float_100>
+> other_distributions;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(discrete_distributions, distribution_type, other_distributions)
+{
+   typedef typename distribution_type::result_type  result_type;
+   typedef typename distribution_type::input_type   input_type;
+
+   input_type a[] = { 20, 30, 40, 50 };
+
+   distribution_type d(a, a + 4);
+   boost::random::mt19937 gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(gen);
+   }
+
+   std::stringstream ss;
+   ss << std::setprecision(std::numeric_limits<input_type>::digits10 + 3) << d;
+   distribution_type d2;
+   ss >> d2;
+   BOOST_CHECK(d == d2);
+
+   boost::random::independent_bits_engine<boost::random::mt19937, std::numeric_limits<boost::multiprecision::uint1024_t>::digits, boost::multiprecision::uint1024_t > big_random;
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(big_random);
+   }
+}
+
+#endif

@@ -185,7 +185,7 @@ template<class UniformRandomNumberGenerator, class RealType>
 const bool backward_compatible_uniform_01<UniformRandomNumberGenerator, RealType>::has_fixed_range;
 #endif
 
-template<class UniformRandomNumberGenerator>
+template<class UniformRandomNumberGenerator, bool is_number = std::numeric_limits<UniformRandomNumberGenerator>::is_specialized>
 struct select_uniform_01
 {
   template<class RealType>
@@ -195,33 +195,13 @@ struct select_uniform_01
   };
 };
 
-template<>
-struct select_uniform_01<float>
+template<class Num>
+struct select_uniform_01<Num, true>
 {
   template<class RealType>
   struct apply
   {
-    typedef new_uniform_01<float> type;
-  };
-};
-
-template<>
-struct select_uniform_01<double>
-{
-  template<class RealType>
-  struct apply
-  {
-    typedef new_uniform_01<double> type;
-  };
-};
-
-template<>
-struct select_uniform_01<long double>
-{
-  template<class RealType>
-  struct apply
-  {
-    typedef new_uniform_01<long double> type;
+    typedef new_uniform_01<Num> type;
   };
 };
 
