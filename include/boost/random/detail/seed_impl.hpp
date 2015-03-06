@@ -313,7 +313,7 @@ void fill_array_int_impl(Iter& first, Iter last, UIntType (&x)[n])
 template<int w, std::size_t n, class Iter, class IntType>
 inline void fill_array_int_impl(Iter& first, Iter last, IntType (&x)[n], boost::mpl::true_)
 {
-   typedef typename boost::boost::random::traits::make_unsigned<IntType>::type unsigned_array[n];
+    typedef typename boost::random::traits::make_unsigned<IntType>::type unsigned_array[n];
     fill_array_int_impl<w>(first, last, reinterpret_cast<unsigned_array&>(x));
 }
 

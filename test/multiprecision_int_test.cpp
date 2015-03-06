@@ -90,7 +90,9 @@ BOOST_AUTO_TEST_CASE(xor_combine_test)
    test_type b = gen.max();
    BOOST_CHECK(a < b);
    a = gen();
+#ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
    gen.generate(&b, &b + 1);
+#endif
    gen.discard(20);
 
    //typename engine_type::base_type base(gen.base());
