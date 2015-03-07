@@ -53,8 +53,8 @@ struct const_pow_impl
     template<class T>
     static T call(T arg, int n, T result)
     {
-        return const_pow_impl<N / 2>::call(arg * arg, n / 2,
-            n%2 == 0? result : result * arg);
+        return const_pow_impl<N / 2>::call(T(arg * arg), n / 2,
+            n%2 == 0? result : T(result * arg));
     }
 };
 
