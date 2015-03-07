@@ -27,8 +27,14 @@
 #include <boost/random.hpp>
 #include <sstream>
 
+
+typedef boost::multiprecision::number<boost::multiprecision::cpp_bin_float_100::backend_type, boost::multiprecision::et_on > big_float;
+typedef boost::random::subtract_with_carry_01_engine<big_float, 48, 10, 24 > ranlux_big_base_01;
+typedef boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::uint1024_t> large_int_generator;
+
 typedef boost::mpl::list <
-   boost::random::lagged_fibonacci_01_engine<boost::multiprecision::number<boost::multiprecision::cpp_bin_float_100::backend_type, boost::multiprecision::et_on>, 48, 44497, 21034 >
+   boost::random::lagged_fibonacci_01_engine<big_float, 48, 44497, 21034 >,
+   boost::random::discard_block_engine< ranlux_big_base_01, 389, 24 >
 > engines;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(generator_test, engine_type, engines)
