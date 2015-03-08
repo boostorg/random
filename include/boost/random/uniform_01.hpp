@@ -93,9 +93,9 @@ public:
     for (;;) {
       typedef typename Engine::result_type base_result;
       result_type factor = result_type(1) /
-              (result_type((eng.max)()-(eng.min)()) +
+              (result_type(base_result((eng.max)()-(eng.min)())) +
                result_type(std::numeric_limits<base_result>::is_integer ? 1 : 0));
-      result_type result = result_type(eng() - (eng.min)()) * factor;
+      result_type result = result_type(base_result(eng() - (eng.min)())) * factor;
       if (result < result_type(1))
         return result;
     }

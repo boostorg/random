@@ -1,5 +1,5 @@
 
-/* multiprecision_int_test.cpp
+/* multiprecision_float_test.cpp
 *
 * Copyright John Maddock 2015
 * Distributed under the Boost Software License, Version 1.0. (See
@@ -8,13 +8,7 @@
 *
 * $Id$
 *
-* Tests all integer related generators and distributions with multiprecision types:
-* discard_block, independent_bits_engine, random_number_generator,
-* xor_combine_engine, uniform_int_distribution, uniform_smallint.
-*
-* Not supported, but could be with more work (but probably not worth while):
-* shuffle_order_engine, binomial_distribution, discrete_distribution, negative_binomial_distribution,
-* poisson_distribution
+* Tests all floating point related generators and distributions with multiprecision types.
 */
 
 #define BOOST_TEST_MAIN
@@ -67,3 +61,137 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(generator_test, engine_type, engines)
    (*gen2)();
    BOOST_CHECK(*gen != *gen2);
 }
+
+typedef boost::mpl::list <
+   boost::random::bernoulli_distribution<big_float>,
+   boost::random::beta_distribution<big_float>,
+   boost::random::cauchy_distribution<big_float>,
+   boost::random::chi_squared_distribution<big_float>,
+   boost::random::exponential_distribution<big_float>,
+   boost::random::extreme_value_distribution<big_float>,
+   boost::random::fisher_f_distribution<big_float>,
+   boost::random::gamma_distribution<big_float>,
+   boost::random::laplace_distribution<big_float>,
+   boost::random::lognormal_distribution<big_float>,
+   boost::random::normal_distribution<big_float>,
+#ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
+   boost::random::piecewise_constant_distribution<big_float>,
+   boost::random::piecewise_linear_distribution<big_float>,
+#endif
+   boost::random::student_t_distribution<big_float>,
+   boost::random::triangle_distribution<big_float>,
+   //boost::random::uniform_01<big_float>,  // doesn't respect the concept!  But gets used internally anyway.
+   boost::random::uniform_real_distribution<big_float>,
+   boost::random::uniform_on_sphere<big_float>,
+   boost::random::uniform_real_distribution<big_float>,
+   boost::random::weibull_distribution<big_float>
+> distributions;
+
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(distributions_test, dist_type, distributions)
+{
+   typedef typename dist_type::result_type result_type;
+   dist_type d;
+   result_type a = (d.min)();
+   result_type b = (d.max)();
+   typename dist_type::param_type p = d.param();
+   d.reset();
+   
+   std::stringstream ss;
+   ss << std::setprecision(std::numeric_limits<result_type>::digits10 + 3) << d;
+   dist_type d2;
+   ss >> d2;
+   BOOST_CHECK(d == d2);
+
+   boost::random::mt19937 int_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(int_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= a);
+      BOOST_CHECK(r <= b);
+   }
+
+#ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
+   large_int_generator big_int_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(big_int_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= a);
+      BOOST_CHECK(r <= b);
+   }
+
+   boost::random::discard_block_engine< ranlux_big_base_01, 389, 24 > big_float_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(big_float_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= a);
+      BOOST_CHECK(r <= b);
+   }
+#endif
+
+   boost::random::ranlux64_4_01 float_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(float_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= a);
+      BOOST_CHECK(r <= b);
+   }
+}
+
+
+
+BOOST_AUTO_TEST_CASE(canonical_test)
+{
+   typedef big_float result_type;
+
+   boost::random::mt19937 int_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = boost::random::generate_canonical<big_float, std::numeric_limits<big_float>::digits>(int_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= 0);
+      BOOST_CHECK(r <= 1);
+   }
+
+   large_int_generator big_int_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = boost::random::generate_canonical<big_float, std::numeric_limits<big_float>::digits>(big_int_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= 0);
+      BOOST_CHECK(r <= 1);
+   }
+
+
+   boost::random::discard_block_engine< ranlux_big_base_01, 389, 24 > big_float_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = boost::random::generate_canonical<big_float, std::numeric_limits<big_float>::digits>(big_float_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= 0);
+      BOOST_CHECK(r <= 1);
+   }
+
+   boost::random::ranlux64_4_01 float_gen;
+
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = boost::random::generate_canonical<big_float, std::numeric_limits<big_float>::digits>(float_gen);
+      BOOST_CHECK((boost::math::isfinite)(r));
+      BOOST_CHECK(r >= 0);
+      BOOST_CHECK(r <= 1);
+   }
+
+}
+
