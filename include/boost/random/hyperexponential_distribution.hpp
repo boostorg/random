@@ -452,6 +452,9 @@ class hyperexponential_distribution
             detail::read_vector(is, tmp);
             if (!is)
             {
+				// Initialize rates to a admissible value (i.e., 1.0) to avoid leaving rates_ in an inconsistent state
+				parm.rates_.assign(parm.probs_.size(), 1);
+
                 return is;
             }
             parm.rates_.swap(tmp);
