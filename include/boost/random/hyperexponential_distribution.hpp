@@ -88,10 +88,10 @@ bool check_probabilities(std::vector<RealT> const& probabilities)
     // - We try to keep phase probabilities correctly normalized in the distribution constructors
     // - However in practice we have to allow for a very slight divergence from a sum of exactly 1:
     //if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
-	// This is from Knuth "The Art of Computer Programming: Vol.2, 3rd Ed", and can be used to
-	// check is two numbers are approximately equal
-	const RealT one = 1;
-	const RealT tol = std::numeric_limits<RealT>::epsilon()*2.0;
+    // This is from Knuth "The Art of Computer Programming: Vol.2, 3rd Ed", and can be used to
+    // check is two numbers are approximately equal
+    const RealT one = 1;
+    const RealT tol = std::numeric_limits<RealT>::epsilon()*2.0;
     if (std::abs(sum-one) > (std::max(std::abs(sum), std::abs(one))*tol))
     {
         return false;
@@ -146,12 +146,12 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
  * parameters, namely a <em>phase probability vector</em> \f$\mathbf{\alpha}=(\alpha_1,\ldots,\alpha_k)\f$ and a <em>rate vector</em> \f$\mathbf{\lambda}=(\lambda_1,\ldots,\lambda_k)\f$.
  *
  * A \f$k\f$-phase hyperexponential distribution is frequently used in
- * <a href="http://en.wikipedia.org/wiki/Queueing_theory">queueing theory</a> to
- * model the distribution of the superposition of \f$k\f$ independent events,
- * like, for instance, the  service time distribution of a queueing station with
- * \f$k\f$ servers in parallel where the \f$i\f$-th server is chosen with
- * probability \f$\alpha_i\f$ and its service time distribution is an exponential
- * distribution with rate \f$\lambda_i\f$ (Allen,1990; Papadopolous et al.,1993; Trivedi,2002).
+ * <em>queueing theory</em> to model the distribution of the superposition of
+ * \f$k\f$ independent events, like, for instance, the  service time distribution
+ * of a queueing station with \f$k\f$ servers in parallel where the \f$i\f$-th
+ * server is chosen with probability \f$\alpha_i\f$ and its service time
+ * distribution is an exponential distribution with rate \f$\lambda_i\f$
+ * (Allen,1990; Papadopolous et al.,1993; Trivedi,2002).
  *
  * For instance, CPUs service-time distribution in a computing system has often
  * been observed to possess such a distribution (Rosin,1965).
@@ -164,8 +164,7 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
  * Finally, since the hyperexponential distribution exhibits a high Coefficient
  * of Variation (CoV), that is a CoV > 1, it is especially suited to fit
  * empirical data with large CoV (Feitelson,2014; Wolski et al.,2013) and to
- * approximate <a href="http://en.wikipedia.org/wiki/Long_tail">long-tail
- * probability distributions</a> (Feldmann et al.,1998).
+ * approximate <em>long-tail probability distributions</em> (Feldmann et al.,1998).
  *
  * See (Boost,2014) for more information and examples.
  *
@@ -188,8 +187,7 @@ bool check_params(std::vector<RealT> const& probabilities, std::vector<RealT> co
  * random variate generation algorithm consists of the following steps (Tyszer,1999):
  * -# Generate a random variable \f$U\f$ uniformly distribution on the interval \f$(0,1)\f$.
  * -# Use \f$U\f$ to select the appropriate \f$\lambda_i\f$ (e.g., the
- *  <a href="http://en.wikipedia.org/wiki/Alias_method">alias method</a> can
- *  possibly be used for this step).
+ *  <em>alias method</em> can possibly be used for this step).
  * -# Generate an exponentially distributed random variable \f$X\f$ with rate parameter \f$\lambda_i\f$.
  * -# Return \f$X\f$.
  * .
@@ -247,13 +245,17 @@ class hyperexponential_distribution
          * <em>rate vector</em> parameter is given by the range defined by
          * [\a rate_first, \a rate_last) iterator pair.
          *
-         * \tparam ProbIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
-         * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
          *
          * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
          * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
          * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
          * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
+         *
+         * References:
+         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+         * .
          */
         public: template <typename ProbIterT, typename RateIterT>
                 param_type(ProbIterT prob_first, ProbIterT prob_last,
@@ -274,8 +276,8 @@ class hyperexponential_distribution
          * defined by \a prob_range, and the <em>rate vector</em> parameter is
          * given by the range defined by \a rate_range.
          *
-         * \tparam ProbRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
-         * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+         * \tparam ProbRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
+         * \tparam RateRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
          *
          * \param prob_range The range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
          * \param rate_range The range of positive real elements representing the rates.
@@ -309,8 +311,8 @@ class hyperexponential_distribution
          * probabilities (i.e., to a vector of the same length \f$k\f$ of the
          * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
          *
-         * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
-         * \tparam RateIterT2 Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+         * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (C++reference,2014).
          *
          * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
          * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
@@ -319,6 +321,10 @@ class hyperexponential_distribution
          *  The final \c disable_if parameter is an implementation detail that
          *  differentiates between this two argument constructor and the
          *  range-based two argument constructor described above.
+         *
+         * References:
+         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+         * .
          */
         //  We SFINAE this out of existance if either argument type is
         //  incrementable as in that case the type is probably an iterator:
@@ -344,7 +350,7 @@ class hyperexponential_distribution
          * length \f$k\f$ of the <em>rate vector</em> and with each element set
          * to \f$1.0/k\f$).
          *
-         * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+         * \tparam RateRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
          *
          * \param rate_range The range of positive real elements representing the rates.
          */
@@ -364,13 +370,17 @@ class hyperexponential_distribution
          * and <em>rate vector</em> parameters of the distribution.
          *
          * The <em>phase probability vector</em> parameter is given by the
-         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * <em>brace-init-list</em> (C++reference,2014)
          * defined by \a l1, and the <em>rate vector</em> parameter is given by the
-         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * <em>brace-init-list</em> (C++reference,2014)
          * defined by \a l2.
          *
          * \param l1 The initializer list for inizializing the phase probability vector.
          * \param l2 The initializer list for inizializing the rate vector.
+         *
+         * References:
+         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+         * .
          */
         public: param_type(std::initializer_list<RealT> l1, std::initializer_list<RealT> l2)
         : probs_(l1.begin(), l1.end()),
@@ -386,13 +396,17 @@ class hyperexponential_distribution
          * of the distribution and with equal phase probabilities.
          *
          * The <em>rate vector</em> parameter is given by the
-         * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+         * <em>brace-init-list</em> (C++reference,2014)
          * defined by \a l1, and the <em>phase probability vector</em> parameter is
          * set to the equal phase probabilities (i.e., to a vector of the same
          * length \f$k\f$ of the <em>rate vector</em> and with each element set
          * to \f$1.0/k\f$).
          *
          * \param l1 The initializer list for inizializing the rate vector.
+         *
+         * References:
+         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+         * .
          */
         public: param_type(std::initializer_list<RealT> l1)
         : probs_(std::distance(l1.begin(), l1.end()), 1), // Will be normalized below
@@ -530,13 +544,17 @@ class hyperexponential_distribution
      * <em>rate vector</em> parameter is given by the range defined by
      * [\a rate_first, \a rate_last) iterator pair.
      *
-     * \tparam ProbIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
-     * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
      *
      * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
      * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
      * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
      * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
+     *
+     * References:
+     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+     * .
      */
     public: template <typename ProbIterT, typename RateIterT>
             hyperexponential_distribution(ProbIterT prob_first, ProbIterT prob_last,
@@ -556,8 +574,8 @@ class hyperexponential_distribution
      * defined by \a prob_range, and the <em>rate vector</em> parameter is
      * given by the range defined by \a rate_range.
      *
-     * \tparam ProbRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
-     * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+     * \tparam ProbRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
+     * \tparam RateRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
      *
      * \param prob_range The range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
      * \param rate_range The range of positive real elements representing the rates.
@@ -590,8 +608,8 @@ class hyperexponential_distribution
      * probabilities (i.e., to a vector of the same length \f$k\f$ of the
      * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
      *
-     * \tparam RateIterT Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
-     * \tparam RateIterT2 Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/InputIterator">InputIterator</a> concept.
+     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+     * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (C++reference,2014).
      *
      * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
      * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
@@ -600,6 +618,10 @@ class hyperexponential_distribution
      *  The final \c disable_if parameter is an implementation detail that
      *  differentiates between this two argument constructor and the
      *  range-based two argument constructor described above.
+     *
+     * References:
+     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+     * .
      */
     //  We SFINAE this out of existance if either argument type is
     //  incrementable as in that case the type is probably an iterator:
@@ -625,7 +647,7 @@ class hyperexponential_distribution
      * length \f$k\f$ of the <em>rate vector</em> and with each element set
      * to \f$1.0/k\f$).
      *
-     * \tparam RateRangeT Must meet the requirements of <a href="http://www.boost.org/doc/libs/release/libs/range/doc/html/range/concepts.html">InputIterator</a> concept.
+     * \tparam RateRangeT Must meet the requirements of <a href="boost:/libs/range/doc/html/range/concepts.html">Range</a> concept.
      *
      * \param rate_range The range of positive real elements representing the rates.
      */
@@ -656,13 +678,17 @@ class hyperexponential_distribution
      * distribution.
      *
      * The <em>phase probability vector</em> parameter is given by the
-     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * <em>brace-init-list</em> (C++reference,2014)
      * defined by \a l1, and the <em>rate vector</em> parameter is given by the
-     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * <em>brace-init-list</em> (C++reference,2014)
      * defined by \a l2.
      *
      * \param l1 The initializer list for inizializing the phase probability vector.
      * \param l2 The initializer list for inizializing the rate vector.
+     *
+     * References:
+     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+     * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1, std::initializer_list<RealT> const& l2)
     : dd_(l1.begin(), l1.end()),
@@ -677,13 +703,17 @@ class hyperexponential_distribution
      * probabilities.
      *
      * The <em>rate vector</em> parameter is given by the
-     * <a href="http://en.cppreference.com/w/cpp/language/list_initialization">brace-init-list</a>
+     * <em>brace-init-list</em> (C++reference,2014)
      * defined by \a l1, and the <em>phase probability vector</em> parameter is
      * set to the equal phase probabilities (i.e., to a vector of the same
      * length \f$k\f$ of the <em>rate vector</em> and with each element set
      * to \f$1.0/k\f$).
      *
      * \param l1 The initializer list for inizializing the rate vector.
+     *
+     * References:
+     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+     * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1)
     : dd_(std::vector<RealT>(std::distance(l1.begin(), l1.end()), 1)),
@@ -697,13 +727,13 @@ class hyperexponential_distribution
      * Gets a random variate distributed according to the
      * hyperexponential distribution.
      *
-     * \tparam URNG Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/UniformRandomNumberGenerator">UniformRandomNumberGenerator</a>.
+     * \tparam URNG Must meet the requirements of \uniform_random_number_generator.
      *
      * \param urng A uniform random number generator object.
      *
      * \return A random variate distributed according to the hyperexponential distribution.
      */
-    public: template<class URNG>
+    public: template<class URNG>\
             RealT operator()(URNG& urng) const
     {
         const int i = dd_(urng);
@@ -715,7 +745,7 @@ class hyperexponential_distribution
      * Gets a random variate distributed according to the hyperexponential
      * distribution with parameters specified by \c parm.
      *
-     * \tparam URNG Must meet the requirements of <a href="http://en.cppreference.com/w/cpp/concept/UniformRandomNumberGenerator">UniformRandomNumberGenerator</a>.
+     * \tparam URNG Must meet the requirements of \uniform_random_number_generator.
      *
      * \param urng A uniform random number generator object.
      * \param parm A distribution parameter object.
