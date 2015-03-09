@@ -87,7 +87,12 @@ bool check_probabilities(std::vector<RealT> const& probabilities)
 
     // - We try to keep phase probabilities correctly normalized in the distribution constructors
     // - However in practice we have to allow for a very slight divergence from a sum of exactly 1:
-    if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
+    //if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
+	// This is from Knuth "The Art of Computer Programming: Vol.2, 3rd Ed", and can be used to
+	// check is two numbers are approximately equal
+	const RealT one = 1;
+	const RealT tol = std::numeric_limits<RealT>::epsilon()*2.0;
+    if (std::abs(sum-one) > (std::max(std::abs(sum), std::abs(one))*tol))
     {
         return false;
     }

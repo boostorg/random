@@ -238,6 +238,18 @@ BOOST_AUTO_TEST_CASE( test_streaming )
     BOOST_CHECK_EQUAL(dist4, check_dist4);
 }
 
+BOOST_AUTO_TEST_CASE( test_normalization )
+{
+    const double tol = detail::make_tolerance<double>();
+
+    const std::vector<double> probs = boost::assign::list_of(1023.0)(1.0);
+    const std::vector<double> rates = boost::assign::list_of(1023.0)(1.0);
+    const std::vector<double> norm_probs = boost::assign::list_of(1023.0/1024.0)(1.0/1024.0);
+
+    boost::random::hyperexponential_distribution<> dist(probs, rates);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.probabilities(), norm_probs, tol);
+}
+
 void use(boost::random::hyperexponential_distribution<>::result_type) {}
 
 BOOST_AUTO_TEST_CASE(test_generation)
