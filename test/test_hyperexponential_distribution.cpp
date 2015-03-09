@@ -57,20 +57,20 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
     // Test default ctor
     boost::random::hyperexponential_distribution<> dist;
-    BOOST_CHECK_EQUAL(dist.num_phases(), 1);
+    BOOST_CHECK_EQUAL(dist.num_phases(), 1u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.probabilities(), boost::assign::list_of(1.0), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.rates(), boost::assign::list_of(1.0), tol);
 
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
     // Test ctor from initializer_list with probabilities and rates
     boost::random::hyperexponential_distribution<> dist_il_p_r = {{1, 2, 3, 4 }, {1, 2, 3, 4}};
-    BOOST_CHECK_EQUAL(dist_il_p_r.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_il_p_r.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_p_r.probabilities(), list_of(.1)(.2)(.3)(.4), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_p_r.rates(), list_of(1.)(2.)(3.)(4.), tol);
 
     // Test ctor from initializer_list with rates
     boost::random::hyperexponential_distribution<> dist_il_r = {{1, 2, 3, 4}};
-    BOOST_CHECK_EQUAL(dist_il_r.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_il_r.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.probabilities(), list_of(.25)(.25)(.25)(.25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.rates(), list_of(1.)(2.)(3.)(4.), tol);
 #endif
@@ -80,25 +80,25 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
     // Test ctor from range
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
-    BOOST_CHECK_EQUAL(dist_r.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_r.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.rates(), rates, tol);
 
     // Test ctor from iterators
     boost::random::hyperexponential_distribution<> dist_it(probs.begin(), probs.end(), rates.begin(), rates.end());
-    BOOST_CHECK_EQUAL(dist_it.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_it.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_it.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_it.rates(), rates, tol);
 
     // Test ctor from rate iterators
     boost::random::hyperexponential_distribution<> dist_r_it(rates.begin(), rates.end());
-    BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), rates, tol);
 
     // Test ctor from rate range
     boost::random::hyperexponential_distribution<> dist_r_r(rates);
-    BOOST_CHECK_EQUAL(dist_r_r.num_phases(), 4);
+    BOOST_CHECK_EQUAL(dist_r_r.num_phases(), 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_r.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_r.rates(), rates, tol);
 
