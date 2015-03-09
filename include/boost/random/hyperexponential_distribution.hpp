@@ -48,13 +48,13 @@ namespace hyperexp_detail {
 template <typename T>
 std::vector<T>& normalize(std::vector<T>& v)
 {
-	if (v.size() == 0)
-	{
-		return v;
-	}
+    if (v.size() == 0)
+    {
+        return v;
+    }
 
     const T sum = std::accumulate(v.begin(), v.end(), static_cast<T>(0));
-	T final_sum = 0;
+    T final_sum = 0;
 
     const typename std::vector<T>::iterator end = --v.end();
     for (typename std::vector<T>::iterator it = v.begin();
@@ -62,9 +62,9 @@ std::vector<T>& normalize(std::vector<T>& v)
          ++it)
     {
         *it /= sum;
-		final_sum += *it;
+        final_sum += *it;
     }
-	*end = 1-final_sum; // avoids round off errors thus ensuring the probabilities really sum to 1
+    *end = 1-final_sum; // avoids round off errors thus ensuring the probabilities really sum to 1
 
     return v;
 }
@@ -443,7 +443,14 @@ class hyperexponential_distribution
             {
                 return is;
             }
-            parm.probs_.swap(tmp);
+            if (tmp.size() > 0)
+            {
+                parm.probs_.swap(tmp);
+            }
+            else
+            {
+                parm.probs_.resize(1, 1);
+            }
             hyperexp_detail::normalize(parm.probs_);
 
             is >> std::ws;
@@ -452,12 +459,28 @@ class hyperexponential_distribution
             detail::read_vector(is, tmp);
             if (!is)
             {
-				// Initialize rates to a admissible value (i.e., 1.0) to avoid leaving rates_ in an inconsistent state
-				parm.rates_.assign(parm.probs_.size(), 1);
+                // Initialize rates to a admissible value (i.e., 1.0) to avoid leaving rates_ in an inconsistent state
+                parm.rates_.assign(parm.probs_.size(), 1);
 
                 return is;
             }
             parm.rates_.swap(tmp);
+
+            // Adjust vector sizes (if needed)
+            if (parm.probs_.size() != parm.rates_.size())
+            {
+                const std::size_t np = parm.probs_.size();
+                const std::size_t nr = parm.rates_.size();
+
+                if (np > nr)
+                {
+                    parm.rates_.resize(np, 1);
+                }
+                else
+                {
+                    parm.probs_.resize(nr, 1);
+                }
+            }
 
             //pre: vector size conformance
             assert(parm.probs_.size() == parm.rates_.size());

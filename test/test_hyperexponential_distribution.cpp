@@ -198,6 +198,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
+    const std::vector<double> empty_vector;
 
     boost::random::hyperexponential_distribution<> dist(probs, rates);
     std::stringstream ss;
@@ -205,6 +206,36 @@ BOOST_AUTO_TEST_CASE( test_streaming )
     boost::random::hyperexponential_distribution<> restored_dist;
     ss >> restored_dist;
     BOOST_CHECK_EQUAL(dist, restored_dist);
+
+    // Test with an empty probability vector
+    std::stringstream ss2;
+    boost::random::detail::print_vector(ss2, empty_vector);
+    ss2 << ' ';
+    boost::random::detail::print_vector(ss2, rates);
+    boost::random::hyperexponential_distribution<> dist2;
+    ss2 >> dist2;
+    boost::random::hyperexponential_distribution<> check_dist2(std::vector<double>(rates.size(), 1), rates);
+    BOOST_CHECK_EQUAL(dist2, check_dist2);
+
+    // Test with an empty rate vector
+    std::stringstream ss3;
+    boost::random::detail::print_vector(ss3, probs);
+    ss3 << ' ';
+    boost::random::detail::print_vector(ss3, empty_vector);
+    boost::random::hyperexponential_distribution<> dist3;
+    ss3 >> dist3;
+    boost::random::hyperexponential_distribution<> check_dist3(probs, std::vector<double>(probs.size(), 1));
+    BOOST_CHECK_EQUAL(dist3, check_dist3);
+
+    // Test with an empty probability and rate vectors
+    std::stringstream ss4;
+    boost::random::detail::print_vector(ss4, empty_vector);
+    ss4 << ' ';
+    boost::random::detail::print_vector(ss4, empty_vector);
+    boost::random::hyperexponential_distribution<> dist4;
+    ss4 >> dist4;
+    boost::random::hyperexponential_distribution<> check_dist4;
+    BOOST_CHECK_EQUAL(dist4, check_dist4);
 }
 
 void use(boost::random::hyperexponential_distribution<>::result_type) {}
