@@ -104,6 +104,4 @@ namespace traits {
 }
 }
 
-#include <boost/random/detail/enable_warnings.hpp>
-
 #endif
