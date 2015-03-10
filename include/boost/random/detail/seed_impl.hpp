@@ -217,7 +217,7 @@ void generate_impl(Engine& eng, Iter first, Iter last, boost::mpl::false_)
 template<class Engine, class Iter>
 void generate(Engine& eng, Iter first, Iter last)
 {
-   return detail::generate_impl(eng, first, last, boost::random::traits::is_integral<typename Engine::result_type>());
+    return detail::generate_impl(eng, first, last, boost::random::traits::is_integral<typename Engine::result_type>());
 }
 
 
