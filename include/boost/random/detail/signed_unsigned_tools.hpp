@@ -13,7 +13,7 @@
 
 #include <boost/limits.hpp>
 #include <boost/config.hpp>
-#include <boost/random/detail/traits.hpp>
+#include <boost/random/traits.hpp>
 
 namespace boost {
 namespace random {

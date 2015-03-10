@@ -1,4 +1,4 @@
-/* boost random/detail/seed.hpp header file
+/* boost random/traits.hpp header file
  *
  * Copyright John Maddock 2015
  * Distributed under the Boost Software License, Version 1.0. (See

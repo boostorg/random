@@ -21,7 +21,7 @@
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
-#include <boost/random/detail/traits.hpp>
+#include <boost/random/traits.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/integer_log2.hpp>
 #include <boost/random/detail/operators.hpp>

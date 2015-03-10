@@ -19,7 +19,7 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/integer/static_log2.hpp>
-#include <boost/random/detail/traits.hpp>
+#include <boost/random/traits.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/int.hpp>

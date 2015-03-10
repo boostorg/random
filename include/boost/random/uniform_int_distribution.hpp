@@ -28,7 +28,7 @@
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/uniform_int_float.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
-#include <boost/random/detail/traits.hpp>
+#include <boost/random/traits.hpp>
 #include <boost/mpl/bool.hpp>
 #ifdef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
 #include <boost/mpl/if.hpp>
