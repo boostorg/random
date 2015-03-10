@@ -35,9 +35,8 @@ const bool boost::random::random_device::has_fixed_range;
 #include <wincrypt.h>
 #include <stdexcept>  // std::invalid_argument
 #else
-#include <vector>
+using namespace Platform;
 using namespace Windows::Security::Cryptography;
-using namespace Windows::Storage::Streams;
 #endif
 
 #define BOOST_AUTO_LINK_NOMANGLE
@@ -117,10 +116,9 @@ public:
     }
 #else
     auto buffer = CryptographicBuffer::GenerateRandom(sizeof(result));
-    auto reader = DataReader::FromBuffer(buffer);
-    std::vector<unsigned char> data(reader->UnconsumedBufferLength);
-    reader->ReadBytes(Platform::ArrayReference<unsigned char>(&data[0], data.size()));
-    memcpy(&result, data.data(), sizeof(result));
+    auto data = ref new Array<unsigned char>(buffer->Length);
+    CryptographicBuffer::CopyToByteArray(buffer, &data);
+    memcpy(&result, data->begin(), data->end() - data->begin());
 #endif
 
     return result;
