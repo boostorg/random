@@ -29,7 +29,6 @@ void print_vector(std::basic_ostream<CharT, Traits>& os,
         iter = vec.begin(),
         end =  vec.end();
     os << os.widen('[');
-    os << os.widen(' ');
     if(iter != end) {
         os << *iter;
         ++iter;
@@ -38,7 +37,6 @@ void print_vector(std::basic_ostream<CharT, Traits>& os,
             os << os.widen(' ') << *iter;
         }
     }
-    os << os.widen(' ');
     os << os.widen(']');
 }
 
@@ -55,20 +53,18 @@ void read_vector(std::basic_istream<CharT, Traits>& is, std::vector<T>& vec)
         return;
     }
     T val;
-    is >> std::ws;
-    while(is >> val >> std::ws) {
+    while(is >> std::ws >> val) {
         vec.push_back(val);
-        if(is.widen(']') == is.peek())
-           break;
     }
-    if(is.fail())
-       return;
-    if(!(is >> ch)) {
-       return;
-    }
-    if(ch != is.widen(']')) {
-       is.putback(ch);
-       is.setstate(std::ios_base::failbit);
+    if(is.fail()) {
+        is.clear();
+        if(!(is >> ch)) {
+            return;
+        }
+        if(ch != is.widen(']')) {
+            is.putback(ch);
+            is.setstate(std::ios_base::failbit);
+        }
     }
 }
 
