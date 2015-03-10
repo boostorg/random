@@ -279,7 +279,8 @@ void seed_array_int_impl(SeedSeq& seq, UIntType (&x)[n])
 template<int w, std::size_t n, class SeedSeq, class IntType>
 inline void seed_array_int_impl(SeedSeq& seq, IntType (&x)[n], boost::mpl::true_)
 {
-    typedef typename boost::random::traits::make_unsigned<IntType>::type unsigned_array[n];
+    BOOST_STATIC_ASSERT_MSG(boost::is_integral<IntType>::value, "Sorry but this routine has not been ported to non built-in integers as it relies on a reinterpret_cast.");
+    typedef typename boost::make_unsigned<IntType>::type unsigned_array[n];
     seed_array_int_impl<w>(seq, reinterpret_cast<unsigned_array&>(x));
 }
 
@@ -313,7 +314,8 @@ void fill_array_int_impl(Iter& first, Iter last, UIntType (&x)[n])
 template<int w, std::size_t n, class Iter, class IntType>
 inline void fill_array_int_impl(Iter& first, Iter last, IntType (&x)[n], boost::mpl::true_)
 {
-    typedef typename boost::random::traits::make_unsigned<IntType>::type unsigned_array[n];
+    BOOST_STATIC_ASSERT_MSG(boost::is_integral<IntType>::value, "Sorry but this routine has not been ported to non built-in integers as it relies on a reinterpret_cast.");
+    typedef typename boost::make_unsigned<IntType>::type unsigned_array[n];
     fill_array_int_impl<w>(first, last, reinterpret_cast<unsigned_array&>(x));
 }
 
