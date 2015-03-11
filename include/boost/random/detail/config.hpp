@@ -16,13 +16,3 @@
     && !defined(BOOST_MSVC)
     #define BOOST_RANDOM_NO_STREAM_OPERATORS
 #endif
-
-// WinRT target.
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
-# if defined(__cplusplus_winrt)
-#  include <winapifamily.h>
-#  if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
-#   define BOOST_RANDOM_WINDOWS_RUNTIME 1
-#  endif
-# endif
-#endif

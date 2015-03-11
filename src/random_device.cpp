@@ -14,7 +14,6 @@
 
 #include <boost/random/random_device.hpp>
 #include <boost/config.hpp>
-#include <boost/random/detail/config.hpp>
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
 #include <boost/detail/workaround.hpp>
@@ -30,7 +29,7 @@ const bool boost::random::random_device::has_fixed_range;
 
 #if defined(BOOST_WINDOWS)
 
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
 #include <windows.h>
 #include <wincrypt.h>
 #include <stdexcept>  // std::invalid_argument
@@ -65,7 +64,7 @@ CryptEnumProvidersA(
 #endif
 
 namespace {
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
 const char * const default_token = MS_DEF_PROV_A;
 #else
 const char * const default_token = "";
@@ -76,7 +75,7 @@ class boost::random::random_device::impl
 {
 public:
   impl(const std::string & token) : provider(token) {
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
     char buffer[80];
     DWORD type;
     DWORD len;
@@ -100,7 +99,7 @@ public:
 #endif
   }
 
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
   ~impl() {
     if(!CryptReleaseContext(hProv, 0)) error("Could not release CSP context");
   }
@@ -109,7 +108,7 @@ public:
   unsigned int next() {
     unsigned int result;
 
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
     if(!CryptGenRandom(hProv, sizeof(result),
         static_cast<BYTE*>(static_cast<void*>(&result)))) {
       error("error while reading");
@@ -125,7 +124,7 @@ public:
   }
 
 private:
-#if !defined(BOOST_RANDOM_WINDOWS_RUNTIME)
+#if !defined(WINAPI_FAMILY_APP)
   void error(const char * msg) {
     DWORD error_code = GetLastError();
     boost::throw_exception(
