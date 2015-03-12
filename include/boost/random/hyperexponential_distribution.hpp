@@ -246,8 +246,8 @@ class hyperexponential_distribution
          * <em>rate vector</em> parameter is given by the range defined by
          * [\a rate_first, \a rate_last) iterator pair.
          *
-         * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
-         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+         * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
+         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
          *
          * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
          * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
@@ -255,7 +255,7 @@ class hyperexponential_distribution
          * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
          *
          * References:
-         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
          * .
          */
         public: template <typename ProbIterT, typename RateIterT>
@@ -312,8 +312,8 @@ class hyperexponential_distribution
          * probabilities (i.e., to a vector of the same length \f$k\f$ of the
          * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
          *
-         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
-         * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (C++reference,2014).
+         * \tparam RateIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
+         * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
          *
          * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
          * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
@@ -324,7 +324,7 @@ class hyperexponential_distribution
          *  range-based two argument constructor described above.
          *
          * References:
-         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
          * .
          */
         //  We SFINAE this out of existance if either argument type is
@@ -371,16 +371,16 @@ class hyperexponential_distribution
          * and <em>rate vector</em> parameters of the distribution.
          *
          * The <em>phase probability vector</em> parameter is given by the
-         * <em>brace-init-list</em> (C++reference,2014)
+         * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
          * defined by \a l1, and the <em>rate vector</em> parameter is given by the
-         * <em>brace-init-list</em> (C++reference,2014)
+         * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
          * defined by \a l2.
          *
          * \param l1 The initializer list for inizializing the phase probability vector.
          * \param l2 The initializer list for inizializing the rate vector.
          *
          * References:
-         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
          * .
          */
         public: param_type(std::initializer_list<RealT> l1, std::initializer_list<RealT> l2)
@@ -397,7 +397,7 @@ class hyperexponential_distribution
          * of the distribution and with equal phase probabilities.
          *
          * The <em>rate vector</em> parameter is given by the
-         * <em>brace-init-list</em> (C++reference,2014)
+         * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
          * defined by \a l1, and the <em>phase probability vector</em> parameter is
          * set to the equal phase probabilities (i.e., to a vector of the same
          * length \f$k\f$ of the <em>rate vector</em> and with each element set
@@ -406,7 +406,7 @@ class hyperexponential_distribution
          * \param l1 The initializer list for inizializing the rate vector.
          *
          * References:
-         * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
          * .
          */
         public: param_type(std::initializer_list<RealT> l1)
@@ -560,8 +560,8 @@ class hyperexponential_distribution
      * <em>rate vector</em> parameter is given by the range defined by
      * [\a rate_first, \a rate_last) iterator pair.
      *
-     * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
-     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
+     * \tparam ProbIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
+     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
      *
      * \param prob_first The iterator to the beginning of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
      * \param prob_last The iterator to the ending of the range of non-negative real elements representing the phase probabilities; if elements don't sum to 1, they are normalized.
@@ -569,7 +569,7 @@ class hyperexponential_distribution
      * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
      *
      * References:
-     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
      * .
      */
     public: template <typename ProbIterT, typename RateIterT>
@@ -624,8 +624,8 @@ class hyperexponential_distribution
      * probabilities (i.e., to a vector of the same length \f$k\f$ of the
      * <em>rate vector</em> and with each element set to \f$1.0/k\f$).
      *
-     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (C++reference,2014).
-     * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (C++reference,2014).
+     * \tparam RateIterT Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
+     * \tparam RateIterT2 Must meet the requirements of \c InputIterator concept (ISO,2014,sec. 24.2.3 [input.iterators]).
      *
      * \param rate_first The iterator to the beginning of the range of non-negative real elements representing the rates.
      * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
@@ -636,7 +636,7 @@ class hyperexponential_distribution
      *  range-based two argument constructor described above.
      *
      * References:
-     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/concept/InputIterator, 2014.
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
      * .
      */
     //  We SFINAE this out of existance if either argument type is
@@ -694,16 +694,16 @@ class hyperexponential_distribution
      * distribution.
      *
      * The <em>phase probability vector</em> parameter is given by the
-     * <em>brace-init-list</em> (C++reference,2014)
+     * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
      * defined by \a l1, and the <em>rate vector</em> parameter is given by the
-     * <em>brace-init-list</em> (C++reference,2014)
+     * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
      * defined by \a l2.
      *
      * \param l1 The initializer list for inizializing the phase probability vector.
      * \param l2 The initializer list for inizializing the rate vector.
      *
      * References:
-     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
      * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1, std::initializer_list<RealT> const& l2)
@@ -719,7 +719,7 @@ class hyperexponential_distribution
      * probabilities.
      *
      * The <em>rate vector</em> parameter is given by the
-     * <em>brace-init-list</em> (C++reference,2014)
+     * <em>brace-init-list</em> (ISO,2014,sec. 8.5.4 [dcl.init.list])
      * defined by \a l1, and the <em>phase probability vector</em> parameter is
      * set to the equal phase probabilities (i.e., to a vector of the same
      * length \f$k\f$ of the <em>rate vector</em> and with each element set
@@ -728,7 +728,7 @@ class hyperexponential_distribution
      * \param l1 The initializer list for inizializing the rate vector.
      *
      * References:
-     * -# C++reference, <em>InputIterator concept</em>, Online: http://en.cppreference.com/w/cpp/language/list_initialization, 2014.
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
      * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1)
