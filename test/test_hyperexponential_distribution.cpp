@@ -248,6 +248,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
 //    const std::vector<double> norm_probs = boost::assign::list_of(1023.0/1024.0)(1.0/1024.0);
 //
 //    boost::random::hyperexponential_distribution<> dist(probs, rates);
+//    BOOST_CHECK( boost::random::hyperexp_detail::check_params(dist.probabilities(), dist.rates()) );
 //    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist.probabilities(), norm_probs, tol);
 //
 //    const std::vector<double> probs2 = boost::assign::list_of(1001.0)(1.0);
@@ -255,6 +256,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
 //    const std::vector<double> norm_probs2 = boost::assign::list_of(1001.0/1002.0)(1.0/1002.0);
 //
 //    boost::random::hyperexponential_distribution<> dist2(probs2, rates2);
+//    BOOST_CHECK( boost::random::hyperexp_detail::check_params(dist2.probabilities(), dist2.rates()) );
 //    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist2.probabilities(), norm_probs2, tol);
 //}
 
