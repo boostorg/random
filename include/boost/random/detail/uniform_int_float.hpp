@@ -60,7 +60,7 @@ public:
     result_type operator()()
     {
         base_result range = static_cast<base_result>((max)())+1;
-        return static_cast<result_type>(static_cast<base_result>(_rng() * range));
+        return static_cast<result_type>(_rng() * range);
     }
 
 private:
