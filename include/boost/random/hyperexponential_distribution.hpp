@@ -480,33 +480,25 @@ class hyperexponential_distribution
                 return is;
             }
 
+            // Update the state of the param_type object
             if (probs.size() > 0)
             {
                 parm.probs_.swap(probs);
                 probs.clear();
             }
-            else
-            {
-                parm.probs_.resize(1, 1);
-            }
-
             if (rates.size() > 0)
             {
                 parm.rates_.swap(rates);
                 rates.clear();
             }
-            else
-            {
-                parm.rates_.resize(1, 1);
-            }
 
-std::cerr << "Read probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
-std::cerr << "Read rates: "; std::copy(parm.rates_.begin(), parm.rates_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
+            bool fail = false;
+
             // Adjust vector sizes (if needed)
-            if (parm.probs_.size() != parm.rates_.size())
+            if (parm.probs_.size() != parm.rates_.size()
+                || parm.probs_.size() == 0)
             {
-                // This throws an exception if ios_base::exception(failbit) is enabled
-                is.setstate(std::ios_base::failbit);
+                fail = true;
 
                 const std::size_t np = parm.probs_.size();
                 const std::size_t nr = parm.rates_.size();
@@ -514,20 +506,29 @@ std::cerr << "Read rates: "; std::copy(parm.rates_.begin(), parm.rates_.end(), s
                 if (np > nr)
                 {
                     parm.rates_.resize(np, 1);
-std::cerr << "Adjusted rates: "; std::copy(parm.rates_.begin(), parm.rates_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
+                }
+                else if (nr > np)
+                {
+                    parm.probs_.resize(nr, 1);
                 }
                 else
                 {
-                    parm.probs_.resize(nr, 1);
-std::cerr << "Adjusted probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
+                    parm.probs_.resize(1, 1);
+                    parm.rates_.resize(1, 1);
                 }
             }
 
             // Normalize probabilities
             // NOTE: this cannot be done earlier since the probability vector
-            //       can be changed due to size conformance)
+            //       can be changed due to size conformance
             hyperexp_detail::normalize(parm.probs_);
-std::cerr << "Normalized probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
+
+            // Set the error state in the underlying stream in case of invalid input
+            if (fail)
+            {
+                // This throws an exception if ios_base::exception(failbit) is enabled
+                is.setstate(std::ios_base::failbit);
+            }
 
             //post: vector size conformance
             assert(parm.probs_.size() == parm.rates_.size());

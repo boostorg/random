@@ -200,6 +200,114 @@ BOOST_AUTO_TEST_CASE( test_streaming )
     const std::vector<double> rates = boost::assign::list_of(1.0)(2.0)(3.0)(4.0);
     const std::vector<double> empty_vector;
 
+    // Test the reading of param_type
+
+    // - Test with valid input
+    {
+        boost::random::hyperexponential_distribution<>::param_type parm(probs, rates);
+        std::stringstream ss;
+        ss << parm;
+        boost::random::hyperexponential_distribution<>::param_type restored_parm;
+        ss >> restored_parm;
+        BOOST_CHECK_EQUAL(parm, restored_parm);
+    }
+
+    // - Test with an empty probability vector and ios_base exceptions disabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, rates);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss >> param;
+        boost::random::hyperexponential_distribution<>::param_type check_param(std::vector<double>(rates.size(), 1), rates);
+        BOOST_CHECK_EQUAL(param, check_param);
+    }
+
+    // - Test with an empty rate vector and ios_base exceptions disabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, probs);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss >> param;
+        boost::random::hyperexponential_distribution<>::param_type check_param(probs, std::vector<double>(probs.size(), 1));
+        BOOST_CHECK_EQUAL(param, check_param);
+    }
+
+    // - Test with an empty probability and rate vectors and ios_base exceptions disabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss >> param;
+        boost::random::hyperexponential_distribution<>::param_type check_param;
+        BOOST_CHECK_EQUAL(param, check_param);
+    }
+
+    // - Test with an empty probability vector and ios_base exceptions enabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, rates);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss.exceptions(std::ios_base::failbit);
+        try
+        {
+            ss >> param;
+        }
+        catch (...)
+        {
+            boost::random::hyperexponential_distribution<>::param_type check_param;
+            BOOST_CHECK_EQUAL(param, check_param);
+        }
+    }
+
+    // - Test with an empty rate vector and ios_base exceptions enabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, probs);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss.exceptions(std::ios_base::failbit);
+        try
+        {
+            ss >> param;
+        }
+        catch (...)
+        {
+            boost::random::hyperexponential_distribution<>::param_type check_param;
+            BOOST_CHECK_EQUAL(param, check_param);
+        }
+    }
+
+    // - Test with an empty probability and rate vectors and ios_base exceptions enabled
+    {
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<>::param_type param;
+        ss.exceptions(std::ios_base::failbit);
+        try
+        {
+            ss >> param;
+        }
+        catch (...)
+        {
+            boost::random::hyperexponential_distribution<>::param_type check_param;
+            BOOST_CHECK_EQUAL(param, check_param);
+        }
+    }
+
+    // The the reading of hyperexponential_distribution
+
+    // - Test with valid input
     {
         boost::random::hyperexponential_distribution<> dist(probs, rates);
         std::stringstream ss;
@@ -209,99 +317,96 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         BOOST_CHECK_EQUAL(dist, restored_dist);
     }
 
-    // Test with an empty probability vector and ios_base exceptions disabled
+    // - Test with an empty probability vector and ios_base exceptions disabled
     {
-        std::stringstream ss2_noex;
-        boost::random::detail::print_vector(ss2_noex, empty_vector);
-        ss2_noex << ' ';
-        boost::random::detail::print_vector(ss2_noex, rates);
-        boost::random::hyperexponential_distribution<> dist2_noex;
-        ss2_noex.exceptions(std::ios_base::goodbit);
-        ss2_noex >> dist2_noex;
-        boost::random::hyperexponential_distribution<> check_dist2_noex(std::vector<double>(rates.size(), 1), rates);
-        BOOST_CHECK_EQUAL(dist2_noex, check_dist2_noex);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, rates);
+        boost::random::hyperexponential_distribution<> dist;
+        ss >> dist;
+        boost::random::hyperexponential_distribution<> check_dist;
+        BOOST_CHECK_EQUAL(dist, check_dist);
     }
 
-    // Test with an empty rate vector and ios_base exceptions disabled
+    // - Test with an empty rate vector and ios_base exceptions disabled
     {
-        std::stringstream ss3_noex;
-        boost::random::detail::print_vector(ss3_noex, probs);
-        ss3_noex << ' ';
-        boost::random::detail::print_vector(ss3_noex, empty_vector);
-        boost::random::hyperexponential_distribution<> dist3_noex;
-        ss3_noex.exceptions(std::ios_base::goodbit);
-        ss3_noex >> dist3_noex;
-        boost::random::hyperexponential_distribution<> check_dist3_noex(probs, std::vector<double>(probs.size(), 1));
-        BOOST_CHECK_EQUAL(dist3_noex, check_dist3_noex);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, probs);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<> dist;
+        ss >> dist;
+        boost::random::hyperexponential_distribution<> check_dist;
+        BOOST_CHECK_EQUAL(dist, check_dist);
     }
 
-    // Test with an empty probability and rate vectors and ios_base exceptions disabled
+    // - Test with an empty probability and rate vectors and ios_base exceptions disabled
     {
-        std::stringstream ss4_noex;
-        boost::random::detail::print_vector(ss4_noex, empty_vector);
-        ss4_noex << ' ';
-        boost::random::detail::print_vector(ss4_noex, empty_vector);
-        boost::random::hyperexponential_distribution<> dist4_noex;
-        ss4_noex.exceptions(std::ios_base::goodbit);
-        ss4_noex >> dist4_noex;
-        boost::random::hyperexponential_distribution<> check_dist4_noex;
-        BOOST_CHECK_EQUAL(dist4_noex, check_dist4_noex);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<> dist;
+        ss >> dist;
+        boost::random::hyperexponential_distribution<> check_dist;
+        BOOST_CHECK_EQUAL(dist, check_dist);
     }
 
-    // Test with an empty probability vector and ios_base exceptions enabled
+    // - Test with an empty probability vector and ios_base exceptions enabled
     {
-        std::stringstream ss2_ex;
-        boost::random::detail::print_vector(ss2_ex, empty_vector);
-        ss2_ex << ' ';
-        boost::random::detail::print_vector(ss2_ex, rates);
-        boost::random::hyperexponential_distribution<> dist2_ex;
-        ss2_ex.exceptions(std::ios_base::failbit);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, rates);
+        boost::random::hyperexponential_distribution<> dist;
+        ss.exceptions(std::ios_base::failbit);
         try
         {
-            ss2_ex >> dist2_ex;
+            ss >> dist;
         }
         catch (...)
         {
-            boost::random::hyperexponential_distribution<> check_dist2_ex;
-            BOOST_CHECK_EQUAL(dist2_ex, check_dist2_ex);
+            boost::random::hyperexponential_distribution<> check_dist;
+            BOOST_CHECK_EQUAL(dist, check_dist);
         }
     }
 
-    // Test with an empty rate vector and ios_base exceptions enabled
+    // - Test with an empty rate vector and ios_base exceptions enabled
     {
-        std::stringstream ss3_ex;
-        boost::random::detail::print_vector(ss3_ex, probs);
-        ss3_ex << ' ';
-        boost::random::detail::print_vector(ss3_ex, empty_vector);
-        boost::random::hyperexponential_distribution<> dist3_ex;
-        ss3_ex.exceptions(std::ios_base::failbit);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, probs);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<> dist;
+        ss.exceptions(std::ios_base::failbit);
         try
         {
-            ss3_ex >> dist3_ex;
+            ss >> dist;
         }
         catch (...)
         {
-            boost::random::hyperexponential_distribution<> check_dist3_ex;
-            BOOST_CHECK_EQUAL(dist3_ex, check_dist3_ex);
+            boost::random::hyperexponential_distribution<> check_dist;
+            BOOST_CHECK_EQUAL(dist, check_dist);
         }
     }
 
-    // Test with an empty probability and rate vectors and ios_base exceptions enabled
+    // - Test with an empty probability and rate vectors and ios_base exceptions enabled
     {
-        std::stringstream ss4_ex;
-        boost::random::detail::print_vector(ss4_ex, empty_vector);
-        ss4_ex << ' ';
-        boost::random::detail::print_vector(ss4_ex, empty_vector);
-        boost::random::hyperexponential_distribution<> dist4_ex;
-        ss4_ex.exceptions(std::ios_base::failbit);
+        std::stringstream ss;
+        boost::random::detail::print_vector(ss, empty_vector);
+        ss << ' ';
+        boost::random::detail::print_vector(ss, empty_vector);
+        boost::random::hyperexponential_distribution<> dist;
+        ss.exceptions(std::ios_base::failbit);
         try
         {
-            ss4_ex >> dist4_ex;
+            ss >> dist;
         }
         catch (...)
         {
-            boost::random::hyperexponential_distribution<> check_dist4_ex;
-            BOOST_CHECK_EQUAL(dist4_ex, check_dist4_ex);
+            boost::random::hyperexponential_distribution<> check_dist;
+            BOOST_CHECK_EQUAL(dist, check_dist);
         }
     }
 }
