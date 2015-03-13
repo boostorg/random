@@ -85,8 +85,8 @@ bool check_probabilities(std::vector<RealT> const& probabilities)
         sum += probabilities[i];
     }
 
-	//NOTE: the check below seems to fail on some architectures.
-	//      So we commented it.
+    //NOTE: the check below seems to fail on some architectures.
+    //      So we commented it.
     //// - We try to keep phase probabilities correctly normalized in the distribution constructors
     //// - However in practice we have to allow for a very slight divergence from a sum of exactly 1:
     ////if (std::abs(sum-1) > (std::numeric_limits<RealT>::epsilon()*2))
@@ -483,39 +483,51 @@ class hyperexponential_distribution
             if (probs.size() > 0)
             {
                 parm.probs_.swap(probs);
-				probs.clear();
+                probs.clear();
             }
             else
             {
                 parm.probs_.resize(1, 1);
             }
-            hyperexp_detail::normalize(parm.probs_);
 
             if (rates.size() > 0)
             {
                 parm.rates_.swap(rates);
-				rates.clear();
+                rates.clear();
             }
             else
             {
                 parm.rates_.resize(1, 1);
             }
 
+std::cerr << "Read probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
+std::cerr << "Read rates: "; std::copy(parm.rates_.begin(), parm.rates_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
             // Adjust vector sizes (if needed)
             if (parm.probs_.size() != parm.rates_.size())
             {
+                // This throws an exception if ios_base::exception(failbit) is enabled
+                is.setstate(std::ios_base::failbit);
+
                 const std::size_t np = parm.probs_.size();
                 const std::size_t nr = parm.rates_.size();
 
                 if (np > nr)
                 {
                     parm.rates_.resize(np, 1);
+std::cerr << "Adjusted rates: "; std::copy(parm.rates_.begin(), parm.rates_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
                 }
                 else
                 {
                     parm.probs_.resize(nr, 1);
+std::cerr << "Adjusted probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
                 }
             }
+
+            // Normalize probabilities
+            // NOTE: this cannot be done earlier since the probability vector
+            //       can be changed due to size conformance)
+            hyperexp_detail::normalize(parm.probs_);
+std::cerr << "Normalized probs: "; std::copy(parm.probs_.begin(), parm.probs_.end(), std::ostream_iterator<RealT>(std::cerr,",")); std::cerr << std::endl;//XXX
 
             //post: vector size conformance
             assert(parm.probs_.size() == parm.rates_.size());
