@@ -43,17 +43,6 @@ namespace random {
 template<class Engine, std::size_t w, class UIntType>
 class independent_bits_engine
 {
-private:
-   static UIntType max_imp(const boost::true_type&)
-   {
-      return boost::low_bits_mask_t<w>::sig_bits;
-   }
-   static UIntType max_imp(const boost::false_type&)
-   {
-      // We have a multiprecision integer type:
-      BOOST_STATIC_ASSERT(std::numeric_limits<UIntType>::is_specialized);
-      return w < std::numeric_limits<UIntType>::digits ? UIntType((UIntType(1) << w) - 1) : UIntType((((UIntType(1) << (w - 1)) - 1) << 1) | 1u);
-   }
 public:
     typedef Engine base_type;
     typedef UIntType result_type;
@@ -239,6 +228,17 @@ private:
 
     /// \cond show_private
     typedef typename boost::random::traits::make_unsigned<base_result_type>::type base_unsigned;
+
+    static UIntType max_imp(const boost::true_type&)
+    {
+       return boost::low_bits_mask_t<w>::sig_bits;
+    }
+    static UIntType max_imp(const boost::false_type&)
+    {
+       // We have a multiprecision integer type:
+       BOOST_STATIC_ASSERT(std::numeric_limits<UIntType>::is_specialized);
+       return w < std::numeric_limits<UIntType>::digits ? UIntType((UIntType(1) << w) - 1) : UIntType((((UIntType(1) << (w - 1)) - 1) << 1) | 1u);
+    }
 
     void calc_params(
         std::size_t n, base_unsigned range,
