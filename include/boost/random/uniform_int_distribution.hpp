@@ -213,7 +213,7 @@ T generate_uniform_int(
           ++bucket_size;
         }
       } else {
-         bucket_size = static_cast<mixed_range_type>(brange + 1) / (static_cast<mixed_range_type>(range)+1);
+        bucket_size = static_cast<mixed_range_type>(brange + 1) / (static_cast<mixed_range_type>(range)+1);
       }
       for(;;) {
         mixed_range_type result =
