@@ -293,7 +293,7 @@ inline void seed_array_int_impl(SeedSeq& seq, IntType (&x)[n], boost::mpl::false
 template<int w, std::size_t n, class SeedSeq, class IntType>
 inline void seed_array_int(SeedSeq& seq, IntType (&x)[n])
 {
-   seed_array_int_impl<w>(seq, x, boost::random::traits::is_signed<IntType>());
+    seed_array_int_impl<w>(seq, x, boost::random::traits::is_signed<IntType>());
 }
 
 template<int w, std::size_t n, class Iter, class UIntType>
