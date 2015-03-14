@@ -254,7 +254,7 @@ private:
 #endif
         range_type range = random::detail::subtract<result_type>()(_max, _min);
         base_unsigned base_range =
-           random::detail::subtract<base_result>()((eng.max)(), (eng.min)());
+            random::detail::subtract<base_result>()((eng.max)(), (eng.min)());
         base_unsigned val =
             random::detail::subtract<base_result>()(eng(), (eng.min)());
         if(range >= base_range) {
@@ -269,7 +269,7 @@ private:
             // multiprecision arithmetic throughout instead.
             mixed_range_type modulus = static_cast<mixed_range_type>(range)+1;
             return boost::random::detail::add<range_type, result_type>()(
-               static_cast<mixed_range_type>(val) % modulus, _min);
+                static_cast<mixed_range_type>(val) % modulus, _min);
         }
     }
     
