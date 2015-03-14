@@ -16,8 +16,8 @@
  * $Id$
  */
 
-#ifndef BOOST_RANDOM_DETAIL_TRAITS_HPP
-#define BOOST_RANDOM_DETAIL_TRAITS_HPP
+#ifndef BOOST_RANDOM_TRAITS_HPP
+#define BOOST_RANDOM_TRAITS_HPP
 
 #include <boost/type_traits/is_signed.hpp>
 #include <boost/type_traits/is_integral.hpp>

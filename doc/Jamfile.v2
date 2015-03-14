@@ -62,7 +62,7 @@ doxygen_files =
     variate_generator
     weibull_distribution
     xor_combine
-    detail/traits
+    traits
 ;
 
 path-constant here : . ;
