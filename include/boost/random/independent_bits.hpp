@@ -80,7 +80,7 @@ public:
      * the constructor argument for both base generators.
      */
     BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(independent_bits_engine,
-       base_result_type, seed_arg)
+        base_result_type, seed_arg)
     {
         _base.seed(seed_arg);
     }
@@ -151,7 +151,7 @@ public:
         // every time, both msvc and gcc can propagate
         // constants, resolving this at compile time.
         base_unsigned range =
-           detail::subtract<base_result_type>()((_base.max)(), (_base.min)());
+            detail::subtract<base_result_type>()((_base.max)(), (_base.min)());
         std::size_t m =
             (range == (std::numeric_limits<base_unsigned>::max)()) ?
                 std::numeric_limits<base_unsigned>::digits :
@@ -173,14 +173,14 @@ public:
         for(std::size_t k = 0; k < n0; ++k) {
             base_unsigned u;
             do {
-               u = detail::subtract<base_result_type>()(_base(), (_base.min)());
+                u = detail::subtract<base_result_type>()(_base(), (_base.min)());
             } while(u > base_unsigned(y0 - 1));
             S = (S << w0) + (u & y0_mask);
         }
         for(std::size_t k = 0; k < (n - n0); ++k) {
             base_unsigned u;
             do {
-               u = detail::subtract<base_result_type>()(_base(), (_base.min)());
+                u = detail::subtract<base_result_type>()(_base(), (_base.min)());
             } while(u > base_unsigned(y1 - 1));
             S = (S << (w0 + 1)) + (u & y1_mask);
         }
