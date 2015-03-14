@@ -208,21 +208,21 @@ T generate_uniform_int(
       // and there are no explicit converison operators.
 
       if(brange == (std::numeric_limits<base_unsigned>::max)()) {
-         bucket_size = static_cast<mixed_range_type>(brange) / (static_cast<mixed_range_type>(range)+1);
-         if(static_cast<mixed_range_type>(brange) % (static_cast<mixed_range_type>(range)+1) == static_cast<mixed_range_type>(range)) {
+        bucket_size = static_cast<mixed_range_type>(brange) / (static_cast<mixed_range_type>(range)+1);
+        if(static_cast<mixed_range_type>(brange) % (static_cast<mixed_range_type>(range)+1) == static_cast<mixed_range_type>(range)) {
           ++bucket_size;
         }
       } else {
          bucket_size = static_cast<mixed_range_type>(brange + 1) / (static_cast<mixed_range_type>(range)+1);
       }
       for(;;) {
-         mixed_range_type result =
+        mixed_range_type result =
           random::detail::subtract<base_result>()(eng(), bmin);
         result /= bucket_size;
         // result and range are non-negative, and result is possibly larger
         // than range, so the cast is safe
         if(result <= static_cast<mixed_range_type>(range))
-           return random::detail::add<mixed_range_type, result_type>()(result, min_value);
+          return random::detail::add<mixed_range_type, result_type>()(result, min_value);
       }
     }
 }
