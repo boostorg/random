@@ -437,7 +437,7 @@ public:
         if(test < _impl._alias_table[static_cast<std::size_t>(result)].first) {
             return result;
         } else {
-           return(_impl._alias_table[static_cast<std::size_t>(result)].second);
+            return(_impl._alias_table[static_cast<std::size_t>(result)].second);
         }
     }
     
@@ -495,7 +495,7 @@ public:
      */
     std::vector<WeightType> probabilities() const
     {
-       std::vector<WeightType> result(_impl._alias_table.size(), static_cast<WeightType>(0));
+        std::vector<WeightType> result(_impl._alias_table.size(), static_cast<WeightType>(0));
         std::size_t i = 0;
         for(typename impl_type::alias_table_t::const_iterator
                 iter = _impl._alias_table.begin(),
@@ -603,11 +603,11 @@ private:
             }
         }
         for(; b_iter != b_end; ++b_iter) {
-           _impl._alias_table[static_cast<std::size_t>(b_iter->second)].first =
+            _impl._alias_table[static_cast<std::size_t>(b_iter->second)].first =
                 _impl.get_weight(b_iter->second);
         }
         for(; a_iter != a_end; ++a_iter) {
-           _impl._alias_table[static_cast<std::size_t>(a_iter->second)].first =
+            _impl._alias_table[static_cast<std::size_t>(a_iter->second)].first =
                 _impl.get_weight(a_iter->second);
         }
     }
