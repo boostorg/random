@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_constructors )
         boost::random::hyperexponential_distribution<> dist_r_it(rates2, rates2+4);
         BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4u);
         BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
-        BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), rates, tol);
+        BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), std::vector<double>(rates2, rates2+4), tol);
     }
 
     // Test ctor from rate range
