@@ -96,6 +96,15 @@ BOOST_AUTO_TEST_CASE( test_constructors )
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), rates, tol);
 
+    // Test ctor from rate iterators #2
+	{
+        const double rates2[] = {1.0,2.0,3.0,4.0};
+        boost::random::hyperexponential_distribution<> dist_r_it(rates2, rates2+4);
+        BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4u);
+        BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
+        BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r_it.rates(), rates, tol);
+    }
+
     // Test ctor from rate range
     boost::random::hyperexponential_distribution<> dist_r_r(rates);
     BOOST_CHECK_EQUAL(dist_r_r.num_phases(), 4u);

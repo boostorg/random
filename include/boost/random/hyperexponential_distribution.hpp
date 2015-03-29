@@ -327,14 +327,12 @@ class hyperexponential_distribution
          * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
          * .
          */
-        //  We SFINAE this out of existance if either argument type is
-        //  incrementable as in that case the type is probably an iterator:
-        //  Note that we allow different argument types here to allow for
-        //  construction from an array plus a pointer into that array.
-        public: template <typename RateIterT, typename RateIterT2>
-                param_type(RateIterT const& rate_first, 
-                           RateIterT2 const& rate_last,  
-                           typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value || boost::has_pre_increment<RateIterT2>::value>::type* = 0)
+        //  We SFINAE this out of existance if the argument type is
+        //  incrementable as in that case the type is probably an iterator.
+        public: template <typename RateIterT>
+                param_type(RateIterT rate_first, 
+                           RateIterT rate_last,  
+                           typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value>::type* = 0)
         : probs_(std::distance(rate_first, rate_last), 1), // will be normalized below
           rates_(rate_first, rate_last)
         {
@@ -652,14 +650,12 @@ class hyperexponential_distribution
      * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
      * .
      */
-    //  We SFINAE this out of existance if either argument type is
-    //  incrementable as in that case the type is probably an iterator:
-    //  Note that we allow different argument types here to allow for
-    //  construction from an array plus a pointer into that array.
-    public: template <typename RateIterT, typename RateIterT2>
-            hyperexponential_distribution(RateIterT const& rate_first,
-                                          RateIterT2 const& rate_last,
-                                          typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value || boost::has_pre_increment<RateIterT2>::value>::type* = 0)
+    //  We SFINAE this out of existance if the argument type is
+    //  incrementable as in that case the type is probably an iterator.
+    public: template <typename RateIterT>
+            hyperexponential_distribution(RateIterT rate_first,
+                                          RateIterT rate_last,
+                                          typename boost::enable_if_c<boost::has_pre_increment<RateIterT>::value>::type* = 0)
     : dd_(std::vector<RealT>(std::distance(rate_first, rate_last), 1)),
       rates_(rate_first, rate_last)
     {
