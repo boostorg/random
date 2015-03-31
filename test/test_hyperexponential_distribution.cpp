@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE( test_constructors )
     // Test ctor from initializer_list with rates
     boost::random::hyperexponential_distribution<> dist_il_r = {{1, 2, 3, 4}};
     BOOST_CHECK_EQUAL(dist_il_r.num_phases(), 4u);
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
-    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_r.rates(), boost::assign::list_of(1.)(2.)(3.)(4.), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_r.probabilities(), boost::assign::list_of(.25)(.25)(.25)(.25), tol);
+    BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(double, dist_il_r.rates(), boost::assign::list_of(1.)(2.)(3.)(4.), tol);
 #endif
 
     const std::vector<double> probs = boost::assign::list_of(0.1)(0.2)(0.3)(0.4);
