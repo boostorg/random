@@ -255,7 +255,7 @@ class hyperexponential_distribution
          * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
          *
          * References:
-         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
          * .
          */
         public: template <typename ProbIterT, typename RateIterT>
@@ -324,7 +324,7 @@ class hyperexponential_distribution
          *  range-based two argument constructor described above.
          *
          * References:
-         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
          * .
          */
         //  We SFINAE this out of existance if the argument type is
@@ -378,7 +378,7 @@ class hyperexponential_distribution
          * \param l2 The initializer list for inizializing the rate vector.
          *
          * References:
-         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
          * .
          */
         public: param_type(std::initializer_list<RealT> l1, std::initializer_list<RealT> l2)
@@ -404,7 +404,7 @@ class hyperexponential_distribution
          * \param l1 The initializer list for inizializing the rate vector.
          *
          * References:
-         * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+         * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
          * .
          */
         public: param_type(std::initializer_list<RealT> l1)
@@ -442,25 +442,25 @@ class hyperexponential_distribution
         }
 
         /** Writes a \c param_type to a \c std::ostream. */
-        public: BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
+        public: BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, param)
         {
-            detail::print_vector(os, parm.probs_);
+            detail::print_vector(os, param.probs_);
             os << ' ';
-            detail::print_vector(os, parm.rates_);
+            detail::print_vector(os, param.rates_);
 
             return os;
         }
 
         /** Reads a \c param_type from a \c std::istream. */
-        public: BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
+        public: BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, param)
         {
             // NOTE: if \c std::ios_base::exceptions is set, the code below may
             //       throw in case of a I/O failure.
-            //       To prevent leaving the state of \c parm inconsistent:
-            //       - if an exception is thrown, the state of \c parm is left
+            //       To prevent leaving the state of \c param inconsistent:
+            //       - if an exception is thrown, the state of \c param is left
             //         unchanged (i.e., is the same as the one at the beginning
             //         of the function's execution), and
-            //       - the state of \c parm only after reading the whole input.
+            //       - the state of \c param only after reading the whole input.
 
             std::vector<RealT> probs;
             std::vector<RealT> rates;
@@ -481,45 +481,45 @@ class hyperexponential_distribution
             // Update the state of the param_type object
             if (probs.size() > 0)
             {
-                parm.probs_.swap(probs);
+                param.probs_.swap(probs);
                 probs.clear();
             }
             if (rates.size() > 0)
             {
-                parm.rates_.swap(rates);
+                param.rates_.swap(rates);
                 rates.clear();
             }
 
             bool fail = false;
 
             // Adjust vector sizes (if needed)
-            if (parm.probs_.size() != parm.rates_.size()
-                || parm.probs_.size() == 0)
+            if (param.probs_.size() != param.rates_.size()
+                || param.probs_.size() == 0)
             {
                 fail = true;
 
-                const std::size_t np = parm.probs_.size();
-                const std::size_t nr = parm.rates_.size();
+                const std::size_t np = param.probs_.size();
+                const std::size_t nr = param.rates_.size();
 
                 if (np > nr)
                 {
-                    parm.rates_.resize(np, 1);
+                    param.rates_.resize(np, 1);
                 }
                 else if (nr > np)
                 {
-                    parm.probs_.resize(nr, 1);
+                    param.probs_.resize(nr, 1);
                 }
                 else
                 {
-                    parm.probs_.resize(1, 1);
-                    parm.rates_.resize(1, 1);
+                    param.probs_.resize(1, 1);
+                    param.rates_.resize(1, 1);
                 }
             }
 
             // Normalize probabilities
             // NOTE: this cannot be done earlier since the probability vector
             //       can be changed due to size conformance
-            hyperexp_detail::normalize(parm.probs_);
+            hyperexp_detail::normalize(param.probs_);
 
             // Set the error state in the underlying stream in case of invalid input
             if (fail)
@@ -529,7 +529,7 @@ class hyperexponential_distribution
             }
 
             //post: vector size conformance
-            assert(parm.probs_.size() == parm.rates_.size());
+            assert(param.probs_.size() == param.rates_.size());
 
             return is;
         }
@@ -580,7 +580,7 @@ class hyperexponential_distribution
      * \param rate_last The iterator to the ending of the range of non-negative real elements representing the rates.
      *
      * References:
-     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
      * .
      */
     public: template <typename ProbIterT, typename RateIterT>
@@ -647,7 +647,7 @@ class hyperexponential_distribution
      *  range-based two argument constructor described above.
      *
      * References:
-     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
      * .
      */
     //  We SFINAE this out of existance if the argument type is
@@ -687,11 +687,11 @@ class hyperexponential_distribution
     /**
      * Constructs a \c hyperexponential_distribution from its parameters.
      *
-     * \param parm The parameters of the distribution.
+     * \param param The parameters of the distribution.
      */
-    public: explicit hyperexponential_distribution(param_type const& parm)
-    : dd_(parm.probabilities()),
-      rates_(parm.rates())
+    public: explicit hyperexponential_distribution(param_type const& param)
+    : dd_(param.probabilities()),
+      rates_(param.rates())
     {
         assert( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
     }
@@ -712,7 +712,7 @@ class hyperexponential_distribution
      * \param l2 The initializer list for inizializing the rate vector.
      *
      * References:
-     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
      * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1, std::initializer_list<RealT> const& l2)
@@ -737,7 +737,7 @@ class hyperexponential_distribution
      * \param l1 The initializer list for inizializing the rate vector.
      *
      * References:
-     * -# ISO, <em>ISO/IEC 14882-2014: Information technology -- Programming languages -- C++</em>, 2014
+     * -# ISO, <em>ISO/IEC 14882-2014: Information technology - Programming languages - C++</em>, 2014
      * .
      */
     public: hyperexponential_distribution(std::initializer_list<RealT> const& l1)
@@ -768,20 +768,20 @@ class hyperexponential_distribution
 
     /**
      * Gets a random variate distributed according to the hyperexponential
-     * distribution with parameters specified by \c parm.
+     * distribution with parameters specified by \c param.
      *
      * \tparam URNG Must meet the requirements of \uniform_random_number_generator.
      *
      * \param urng A uniform random number generator object.
-     * \param parm A distribution parameter object.
+     * \param param A distribution parameter object.
      *
      * \return A random variate distributed according to the hyperexponential distribution.
-     *  distribution with parameters specified by \c parm.
+     *  distribution with parameters specified by \c param.
      */
     public: template<class URNG>
-            RealT operator()(URNG& urng, const param_type& parm) const
+            RealT operator()(URNG& urng, const param_type& param) const
     {
-        return hyperexponential_distribution(parm)(urng);
+        return hyperexponential_distribution(param)(urng);
     }
 
     /** Returns the number of phases of the distribution. */
@@ -823,10 +823,10 @@ class hyperexponential_distribution
     }
 
     /** Sets the parameters of the distribution. */
-    public: void param(param_type const& parm)
+    public: void param(param_type const& param)
     {
-        dd_.param(typename boost::random::discrete_distribution<int,RealT>::param_type(parm.probabilities()));
-        rates_ = parm.rates();
+        dd_.param(typename boost::random::discrete_distribution<int,RealT>::param_type(param.probabilities()));
+        rates_ = param.rates();
     }
 
     /**
@@ -848,10 +848,10 @@ class hyperexponential_distribution
     /** Reads an @c hyperexponential_distribution from a @c std::istream. */
     public: BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, hyperexponential_distribution, hd)
     {
-        param_type parm;
-        if(is >> parm)
+        param_type param;
+        if(is >> param)
         {
-            hd.param(parm);
+            hd.param(param);
         }
         return is;
     }
