@@ -66,7 +66,7 @@ public:
      * Throws: If and what the copy constructor of Engine or
      * Distribution throws.
      */
-    variate_generator(Engine e, Distribution d)
+    variate_generator(const Engine& e, const Distribution& d)
       : _eng(e), _dist(d) { }
 
     /** Returns: distribution()(engine()) */
