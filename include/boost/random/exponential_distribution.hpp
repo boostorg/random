@@ -198,7 +198,7 @@ struct unit_exponential_distribution
                 RealType y = RealType(table_y[i]) + uniform_01<RealType>()(eng) * RealType(table_y[i + 1] - table_y[i]);
                 // We only need to bother checking f() for points below the diagonal; points above
                 // will be rejected (because f() is convex).
-                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (x - table_x[i]) * (table_y[i] - table_y[i + 1])
+                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (table_x[i] - x) * (table_y[i + 1] - table_y[i])
                     and y < f(x)) {
                     return shift + x;
                 }

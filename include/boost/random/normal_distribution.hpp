@@ -136,7 +136,7 @@ struct unit_normal_distribution
             if (table_x[i + 1] >= 1) {
                 // Beyond the inflection point; the diagonal is above f(), so we only need to bother
                 // checking f() for points below the diagonal; points above will be rejected.
-                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (x - table_x[i]) * (table_y[i] - table_y[i + 1])
+                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (table_x[i] - x) * (table_y[i + 1] - table_y[i])
                     and y < f(x)) {
                     return x * sign;
                 }
@@ -144,7 +144,7 @@ struct unit_normal_distribution
             else if (table_x[i] <= 1) {
                 // Before the inflection point; the diagonal is below f(), so we can accept anything
                 // below without needing to check f()
-                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (x - table_x[i]) * (table_y[i] - table_y[i + 1])
+                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (table_x[i] - x) * (table_y[i + 1] - table_y[i])
                     or y < f(x)) {
                     return x * sign;
                 }
