@@ -133,12 +133,30 @@ struct unit_normal_distribution
             if(x < table_x[i + 1]) return x * sign;
             if(i == 0) return generate_tail(eng) * sign;
             RealType y = RealType(table_y[i]) + uniform_01<RealType>()(eng) * RealType(table_y[i + 1] - table_y[i]);
-            if (y < f(x)) return x * sign;
+            if (table_x[i + 1] >= 1) {
+                // Beyond the inflection point; the diagonal is above f(), so we only need to bother
+                // checking f() for points below the diagonal; points above will be rejected.
+                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (x - table_x[i]) * (table_y[i] - table_y[i + 1])
+                    and y < f(x)) {
+                    return x * sign;
+                }
+            }
+            else if (table_x[i] <= 1) {
+                // Before the inflection point; the diagonal is below f(), so we can accept anything
+                // below without needing to check f()
+                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (x - table_x[i]) * (table_y[i] - table_y[i + 1])
+                    or y < f(x)) {
+                    return x * sign;
+                }
+            }
+            // Otherwise we're in the block that includes the inflection point, so no simple rule
+            // like the above: just check f(x)
+            else if (y < f(x)) return x * sign;
         }
     }
     static RealType f(RealType x) {
         using std::exp;
-        return exp(-x*x/2);
+        return exp(-(x*x/2));
     }
     template<class Engine>
     RealType generate_tail(Engine& eng) {
