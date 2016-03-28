@@ -132,11 +132,12 @@ struct unit_normal_distribution
             RealType x = vals.first * RealType(table_x[i]);
             if(x < table_x[i + 1]) return x * sign;
             if(i == 0) return generate_tail(eng) * sign;
-            RealType y = RealType(table_y[i]) + uniform_01<RealType>()(eng) * RealType(table_y[i + 1] - table_y[i]);
+            RealType y01 = uniform_01<RealType>()(eng);
+            RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i + 1] - table_y[i]);
             if (table_x[i + 1] >= 1) {
                 // Beyond the inflection point; the diagonal is above f(), so we only need to bother
                 // checking f() for points below the diagonal; points above will be rejected.
-                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (table_x[i] - x) * (table_y[i + 1] - table_y[i])
+                if ((table_x[i] - table_x[i + 1]) * y01 < (table_x[i] - x)
                     and y < f(x)) {
                     return x * sign;
                 }
@@ -144,7 +145,7 @@ struct unit_normal_distribution
             else if (table_x[i] <= 1) {
                 // Before the inflection point; the diagonal is below f(), so we can accept anything
                 // below without needing to check f()
-                if ((table_x[i] - table_x[i + 1]) * (y - table_y[i]) < (table_x[i] - x) * (table_y[i + 1] - table_y[i])
+                if ((table_x[i] - table_x[i + 1]) * y01 < (table_x[i] - x)
                     or y < f(x)) {
                     return x * sign;
                 }
