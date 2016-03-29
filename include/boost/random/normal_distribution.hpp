@@ -136,19 +136,30 @@ struct unit_normal_distribution
             RealType y01 = uniform_01<RealType>()(eng);
             RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i + 1] - table_y[i]);
 
-            // All we care about is whether these are < or > 0 (so in some cases, they aren't
-            // strictly the difference, but something proportional to the distance).  The defaults
-            // are suitable for the inflection point (which doens't get handled below).
-            RealType y_above_ubound = -1, y_above_lbound = 1;
-            if (table_x[i+1] >= 1) {
-                // Beyond the inflection point (so convex); exp(-x^2/2) is below the diagonal,
-                // and above the tangent at the either corner (use right).
+            // These store the value y - bound, or something proportional to that difference:
+            RealType y_above_ubound, y_above_lbound;
+
+            // There are three cases to consider:
+            // - convex regions (where x[i] > x[j] >= 1)
+            // - concave regions (where 1 <= x[i] < x[j])
+            // - region containing the inflection point (where x[i] > 1 > x[j])
+            // For convex (concave), exp^(-x^2/2) is bounded below (above) by the tangent at
+            // (x[i],y[i]) and is bounded above (below) by the diagonal line from (x[i+1],y[i+1]) to
+            // (x[i],y[i]).
+            //
+            // *If* the inflection point region satisfies slope(x[i+1]) < slope(diagonal), then we
+            // can treat the inflection region as a convex region: this condition is necessary and
+            // sufficient to ensure that the curve lies entirely below the diagonal (that, in turn,
+            // also implies that it will be above the tangent at x[i]).
+            //
+            // For the current table size (128), this is satisfied: slope(x[i+1]) = -0.60653 <
+            // slope(diag) = -0.60649, and so we have only two cases below instead of three.
+
+            if (table_x[i] >= 1) { // convex (incl. inflection)
                 y_above_ubound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x);
                 y_above_lbound = y - (RealType(table_y[i]) + (RealType(table_x[i]) - x) * RealType(table_y[i]) * RealType(table_x[i]));
             }
-            else if (table_x[i] <= 1) {
-                // Before the inflection point (so concave); the corner tangent is an upper
-                // bound on the density, the diagonal is a lower bound
+            else { // concave
                 y_above_lbound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x);
                 y_above_ubound = y - (RealType(table_y[i]) + (RealType(table_x[i]) - x) * RealType(table_y[i]) * RealType(table_x[i]));
             }
