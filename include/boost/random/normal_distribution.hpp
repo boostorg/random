@@ -156,7 +156,7 @@ struct unit_normal_distribution
             if (y_above_ubound < 0 // if above the upper bound reject immediately
                     and
                     (
-                     y_above_lbound <= 0 // If below the lower bound accept immediately
+                     y_above_lbound < 0 // If below the lower bound accept immediately
                      or
                      y < f(x) // Otherwise it's between the bounds and we need a full check
                     )
