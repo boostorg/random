@@ -198,8 +198,8 @@ struct unit_exponential_distribution
                 RealType y01 = uniform_01<RealType>()(eng);
                 RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i+1] - table_y[i]);
 
-                // All we care about is whether these are < or > 0; the magnitude is irrelevant (and
-                // not consistent here, for performance reasons).
+                // All we care about is whether these are < or > 0; these values are equal to
+                // (lbound) or proportional to (ubound) `y` minus the lower/upper bound.
                 RealType y_above_ubound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x),
                          y_above_lbound = y - (RealType(table_y[i+1]) + (RealType(table_x[i+1]) - x) * RealType(table_y[i+1]));
 
