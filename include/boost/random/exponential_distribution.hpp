@@ -230,6 +230,14 @@ struct unit_exponential_distribution
  * a single parameter lambda.
  *
  * It has \f$\displaystyle p(x) = \lambda e^{-\lambda x}\f$
+ *
+ * The implementation uses the "ziggurat" algorithm, as described in
+ *
+ *  @blockquote
+ *  "The Ziggurat Method for Generating Random Variables",
+ *  George Marsaglia and Wai Wan Tsang, Journal of Statistical Software
+ *  Volume 5, Number 8 (2000), 1-7.
+ *  @endblockquote
  */
 template<class RealType = double>
 class exponential_distribution

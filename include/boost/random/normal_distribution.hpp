@@ -192,6 +192,14 @@ struct unit_normal_distribution
  *   \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}}
  * \f$,
  * where mean and sigma are the parameters of the distribution.
+ *
+ * The implementation uses the "ziggurat" algorithm, as described in
+ *
+ *  @blockquote
+ *  "The Ziggurat Method for Generating Random Variables",
+ *  George Marsaglia and Wai Wan Tsang, Journal of Statistical Software,
+ *  Volume 5, Number 8 (2000), 1-7.
+ *  @endblockquote
  */
 template<class RealType = double>
 class normal_distribution
