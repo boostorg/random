@@ -189,7 +189,7 @@ struct unit_exponential_distribution
             std::pair<RealType, int> vals = generate_int_float_pair<RealType, 8>(eng);
             int i = vals.second;
             RealType x = vals.first * RealType(table_x[i]);
-            if(x < table_x[i + 1]) return shift + x;
+            if(x < RealType(table_x[i + 1])) return shift + x;
             // For i=0 we need to generate from the tail, but because this is an exponential
             // distribution, the tail looks exactly like the body, so we can simply repeat with a
             // shift:
@@ -200,8 +200,8 @@ struct unit_exponential_distribution
 
                 // All we care about is whether these are < or > 0; the magnitude is irrelevant (and
                 // not consistent here, for performance reasons).
-                RealType y_above_ubound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x),
-                         y_above_lbound = y - (table_y[i+1] + (table_x[i+1] - x) * table_y[i+1]);
+                RealType y_above_ubound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x),
+                         y_above_lbound = y - (RealType(table_y[i+1]) + (RealType(table_x[i+1]) - x) * RealType(table_y[i+1]));
 
                 if (y_above_ubound < 0 // if above the upper bound reject immediately
                         and

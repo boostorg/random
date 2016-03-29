@@ -143,14 +143,14 @@ struct unit_normal_distribution
             if (table_x[i+1] >= 1) {
                 // Beyond the inflection point (so convex); exp(-x^2/2) is below the diagonal,
                 // and above the tangent at the either corner (use right).
-                y_above_ubound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x);
-                y_above_lbound = y - (table_y[i] + (table_x[i] - x) * table_y[i] * table_x[i]);
+                y_above_ubound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x);
+                y_above_lbound = y - (RealType(table_y[i]) + (RealType(table_x[i]) - x) * RealType(table_y[i]) * RealType(table_x[i]));
             }
             else if (table_x[i] <= 1) {
                 // Before the inflection point (so concave); the corner tangent is an upper
                 // bound on the density, the diagonal is a lower bound
-                y_above_lbound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x);
-                y_above_ubound = y - (table_y[i] + (table_x[i] - x) * table_y[i] * table_x[i]);
+                y_above_lbound = RealType(table_x[i] - table_x[i+1]) * y01 - (RealType(table_x[i]) - x);
+                y_above_ubound = y - (RealType(table_y[i]) + (RealType(table_x[i]) - x) * RealType(table_y[i]) * RealType(table_x[i]));
             }
 
             if (y_above_ubound < 0 // if above the upper bound reject immediately
