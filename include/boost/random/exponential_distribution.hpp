@@ -196,12 +196,22 @@ struct unit_exponential_distribution
             if (i == 0) shift += RealType(table_x[1]);
             else {
                 RealType y01 = uniform_01<RealType>()(eng);
-                RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i + 1] - table_y[i]);
-                // We only need to bother checking f() for points below the diagonal; points above
-                // will be rejected (because f() is convex).
-                if ((table_x[i] - table_x[i + 1]) * y01 < (table_x[i] - x)
-                    and y < f(x)) {
-                    return shift + x;
+                RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i+1] - table_y[i]);
+
+                // All we care about is whether these are < or > 0; the magnitude is irrelevant (and
+                // not consistent here, for performance reasons).
+                RealType y_above_ubound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x),
+                         y_above_lbound = y - (table_y[i+1] + (table_x[i+1] - x) * table_y[i+1]);
+
+                if (y_above_ubound < 0 // if above the upper bound reject immediately
+                        and
+                        (
+                         y_above_lbound <= 0 // If below the lower bound accept immediately
+                         or
+                         y < f(x) // Otherwise it's between the bounds and we need a full check
+                        )
+                   ) {
+                    return x + shift;
                 }
             }
         }

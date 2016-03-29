@@ -132,27 +132,37 @@ struct unit_normal_distribution
             RealType x = vals.first * RealType(table_x[i]);
             if(x < table_x[i + 1]) return x * sign;
             if(i == 0) return generate_tail(eng) * sign;
+
             RealType y01 = uniform_01<RealType>()(eng);
             RealType y = RealType(table_y[i]) + y01 * RealType(table_y[i + 1] - table_y[i]);
-            if (table_x[i + 1] >= 1) {
-                // Beyond the inflection point; the diagonal is above f(), so we only need to bother
-                // checking f() for points below the diagonal; points above will be rejected.
-                if ((table_x[i] - table_x[i + 1]) * y01 < (table_x[i] - x)
-                    and y < f(x)) {
-                    return x * sign;
-                }
+
+            // All we care about is whether these are < or > 0 (so in some cases, they aren't
+            // strictly the difference, but something proportional to the distance).  The defaults
+            // are suitable for the inflection point (which doens't get handled below).
+            RealType y_above_ubound = -1, y_above_lbound = 1;
+            if (table_x[i+1] >= 1) {
+                // Beyond the inflection point (so convex); exp(-x^2/2) is below the diagonal,
+                // and above the tangent at the either corner (use right).
+                y_above_ubound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x);
+                y_above_lbound = y - (table_y[i] + (table_x[i] - x) * table_y[i] * table_x[i]);
             }
             else if (table_x[i] <= 1) {
-                // Before the inflection point; the diagonal is below f(), so we can accept anything
-                // below without needing to check f()
-                if ((table_x[i] - table_x[i + 1]) * y01 < (table_x[i] - x)
-                    or y < f(x)) {
-                    return x * sign;
-                }
+                // Before the inflection point (so concave); the corner tangent is an upper
+                // bound on the density, the diagonal is a lower bound
+                y_above_lbound = (table_x[i] - table_x[i+1]) * y01 - (table_x[i] - x);
+                y_above_ubound = y - (table_y[i] + (table_x[i] - x) * table_y[i] * table_x[i]);
             }
-            // Otherwise we're in the block that includes the inflection point, so no simple rule
-            // like the above: just check f(x)
-            else if (y < f(x)) return x * sign;
+
+            if (y_above_ubound < 0 // if above the upper bound reject immediately
+                    and
+                    (
+                     y_above_lbound <= 0 // If below the lower bound accept immediately
+                     or
+                     y < f(x) // Otherwise it's between the bounds and we need a full check
+                    )
+               ) {
+                return x * sign;
+            }
         }
     }
     static RealType f(RealType x) {
