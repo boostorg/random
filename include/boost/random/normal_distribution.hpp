@@ -180,13 +180,22 @@ struct unit_normal_distribution
         using std::exp;
         return exp(-(x*x/2));
     }
+    // Generate from the tail using rejection sampling from the exponential(x_1) distribution,
+    // shifted by x_1.  This looks a little different from the usual rejection sampling because it
+    // transforms the condition by taking the log of both sides, thus avoiding the costly exp() call
+    // on the RHS, then takes advantage of the fact that -log(unif01) is simply generating an
+    // exponential (by inverse cdf sampling) by replacing the log(unif01) on the LHS with a
+    // exponential(1) draw, y.
     template<class Engine>
     RealType generate_tail(Engine& eng) {
-        boost::random::exponential_distribution<RealType> exponential;
         const RealType tail_start = RealType(normal_table<double>::table_x[1]);
+        boost::random::exponential_distribution<RealType> exp_x(tail_start);
+        boost::random::exponential_distribution<RealType> exp_y;
         for(;;) {
-            RealType x = exponential(eng)/tail_start;
-            RealType y = exponential(eng);
+            RealType x = exp_x(eng);
+            RealType y = exp_y(eng);
+            // If we were doing non-transformed rejection sampling, this condition would be:
+            // if (unif01 < exp(-.5*x*x)) return x + tail_start;
             if(2*y > x*x) return x + tail_start;
         }
     }
