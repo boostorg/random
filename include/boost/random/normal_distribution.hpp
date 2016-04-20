@@ -28,7 +28,6 @@
 #include <boost/random/detail/int_float_pair.hpp>
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/exponential_distribution.hpp>
-#include <boost/mpl/bool.hpp>
 
 namespace boost {
 namespace random {
