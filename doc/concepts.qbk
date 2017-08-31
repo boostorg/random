@@ -225,13 +225,16 @@ quasi-Monte Carlo methods, Society for Industrial and Applied Mathematics, 1992"
 
 In addition to the __UniformRandomNumberGenerator requirements,
 a quasi-random number generator has some additional requirements. In the
-following table, `X` denotes a quasi-random number generator class, and `v` is 
-a const value of `X`.
+following table, `X` denotes a quasi-random number generator class, `u` is a value of `X`, 
+`v` is a const value of `X`, and `j` a value of type `unsigned long long`.
 
 [table QuasiRandomNumberGenerator requirements
   [[expression] [return type] [pre/post-condition]]
-  [[`X::dimension()`] [std::size_t] [the dimension of quasi-random domain. It must be no less than 1.
-                        The return value of this function shall not change during the lifetime of the object.]]
+  [[`X(s)`] [-] [creates an s-dimensional generator with a default seed. Dimension `s` is an integer no less than 1.]]
+  [[`v.dimension()`] [std::size_t] [the dimension of quasi-random domain.]]
+  [[`u.seed(i)`] [`void`] [seeds the generator with the integer `i`.]]
+  [[`u.discard(j)`] [`void`] [Advances the generator by `j` steps as if by
+                              `j` calls to `u()`.]]
  ]
 
 [note The `operator()` returns a successive element of an n-dimensional (n = `X::dimension()`) vector 

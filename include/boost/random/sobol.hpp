@@ -1034,7 +1034,7 @@ private:
 //!and [Antonov+Saleev, USSR Comput. Maths. Math. Phys. 19, 252 (1980)]
 //! \endblockquote
 //!
-//!\attention \b Important: This implementation supports up to 40 dimensions.
+//!\attention \b Important: This implementation supports up to 1111 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
 //!sobol returning objects of type @c IntType, u and v are the values of @c X.

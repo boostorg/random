@@ -278,7 +278,7 @@ private:
 //!Bratley, Fox, Niederreiter, ACM Trans. Model. Comp. Sim. 2, 195 (1992).
 //! \endblockquote
 //!
-//!\attention \b Important: This implementation supports up to 20 dimensions.
+//!\attention \b Important: This implementation supports up to 54 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
 //!niederreiter_base2 returning objects of type @c IntType, u and v are the values of @c X.

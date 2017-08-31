@@ -265,7 +265,7 @@ private:
 //!Volume 12, Number 4, December 1986, pages 362-376.
 //! \endblockquote
 //!
-//!\attention\b Important: This implementation supports up to 229 dimensions.
+//!\attention\b Important: This implementation supports up to 1117 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
 //!faure returning objects of type @c RealType, u and v are the values of @c X.
