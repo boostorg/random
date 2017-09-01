@@ -290,10 +290,12 @@ public:
   typedef RealType result_type;
 
   /** @copydoc boost::random::niederreiter_base2::min() */
-  static result_type min /** @cond */ BOOST_PREVENT_MACRO_SUBSTITUTION /** @endcond */ () { return static_cast<RealType>(0); }
+  static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return static_cast<RealType>(0); }
 
   /** @copydoc boost::random::niederreiter_base2::max() */
-  static result_type max /** @cond */ BOOST_PREVENT_MACRO_SUBSTITUTION /** @endcond */ () { return static_cast<RealType>(1); }
+  static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return static_cast<RealType>(1); }
 
   //!Effects: Constructs the s-dimensional default Faure quasi-random number generator.
   //!

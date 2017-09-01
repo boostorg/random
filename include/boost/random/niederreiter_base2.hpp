@@ -154,7 +154,7 @@ inline void calculate_v(const boost::dynamic_bitset<Block, Allocator>& pb,
   for (int r = pb_degree; r < v.size(); ++r)
   {
     T term = T /*zero*/ ();
-    boost::dynamic_bitset<> pb_c = pb;
+    boost::dynamic_bitset<Block, Allocator> pb_c = pb;
     for (int k = -pb_degree; k < 0; ++k, pb_c >>= 1)
     {
       if( pb_c.test(0) )
@@ -302,12 +302,14 @@ public:
   //!Returns: Tight lower bound on the set of values returned by operator().
   //!
   //!Throws: nothing.
-  static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
+  static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return 0; }
 
   //!Returns: Tight upper bound on the set of values returned by operator().
   //!
   //!Throws: nothing.
-  static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return std::numeric_limits<IntType>::max(); }
+  static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return (std::numeric_limits<IntType>::max)(); }
 
   //!Effects: Constructs the default s-dimensional Niederreiter base 2 quasi-random number generator.
   //!

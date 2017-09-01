@@ -1059,10 +1059,12 @@ public:
   typedef IntType result_type;
 
   /** @copydoc boost::random::niederreiter_base2::min() */
-  static result_type min /** @cond */ BOOST_PREVENT_MACRO_SUBSTITUTION /** @endcond */ () { return 0u; }
+  static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return 0; }
 
   /** @copydoc boost::random::niederreiter_base2::max() */
-  static result_type max /** @cond */ BOOST_PREVENT_MACRO_SUBSTITUTION /** @endcond */ () { return std::numeric_limits<IntType>::max(); }
+  static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  { return (std::numeric_limits<IntType>::max)(); }
 
   //!Effects: Constructs the default s-dimensional Sobol quasi-random number generator.
   //!
