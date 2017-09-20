@@ -13,9 +13,8 @@ project /boost/random/test : requirements <toolset>msvc:<define>_SCL_SECURE_NO_W
 run test_const_mod.cpp /boost//unit_test_framework ;
 run test_generate_canonical.cpp /boost//unit_test_framework ;
 run test_random_number_generator.cpp /boost//unit_test_framework ;
+run test_random_device.cpp /boost//unit_test_framework ;
 run ../example/random_demo.cpp ;
-run test_random_device.cpp /boost//random : : : <link>static : test_random_device ;
-run test_random_device.cpp /boost//random : : : <link>shared : test_random_device_dll ;
 
 run test_minstd_rand0.cpp /boost//unit_test_framework ;
 run test_minstd_rand.cpp /boost//unit_test_framework ;
@@ -125,7 +124,6 @@ run test_hyperexponential.cpp ;
 run test_hyperexponential_distribution.cpp /boost//unit_test_framework ;
 
 # run nondet_random_speed.cpp ;
-# run random_device.cpp ;
 # run random_speed.cpp ;
 # run statistic_tests.cpp ;
 
