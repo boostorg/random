@@ -269,7 +269,7 @@ private:
             // multiprecision arithmetic throughout instead.
             mixed_range_type modulus = static_cast<mixed_range_type>(range)+1;
             return boost::random::detail::add<range_type, result_type>()(
-                static_cast<mixed_range_type>(val) % modulus, _min);
+                static_cast<range_type>(static_cast<mixed_range_type>(val) % modulus), _min);
         }
     }
     
