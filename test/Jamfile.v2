@@ -1,5 +1,7 @@
 # Copyright 2003 Jens Maurer
 # Copyright 2009-2011 Steven Watanabe
+# Copyright 2017 James E. King III
+#
 # Distributed under the Boost Software License, Version 1.0. (See accompany-
 # ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -8,14 +10,25 @@
 # bring in rules for testing
 import testing ;
 
-project /boost/random/test : requirements <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS ;
+project libs/random/test
+    : requirements
+
+      # boost.jam defines BOOST_ALL_NO_LIB for builds 
+      # which cannot be undefined?
+      <toolset>msvc:<define>BOOST_RANDOM_FORCE_AUTO_LINK
+      <toolset>gcc-mingw:<linkflags>"-lbcrypt"
+
+      # boost::random needs this setting for a warning free build:
+      <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+
+      # link static for easier debugging, if you need to debug...
+      # <link>static
+;
 
 run test_const_mod.cpp /boost//unit_test_framework ;
 run test_generate_canonical.cpp /boost//unit_test_framework ;
 run test_random_number_generator.cpp /boost//unit_test_framework ;
-run ../example/random_demo.cpp ;
-run test_random_device.cpp /boost//random : : : <link>static : test_random_device ;
-run test_random_device.cpp /boost//random : : : <link>shared : test_random_device_dll ;
+run test_random_device.cpp /boost//unit_test_framework ;
 
 run test_minstd_rand0.cpp /boost//unit_test_framework ;
 run test_minstd_rand.cpp /boost//unit_test_framework ;
@@ -124,11 +137,6 @@ run test_non_central_chi_squared_distribution.cpp /boost//unit_test_framework ;
 run test_hyperexponential.cpp ;
 run test_hyperexponential_distribution.cpp /boost//unit_test_framework ;
 
-# run nondet_random_speed.cpp ;
-# run random_device.cpp ;
-# run random_speed.cpp ;
-# run statistic_tests.cpp ;
-
 exe statistic_tests.exe : statistic_tests.cpp ;
 explicit statistic_tests.exe ;
 
@@ -141,3 +149,87 @@ explicit statistic_tests ;
 run multiprecision_int_test.cpp /boost//unit_test_framework ;
 # This one runs too slow in debug mode, we really need inline expansions turned on amonst other things:
 run multiprecision_float_test.cpp /boost//unit_test_framework : : : release ;
+
+#
+# random_provider tests:
+#
+
+# a small benchmark test for random generation
+run test_bench_random.cpp ../../timer/build//boost_timer : : : <toolset>clang-cloudabi:<build>no <link>static ;
+
+run test_entropy_error.cpp ;
+
+# tests for the header-only random provider
+# there are a number of variations to test all compile-time branches
+# and to make sure we test all the error handling code paths
+
+run test_detail_random_provider.cpp 
+  : : :
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+  : test_detail_random_provider_happy_default ;                         # test the auto-selected happy path
+
+run test_detail_random_provider.cpp 
+  : : :
+        <define>_WIN32_WINNT=0x0600                                     # will force bcrypt over wincrypt
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <build>no                                                       # do not build
+        <target-os>windows:<build>yes                                   # except for windows
+  : test_detail_random_provider_happy_bcrypt ;
+
+run test_detail_random_provider.cpp
+        mock_random
+  : : :
+        <define>_WIN32_WINNT=0x0600                                     # will force bcrypt over wincrypt
+        <define>BOOST_RANDOM_PROVIDER_NO_LIB                            # disable any auto-linking
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <define>BOOST_RANDOM_TEST_RANDOM_MOCK                           # mock wincrypt to force error path testing
+        <build>no                                                       # do not build
+        <target-os>windows:<build>yes                                   # except for windows
+  : test_detail_random_provider_sad_bcrypt ;
+
+# mock testing the wincrypt paths requires a DLL
+lib mock_random
+  : mock_random.cpp
+  : <link>shared
+        <build>no                                                       # do not build on any target-os
+        <target-os>windows:<build>yes ;                                 # except for windows
+
+run test_detail_random_provider.cpp 
+  : : :
+        <define>_WIN32_WINNT=0x0501                                     # will force wincrypt over bcrypt
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <build>no                                                       # do not build on any target-os
+        <target-os>windows:<build>yes                                   # except for windows
+  : test_detail_random_provider_happy_wincrypt ;
+
+run test_detail_random_provider.cpp
+  mock_random
+  : : :
+        <define>_WIN32_WINNT=0x0501                                     # will force wincrypt over bcrypt
+        <define>BOOST_RANDOM_PROVIDER_NO_LIB                            # disable any auto-linking
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <define>BOOST_RANDOM_TEST_RANDOM_MOCK                           # mock wincrypt to force error path testing
+        <build>no                                                       # do not build on any target-os
+        <target-os>windows:<build>yes                                   # except for windows
+  : test_detail_random_provider_sad_wincrypt ;
+
+# CI builds in travis will eventually select getentropy when they move
+# to a version of ubuntu with glibc-2.25 on it, so when that happens keep 
+# testing the posix provider:
+run test_detail_random_provider.cpp 
+  : : :
+        <define>BOOST_RANDOM_PROVIDER_FORCE_POSIX                       # will force POSIX over getentropy
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <target-os>windows:<build>no                                    # do not bother running on windows
+        <toolset>clang-cloudabi:<build>no                               # no need to build under cloudabi
+  : test_detail_random_provider_happy_posix ;
+
+run test_detail_random_provider.cpp 
+  : : :
+        <define>BOOST_RANDOM_PROVIDER_FORCE_POSIX                       # will force POSIX over getentropy
+        <define>BOOST_RANDOM_PROVIDER_SHOW                              # output the selected provider at compile time
+        <define>BOOST_RANDOM_TEST_RANDOM_MOCK                           # redirect code to use mock system calls
+        <target-os>windows:<build>no                                    # do not bother running on windows
+        <toolset>clang-cloudabi:<build>no                               # no need to build under cloudabi
+  : test_detail_random_provider_sad_posix ;
+

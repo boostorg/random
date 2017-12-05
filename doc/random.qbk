@@ -107,14 +107,32 @@ You should read the [concepts concepts documentation] for an introduction and th
 definition of the basic concepts. For a quick start, it may be sufficient
 to have a look at [@boost:/libs/random/example/random_demo.cpp random_demo.cpp].
 
-For a very quick start, here's an example:
+For a very quick start, here's an example for rolling one die:
 
-  ``[classref boost::random::mt19937]`` rng;         // produces randomness out of thin air
-                                      // see pseudo-random number generators
+  ``[classref boost::random::random_device]`` entropy; // operating-system provided entropy generator
   ``[classref boost::random::uniform_int_distribution]<>`` six(1,6);
-                                      // distribution that maps to 1..6
-                                      // see random number distributions
-  int x = six(rng);                   // simulate rolling a die
+                                        // distribution that maps to 1..6
+                                        // see random number distributions
+  int x = six(entropy);                 // simulate rolling a die
+
+If you are going to be rolling a large number of dies, you can initialize a
+__PseudoRandomNumberGenerator once, then reuse it.  This may be more optimal
+than accessing the operating-system provided entropy generator directly many times - as
+always you should test that the solution meets your performance needs:
+
+  ``[classref boost::random::random_device]`` entropy; // operating-system provided entropy generator
+  ``[classref boost::random::mt19937]`` prng;          // produces randomness out of thin air
+                                        // see pseudo-random number generators
+  ``[classref boost::random::uniform_int_distribution]<>`` six(1,6);
+                                        // distribution that maps to 1..6
+                                        // see random number distributions
+  prng.seed(entropy);                   // seed the PRNG
+  int total = 0;
+  const size_t rolls = 65536;
+  for (size_t roll = 0; roll < rolls; ++roll) {
+      total += six(prng);               // simulate rolling a die
+  }
+  double avg = static_cast<double>(total) / static_cast<double>(rolls);
 
 [endsect]
 
