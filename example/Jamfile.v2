@@ -7,6 +7,21 @@
 # accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+project libs/random/example
+    : requirements
+
+      # boost.jam defines BOOST_ALL_NO_LIB for builds 
+      # which cannot be undefined?
+      <toolset>msvc:<define>BOOST_RANDOM_FORCE_AUTO_LINK
+      <toolset>gcc-mingw:<linkflags>"-lbcrypt"
+
+      # boost::random needs this setting for a warning free build:
+      <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+
+      # link static for easier debugging - uncomment if you need to debug...
+      # <link>static
+;
+
 run die.cpp ;
 run weighted_die.cpp ;
-run password.cpp /boost//random ;
+run password.cpp ;

@@ -1,4 +1,4 @@
-/* boost random/mersenne_twister.hpp header file
+/* boost random/detail/generator_seed_seq.hpp header file
  *
  * Copyright Jens Maurer 2000-2001
  * Copyright Steven Watanabe 2010

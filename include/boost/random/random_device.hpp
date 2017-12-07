@@ -2,6 +2,8 @@
  *
  * Copyright Jens Maurer 2000
  * Copyright Steven Watanabe 2010-2011
+ * Copyright 2017 James E. King III
+ * 
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +12,7 @@
  *
  * Revision history
  *  2000-02-18  Portability fixes (thanks to Beman Dawes)
+ *  2017-12-05  Converted to use random_provider
  */
 
 //  See http://www.boost.org/libs/random for documentation.
@@ -18,11 +21,16 @@
 #ifndef BOOST_RANDOM_RANDOM_DEVICE_HPP
 #define BOOST_RANDOM_RANDOM_DEVICE_HPP
 
-#include <string>
-#include <boost/config.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/random/detail/auto_link.hpp>
-#include <boost/system/config.hpp> // force autolink to find Boost.System
+#include <boost/core/noncopyable.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/limits.hpp>
+#include <boost/random/detail/random_provider_detect_platform.hpp>
+#include <boost/random/detail/random_provider_include_platform.hpp>
+#include <boost/random/entropy_error.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/is_unsigned.hpp>
+#include <iterator>
 
 namespace boost {
 namespace random {
@@ -50,88 +58,94 @@ namespace random {
  * on all platforms.
  * @endxmlnote
  *
- * <b>Implementation Note for Linux</b>
+ * \random_device offers two methods for entropy generation:
  *
- * On the Linux operating system, token is interpreted as a filesystem
- * path. It is assumed that this path denotes an operating system
- * pseudo-device which generates a stream of non-deterministic random
- * numbers. The pseudo-device should never signal an error or end-of-file.
- * Otherwise, @c std::ios_base::failure is thrown. By default,
- * \random_device uses the /dev/urandom pseudo-device to retrieve
- * the random numbers. Another option would be to specify the /dev/random
- * pseudo-device, which blocks on reads if the entropy pool has no more
- * random bits available.
+ * 1. Call operator() to generate a random unsigned integer
+ * 2. Call get_random_bytes(void *, size_t) to fill any memory
+ *    area with random data.
  *
- * <b>Implementation Note for Windows</b>
+ * The selection logic for the entropy provider is as follows:
  *
- * On the Windows operating system, token is interpreted as the name
- * of a cryptographic service provider.  By default \random_device uses
- * MS_DEF_PROV.
+ * 1. On CloudABI, or on OpenBSD version 2.1 or later, `arc4random` will be used.
+ * 2. On Windows platforms, the `bcrypt` provider is used unless targeting Windows CE or Windows XP, where the `wincrypt` provider is used.
+ * 3. On Linux platforms with glibc >= 2.25, `getentropy` is used, otherwise it is treated as a POSIX platform.
+ * 4. On POSIX platforms, entropy is obtained by reading from `/dev/urandom`.
  *
- * <b>Performance</b>
+ * The following macros can be used:
  *
- * The test program <a href="\boost/libs/random/performance/nondet_random_speed.cpp">
- * nondet_random_speed.cpp</a> measures the execution times of the
- * random_device.hpp implementation of the above algorithms in a tight
- * loop. The performance has been evaluated on an
- * Intel(R) Core(TM) i7 CPU Q 840 \@ 1.87GHz, 1867 Mhz with
- * Visual C++ 2010, Microsoft Windows 7 Professional and with gcc 4.4.5,
- * Ubuntu Linux 2.6.35-25-generic.
- *
- * <table cols="2">
- *   <tr><th>Platform</th><th>time per invocation [microseconds]</th></tr>
- *   <tr><td> Windows </td><td>2.9</td></tr>
- *   <tr><td> Linux </td><td>1.7</td></tr>
- * </table>
- *
- * The measurement error is estimated at +/- 1 usec.
+ * * `BOOST_RANDOM_NO_LIB` (Windows) - disable auto-linking for the `bcrypt` and `wincrypt` provider when building with MSVC
+ * * `BOOST_RANDOM_PROVIDER_SHOW` - display the chosen entropy provider at compile time
  */
-class random_device : private noncopyable
+class random_device : private noncopyable, public detail::random_provider
 {
 public:
     typedef unsigned int result_type;
+
+    //! \note    this is an old Boost.Random concept requirement
     BOOST_STATIC_CONSTANT(bool, has_fixed_range = false);
 
-    /** Returns the smallest value that the \random_device can produce. */
-    static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
-    /** Returns the largest value that the \random_device can produce. */
-    static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return ~0u; }
-
-    /** Constructs a @c random_device, optionally using the default device. */
-    BOOST_RANDOM_DECL random_device();
-    /** 
-     * Constructs a @c random_device, optionally using the given token as an
-     * access specification (for example, a URL) to some implementation-defined
-     * service for monitoring a stochastic process. 
-     */
-    BOOST_RANDOM_DECL explicit random_device(const std::string& token);
-
-    BOOST_RANDOM_DECL ~random_device();
-
-    /**
-     * Returns: An entropy estimate for the random numbers returned by
-     * operator(), in the range min() to log2( max()+1). A deterministic
-     * random number generator (e.g. a pseudo-random number engine)
-     * has entropy 0.
-     *
-     * Throws: Nothing.
-     */
-    BOOST_RANDOM_DECL double entropy() const;
-    /** Returns a random value in the range [min, max]. */
-    BOOST_RANDOM_DECL unsigned int operator()();
-
-    /** Fills a range with random 32-bit values. */
-    template<class Iter>
-    void generate(Iter begin, Iter end)
+    //! \returns the smallest value that the \random_device can produce.
+    static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () 
     {
-        for(; begin != end; ++begin) {
-            *begin = (*this)();
+        return std::numeric_limits<result_type>::min();
+    }
+
+    //! \returns the largest value that the random_device can produce.
+    static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+    {
+        return std::numeric_limits<result_type>::max();
+    }
+
+    //! \returns a random value in the range [min(), max()].
+    //! \throws  entropy_error
+    result_type operator()()
+    {
+        result_type e;
+        get_random_bytes(&e, sizeof(result_type));
+        return e;
+    }
+
+    //! \returns An entropy estimate for the random numbers returned by
+    //!          operator(), in the range min() to log2(max()+1). A
+    //!          deterministic random number generator (e.g. a pseudo-random
+    //!          number engine) has entropy 0.
+    double entropy() const 
+    {
+        return 10;
+    }
+    
+    //! Allow \random_device to fulfill the SeedSeq concept
+    //! and therefore be compatible as a \pseudo_random_number_generator
+    //! seed() argument.
+    //! 
+    //! Example:
+    //!    boost::random_device rng;
+    //!    boost::mt19937 twister;
+    //!    twister.seed(rng);
+    //!
+    //! \param[in]  first  the first of the sequence requested
+    //! \param[in]  last   the last of the sequence requested
+    //! \throws  entropy_error
+    template<class Iter>
+    void generate(Iter first, Iter last)
+    {
+        typedef typename std::iterator_traits<Iter>::value_type value_type;
+        BOOST_STATIC_ASSERT(is_integral<value_type>::value);
+        BOOST_STATIC_ASSERT(is_unsigned<value_type>::value);
+        BOOST_STATIC_ASSERT(sizeof(value_type) * CHAR_BIT >= 32);
+
+        for (; first != last; ++first)
+        {
+            get_random_bytes(&*first, sizeof(*first));
+            *first &= (std::numeric_limits<boost::uint32_t>::max)();
         }
     }
 
-private:
-    class impl;
-    impl * pimpl;
+    //! \returns the name of the selected entropy provider
+    const char * name() const
+    {
+        return BOOST_RANDOM_PROVIDER_STRINGIFY(BOOST_RANDOM_PROVIDER_NAME);
+    }
 };
 
 } // namespace random

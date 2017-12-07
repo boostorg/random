@@ -1,0 +1,30 @@
+#  Boost.Random Library Jamfile
+#
+#  Copyright (c) 2017 James E. King, III
+#
+#  Use, modification, and distribution are subject to the
+#  Boost Software License, Version 1.0. (See accompanying file
+#  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+project libs/random
+    : requirements
+
+      <warnings>all
+
+      <toolset>clang:<cxxflags>-Wextra
+      <toolset>clang:<cxxflags>-ansi
+#     <toolset>clang:<cxxflags>-pedantic
+      <toolset>clang:<cxxflags>-Wno-c++11-long-long
+
+      <toolset>gcc:<cxxflags>-Wextra
+      <toolset>gcc:<cxxflags>-ansi
+#     <toolset>gcc:<cxxflags>-pedantic
+      <toolset>gcc:<cxxflags>-Wno-long-long
+    ;
+
+# pedantic mode disabled due to issue in multiprecision
+# https://github.com/boostorg/multiprecision/issues/34
+
+# please order by name to ease maintenance
+build-project example ;
+build-project test ;
