@@ -26,11 +26,10 @@
 
 
 // Spatial dimension: 2
-// N: 100
+// N: 99
 // Vectors skipped: 0
-static const double sobol_02_100[100][2] =
+static const double sobol_02_99[99][2] =
 {
-  { 0.0000000000, 0.0000000000 },
   { 0.5000000002, 0.5000000002 },
   { 0.7500000003, 0.2500000001 },
   { 0.2500000001, 0.7500000003 },
@@ -134,7 +133,7 @@ static const double sobol_02_100[100][2] =
 
 // Spatial dimension: 7
 // N: 100
-// Vectors skipped: 128
+// Vectors skipped: 127
 static const double sobol_07_100[100][7] =
 {
   { 0.0117187500, 0.3320312502, 0.7851562504, 0.9414062504, 0.4648437502, 0.4179687502, 0.4648437502 },
@@ -241,7 +240,7 @@ static const double sobol_07_100[100][7] =
 
 // Spatial dimension: 16
 // N: 100
-// Vectors skipped: 128
+// Vectors skipped: 127
 static const double sobol_16_100[100][16] =
 {
   { 0.0117187500, 0.3320312502, 0.7851562504, 0.9414062504, 0.4648437502, 0.4179687502, 0.4648437502, 0.4882812502, 0.7304687503, 0.5742187503, 0.5664062503, 0.2460937501, 0.4882812502, 0.6367187503, 0.7617187504, 0.1835937501 },
@@ -351,21 +350,21 @@ QRNG_VALIDATION_TEST_FUNCTIONS(sobol)
 
 BOOST_AUTO_TEST_CASE( validate_sobol )
 {
-  test_sobol_values(sobol_02_100, 0);
-  test_sobol_values(sobol_07_100, 128);
-  test_sobol_values(sobol_16_100, 128);
+  test_sobol_values(sobol_02_99, 0);
+  test_sobol_values(sobol_07_100, 127);
+  test_sobol_values(sobol_16_100, 127);
 }
 
 BOOST_AUTO_TEST_CASE( validate_sobol_seed )
 {
-  test_sobol_seed(sobol_02_100, 0);
-  test_sobol_seed(sobol_07_100, 128);
-  test_sobol_seed(sobol_16_100, 128);
+  test_sobol_seed(sobol_02_99, 0);
+  test_sobol_seed(sobol_07_100, 127);
+  test_sobol_seed(sobol_16_100, 127);
 }
 
 BOOST_AUTO_TEST_CASE( validate_sobol_discard )
 {
-  test_sobol_discard(sobol_02_100, 0);
-  test_sobol_discard(sobol_07_100, 128);
-  test_sobol_discard(sobol_16_100, 128);
+  test_sobol_discard(sobol_02_99, 0);
+  test_sobol_discard(sobol_07_100, 127);
+  test_sobol_discard(sobol_16_100, 127);
 }

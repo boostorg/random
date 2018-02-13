@@ -139,7 +139,7 @@ protected:
     return *static_cast<DerivedT * const>(this);
   }
 
-  void reset_state()
+  void set_zero()
   {
     curr_elem = 0;
     seq_count = 0;
@@ -162,7 +162,7 @@ private:
 
   result_type next_state()
   {
-    derived().compute_next();
+    derived().compute_seq(++seq_count);
 
     curr_elem = 0;
     return load_cached();

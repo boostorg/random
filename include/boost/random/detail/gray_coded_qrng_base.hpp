@@ -53,10 +53,10 @@ protected:
     this->curr_elem = 0;
     if (init != this->seq_count)
     {
-      base_t::derived().seed();
+      base_t::set_zero();
 
-      this->seq_count = init;
-      init ^= (init / 2);
+      this->seq_count = init++;
+      init ^= (init >> 1);
       for (int r = 0; init != 0; ++r, init >>= 1)
       {
         if (init & 1)
@@ -65,13 +65,13 @@ protected:
     }
   }
 
-private:
-  // Compute next state for this QRNG
-  void compute_next()
+  void reset_state()
   {
-    compute_seq(this->seq_count++);
+    base_t::set_zero();
+    update_quasi(0, "reset_state");
   }
 
+private:
   void compute_seq(std::size_t cnt)
   {
     // Find the position of the least-significant zero in sequence count.

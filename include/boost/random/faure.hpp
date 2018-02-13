@@ -353,10 +353,6 @@ private:
   {
     this->lattice.update(seq, this->quasi_state);
   }
-  void compute_next()
-  {
-    compute_seq(++this->seq_count);
-  }
 /** @endcond */
 };
 
