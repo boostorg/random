@@ -133,21 +133,21 @@ inline void discard_function(T (&pt)[N][Dimension], std::size_t skip)
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_values(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef typename boost::QRNG engine_t; \
+  typedef boost::random::QRNG<> engine_t; \
   test::expected_values<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_seed(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef typename boost::QRNG engine_t; \
+  typedef boost::random::QRNG<> engine_t; \
   test::seed_function<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_discard(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef typename boost::QRNG engine_t; \
+  typedef boost::random::QRNG<> engine_t; \
   test::discard_function<engine_t>(pt, skip); \
 } \
 /**/

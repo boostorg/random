@@ -1042,7 +1042,7 @@ private:
 //! \f$L=Dimension \times 2^{digits}\f$, where digits = std::numeric_limits<IntType>::digits.
 //!
 //! \copydoc friendfunctions
-template<typename IntType>
+template<typename IntType = uint64_t>
 class sobol : public detail::gray_coded_qrng_base<
                         IntType
                       , sobol<IntType>
@@ -1110,8 +1110,6 @@ public:
 };
 
 } // namespace random
-
-typedef random::sobol<uint64_t> sobol;
 
 } // namespace boost
 

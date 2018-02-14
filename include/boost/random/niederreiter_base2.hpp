@@ -284,7 +284,7 @@ private:
 //!happens when the quasi-random domain is exhausted and the generator cannot produce
 //!any more values. The length of the low discrepancy sequence is given by
 //! \f$L=Dimension \times 2^{digits}\f$, where digits = std::numeric_limits<IntType>::digits.
-template<typename IntType>
+template<typename IntType = uint64_t>
 class niederreiter_base2 : public detail::gray_coded_qrng_base<
                                      IntType
                                      , niederreiter_base2<IntType>
@@ -382,8 +382,6 @@ public:
 };
 
 } // namespace random
-
-typedef random::niederreiter_base2<uint64_t> niederreiter_base2;
 
 } // namespace boost
 

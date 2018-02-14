@@ -260,7 +260,7 @@ private:
 //!Some member functions may throw exceptions of type @c std::bad_alloc.
 //!
 //! \copydoc friendfunctions
-template<typename RealType, typename SeqSizeT = boost::uint64_t>
+template<typename RealType = double, typename SeqSizeT = boost::uint64_t>
 class faure : public detail::qrng_base<
                         SeqSizeT
                         , faure<RealType>
@@ -345,8 +345,6 @@ private:
 };
 
 } // namespace random
-
-typedef random::faure<double> faure;
 
 } // namespace boost
 
