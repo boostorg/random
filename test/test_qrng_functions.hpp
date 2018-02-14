@@ -43,16 +43,37 @@ inline void expected_values(T (&pt)[N][Dimension], std::size_t skip)
   Engine eng(Dimension);
 
   eng.seed(skip);
-  
+
   for( std::size_t i = 0; i != N; ++i )
     match_vector(eng, pt[i]);
+}
+
+template<typename Engine, typename T>
+inline void test_zero_seed(std::size_t dimension)
+{
+  Engine eng(dimension);
+
+  Engine other(dimension);
+  other.seed(0);
+
+  // Check that states are equal after zero seed.
+  boost::uniform_real<T> dist;
+  BOOST_CHECK( eng == other );
+  for( std:: size_t i = 0; i != dimension; ++i )
+  {
+    T q_val = dist(eng);
+    T t_val = dist(other);
+    BOOST_CHECK_CLOSE(q_val, t_val, 0.0001);
+  }
 }
 
 template<typename Engine, typename T, std::size_t Dimension, std::size_t N>
 inline void seed_function(T (&pt)[N][Dimension], std::size_t skip)
 {
-  Engine eng(Dimension);
+  // Test zero seed before doing other tests.
+  test_zero_seed<Engine, T>(Dimension);
 
+  Engine eng(Dimension);
   for( std::size_t i = 0; i != N; ++i )
   {
     // For all N seeds an engine
