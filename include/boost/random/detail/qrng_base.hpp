@@ -163,10 +163,11 @@ private:
 
   result_type next_state()
   {
-    size_type old_seq = seq_count++;
-    if (seq_count > old_seq)
+    size_type new_seq = seq_count;
+    if (++new_seq > seq_count)
     {
-      derived().compute_seq(seq_count);
+      derived().compute_seq(new_seq);
+      seq_count = new_seq;
       curr_elem = 0;
       return load_cached();
     }
