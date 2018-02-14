@@ -53,7 +53,7 @@ struct sobol_tables
   static unsigned short polynomial(std::size_t n)
   {
     // successive primitive binary-coefficient polynomials p(z)
-    //   = a_0 + a_1 z + a_2 z^2 + ... a_31 z^31, where a_i is the 
+    //   = a_0 + a_1 z + a_2 z^2 + ... a_31 z^31, where a_i is the
     //     i-th bit of sobol_a[j] for the j-th polynomial.
     static const unsigned short sobol_a[num_polynomials] = {
       3,7,11,13,19,25,37,59,47,61,55,41,67,97,91,
@@ -936,7 +936,7 @@ struct sobol_tables
       1263,1453,1005,6893,2919,1947,1635,3963,397,969,4569,655,
       6737,2995,7235,7713,973,4821,2377,1673,1,6541}
     };
-    
+
     return sobol_minit[degree][dim];
   }
 
@@ -969,7 +969,7 @@ struct sobol_lattice
   {
     if (dimension > sbl::sobol_tables::max_dimension)
     {
-      throw std::invalid_argument("The Sobol quasi-random number generator only supports up to " 
+      throw std::invalid_argument("The Sobol quasi-random number generator only supports up to "
         BOOST_PP_STRINGIZE(BOOST_RANDOM_SOBOL_MAX_DIMENSION) " dimensions.");
     }
 
@@ -984,7 +984,7 @@ struct sobol_lattice
     for (std::size_t dim = 1; dim < dimension; ++dim)
     {
       const int poly = sbl::sobol_tables::polynomial(dim-1);
-      if (static_cast<std::size_t>(poly) > 
+      if (static_cast<std::size_t>(poly) >
           static_cast<std::size_t>(std::numeric_limits<IntType>::max())) {
         boost::throw_exception( std::range_error("sobol: polynomial value outside the given IntType range") );
       }
@@ -1113,7 +1113,7 @@ public:
 
 } // namespace random
 
-typedef random::sobol<uint32_t> sobol;
+typedef random::sobol<uint64_t> sobol;
 
 } // namespace boost
 

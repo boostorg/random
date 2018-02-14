@@ -57,7 +57,7 @@ struct niederreiter_tables
 {
   BOOST_STATIC_CONSTANT(int, max_dimension = BOOST_RANDOM_NIEDERREITER_BASE2_MAX_DIMENSION);
 
-  // Binary irreducible polynomials (primes in the ring GF(2)[X]), evaluated at X=2. 
+  // Binary irreducible polynomials (primes in the ring GF(2)[X]), evaluated at X=2.
   static unsigned short polynomial(std::size_t n)
   {
     static const unsigned short nb2_a[max_dimension] = {
@@ -65,8 +65,8 @@ struct niederreiter_tables
       47, 55, 59, 61, 67, 73, 87, 91, 97, 103,
       109, 115, 117, 131, 137, 143, 145, 157,
       167, 171, 185, 191, 193, 203, 211, 213,
-      229, 239, 241, 247, 253, 283, 285, 299, 
-      301, 313, 319, 333, 351, 355, 357, 361, 369, 
+      229, 239, 241, 247, 253, 283, 285, 299,
+      301, 313, 319, 333, 351, 355, 357, 361, 369,
       375
     };
 
@@ -76,7 +76,7 @@ struct niederreiter_tables
 
 // Return the base 2 logarithm for a given bitset v
 template <typename Block, typename Allocator>
-inline typename boost::dynamic_bitset<Block, Allocator>::size_type 
+inline typename boost::dynamic_bitset<Block, Allocator>::size_type
 bitset_log2(const boost::dynamic_bitset<Block, Allocator>& v)
 {
   typedef boost::dynamic_bitset<Block, Allocator> bitset_t;
@@ -92,7 +92,7 @@ bitset_log2(const boost::dynamic_bitset<Block, Allocator>& v)
   while (low < up)
   {
     size_type m = low + (up - low) / 2;
- 
+
     // Check if any bit is present after mid
     size_type p = v.find_next(m);
     if (p != bitset_t::npos)
@@ -182,13 +182,13 @@ struct niederreiter_base2_lattice
   {
     if (dimension > nb2::niederreiter_tables::max_dimension)
     {
-      throw std::invalid_argument("The Niederreiter base 2 quasi-random number generator only supports up to " 
+      throw std::invalid_argument("The Niederreiter base 2 quasi-random number generator only supports up to "
         BOOST_PP_STRINGIZE(BOOST_RANDOM_NIEDERREITER_BASE2_MAX_DIMENSION) " dimensions.");
     }
 
     // Initialize the bit array
     bits.resize(boost::extents[bit_count][dimension]);
-     
+
     // Reserve temporary space for lattice computation
     boost::multi_array<IntType, 2> ci(boost::extents[bit_count][bit_count]);
 
@@ -198,7 +198,7 @@ struct niederreiter_base2_lattice
     for (std::size_t dim = 0; dim != dimension; ++dim)
     {
       const int poly = nb2::niederreiter_tables::polynomial(dim);
-      if (static_cast<std::size_t>(poly) > 
+      if (static_cast<std::size_t>(poly) >
           static_cast<std::size_t>(std::numeric_limits<IntType>::max())) {
         boost::throw_exception( std::range_error("niederreiter_base2: polynomial value outside the given IntType range") );
       }
@@ -207,7 +207,7 @@ struct niederreiter_base2_lattice
       const int max_degree = degree * ((bit_count / degree) + 1);
 
       v.resize(degree + max_degree);
-  
+
       // For each dimension, we need to calculate powers of an
       // appropriate irreducible polynomial, see Niederreiter
       // page 65, just below equation (19).
@@ -217,7 +217,7 @@ struct niederreiter_base2_lattice
       // powers of PX.
       int pb_degree = 0;
       boost::dynamic_bitset<> pb(max_degree, 1);
-  
+
       int j = 0;
       while (j < bit_count)
       {
@@ -229,11 +229,11 @@ struct niederreiter_base2_lattice
         // If U = 0, we need to set B to the next power of PX
         // and recalculate V.
         nb2::calculate_v(pb, pb_degree, v);
-  
+
         // Niederreiter (page 56, after equation (7), defines two
         // variables Q and U.  We do not need Q explicitly, but we
         // do need U.
-  
+
         // Advance Niederreiter's state variables.
         for (int u = 0; u < degree && j < bit_count; ++u, ++j)
         {
@@ -247,7 +247,7 @@ struct niederreiter_base2_lattice
           }
         }
       }
-  
+
       // The array CI now holds the values of C(I,J,R) for this value
       // of I.  We pack them into array CJ so that CJ(I,R) holds all
       // the values of C(I,J,R) for J from 1 to NBITS.
@@ -384,7 +384,7 @@ public:
 
 } // namespace random
 
-typedef random::niederreiter_base2<uint32_t> niederreiter_base2;
+typedef random::niederreiter_base2<uint64_t> niederreiter_base2;
 
 } // namespace boost
 
