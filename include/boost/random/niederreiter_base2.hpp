@@ -347,7 +347,7 @@ public:
   //!\brief Throws: overflow_error.
   void seed(IntType init)
   {
-    base_t::seed(init, "niederreiter_base2::seed");
+    base_t::seed(init);
   }
 
   //=========================Doxygen needs this!==============================

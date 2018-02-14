@@ -1085,7 +1085,7 @@ public:
   /** @copydoc boost::random::niederreiter_base2::seed(IntType) */
   void seed(IntType init)
   {
-    base_t::seed(init, "sobol::seed");
+    base_t::seed(init);
   }
 
   //=========================Doxygen needs this!==============================

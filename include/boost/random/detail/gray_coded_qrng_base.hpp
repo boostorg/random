@@ -49,7 +49,7 @@ public:
   // default assignment operator is fine
 
 protected:
-  void seed(size_type init, const char* msg)
+  void seed(size_type init)
   {
     this->curr_elem = 0;
     if (init != this->seq_count)
@@ -58,10 +58,10 @@ protected:
 
       this->seq_count = init++;
       init ^= (init >> 1);
-      for (int r = 0; init != 0; ++r, init >>= 1)
+      for (unsigned r = 0; init != 0; ++r, init >>= 1)
       {
         if (init & 1)
-          update_quasi(r, msg);
+          update_quasi(r);
       }
     }
   }
@@ -69,7 +69,7 @@ protected:
   void reset_state()
   {
     base_t::set_zero();
-    update_quasi(0, "reset_state");
+    update_quasi(0);
   }
 
 private:
@@ -78,22 +78,14 @@ private:
     // Find the position of the least-significant zero in sequence count.
     // This is the bit that changes in the Gray-code representation as
     // the count is advanced.
-    unsigned r = multiprecision::detail::find_lsb(~cnt);
-    update_quasi(r, "compute_seq");
+    update_quasi(multiprecision::detail::find_lsb(~cnt));
   }
 
-  void update_quasi(unsigned r, const char* msg)
+  void update_quasi(unsigned r)
   {
-    if (r < LatticeT::bit_count)
-    {
-      // Calculate the next state.
-      for (std::size_t i = 0; i != this->dimension(); ++i)
-        this->quasi_state[i] ^= this->lattice(r, i);
-    }
-    else
-    {
-      boost::throw_exception( std::overflow_error(msg) );
-    }
+    // Calculate the next state.
+    for (std::size_t i = 0; i != this->dimension(); ++i)
+      this->quasi_state[i] ^= this->lattice(r, i);
   }
 };
 
