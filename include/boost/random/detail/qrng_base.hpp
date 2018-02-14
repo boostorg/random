@@ -163,10 +163,14 @@ private:
 
   result_type next_state()
   {
-    derived().compute_seq(++seq_count);
-
-    curr_elem = 0;
-    return load_cached();
+    size_type old_seq = seq_count++;
+    if (seq_count > old_seq)
+    {
+      derived().compute_seq(seq_count);
+      curr_elem = 0;
+      return load_cached();
+    }
+    boost::throw_exception( std::overflow_error("qrng_base: next_state") );
   }
 
   // Discards z consecutive s-dimensional vectors,
