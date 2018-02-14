@@ -549,7 +549,7 @@ bitset_log2(const boost::dynamic_bitset<Block, Allocator>& v)
 // Multiply polynomials over Z_2.
 template <typename Block, typename Allocator>
 inline boost::dynamic_bitset<Block, Allocator>
-modulo2_multiply(int P, boost::dynamic_bitset<Block, Allocator> v)
+modulo2_multiply(unsigned P, boost::dynamic_bitset<Block, Allocator> v)
 {
   boost::dynamic_bitset<Block, Allocator> pt (v.size());
   for (; P; P >>= 1, v <<= 1)
@@ -566,15 +566,18 @@ modulo2_multiply(int P, boost::dynamic_bitset<Block, Allocator> v)
 // pb is modified
 template <typename Block, typename Allocator, typename T>
 inline void calculate_v(const boost::dynamic_bitset<Block, Allocator>& pb,
-  int& pb_degree, std::vector<T>& v)
+  typename boost::dynamic_bitset<Block, Allocator>::size_type& pb_degree,
+  std::vector<T>& v)
 {
+  typedef typename boost::dynamic_bitset<Block, Allocator>::size_type size_type;
+
   const T arbitrary_element = static_cast<T>(1);  // arbitray element of Z_2
 
   // Now choose a value of Kj as defined in section 3.3.
   // We must have 0 <= Kj < E*J = M.
   // The limit condition on Kj does not seem very relevant
   // in this program.
-  int kj = pb_degree;
+  size_type kj = pb_degree;
 
   pb_degree = bitset_log2(pb);
 
@@ -587,12 +590,12 @@ inline void calculate_v(const boost::dynamic_bitset<Block, Allocator>& pb,
   // values of v to 1."
   // Actually, it sets them to the arbitrary chosen value.
   // Whatever.
-  for (int r = kj; r < pb_degree; ++r)
+  for (size_type r = kj; r < pb_degree; ++r)
     v[r] = arbitrary_element;
 
   // Calculate the remaining V's using the recursion of section 2.3,
   // remembering that the B's have the opposite sign.
-  for (int r = pb_degree; r < v.size(); ++r)
+  for (size_type r = pb_degree; r < v.size(); ++r)
   {
     T term = T /*zero*/ ();
     boost::dynamic_bitset<Block, Allocator> pb_c = pb;
@@ -635,14 +638,14 @@ struct niederreiter_base2_lattice
     // Compute Niedderreiter base 2 lattice
     for (std::size_t dim = 0; dim != dimension; ++dim)
     {
-      const int poly = nb2::niederreiter_tables::polynomial(dim);
+      const unsigned short poly = nb2::niederreiter_tables::polynomial(dim);
       if (static_cast<std::size_t>(poly) >
           static_cast<std::size_t>(std::numeric_limits<IntType>::max())) {
         boost::throw_exception( std::range_error("niederreiter_base2: polynomial value outside the given IntType range") );
       }
 
-      const int degree = multiprecision::detail::find_msb(poly); // integer log2(poly)
-      const int max_degree = degree * ((bit_count / degree) + 1);
+      const unsigned degree = multiprecision::detail::find_msb(poly); // integer log2(poly)
+      const unsigned max_degree = degree * ((bit_count / degree) + 1);
 
       v.resize(degree + max_degree);
 
@@ -653,11 +656,11 @@ struct niederreiter_base2_lattice
       // and its degree into E.  Set polynomial B = PX ** 0 = 1.
       // M is the degree of B.  Subsequently B will hold higher
       // powers of PX.
-      int pb_degree = 0;
+      boost::dynamic_bitset<>::size_type pb_degree = 0;
       boost::dynamic_bitset<> pb(max_degree, 1);
 
-      int j = 0;
-      while (j < bit_count)
+      unsigned j = 0;
+      while (j != bit_count)
       {
         // Now multiply B by PX so B becomes PX**J.
         // In section 2.3, the values of Bi are defined with a minus sign :
@@ -673,7 +676,7 @@ struct niederreiter_base2_lattice
         // do need U.
 
         // Advance Niederreiter's state variables.
-        for (int u = 0; u < degree && j < bit_count; ++u, ++j)
+        for (unsigned u = 0; u != degree && j != bit_count; ++u, ++j)
         {
           // Now C is obtained from V.  Niederreiter
           // obtains A from V (page 65, near the bottom), and then gets
@@ -689,10 +692,10 @@ struct niederreiter_base2_lattice
       // The array CI now holds the values of C(I,J,R) for this value
       // of I.  We pack them into array CJ so that CJ(I,R) holds all
       // the values of C(I,J,R) for J from 1 to NBITS.
-      for (int r = 0; r < bit_count; ++r)
+      for (unsigned r = 0; r != bit_count; ++r)
       {
         IntType term = 0;
-        for (int j = 0; j < bit_count; ++j)
+        for (unsigned j = 0; j != bit_count; ++j)
           term = 2*term + ci[r][j];
         bits[r][dim] = term;
       }

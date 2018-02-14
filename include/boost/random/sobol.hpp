@@ -993,11 +993,11 @@ struct sobol_lattice
 
       // Calculate remaining elements for this dimension,
       // as explained in Bratley+Fox, section 2.
-      for (int j = degree; j < bit_count; ++j)
+      for (unsigned j = degree; j < bit_count; ++j)
       {
         int p_i = poly;
         bits[j][dim] = bits[j - degree][dim];
-        for (int k = 0; k < degree; ++k)
+        for (unsigned k = 0; k != degree; ++k)
         {
           int rem = degree - k;
           bits[j][dim] ^= ((p_i & 1) * bits[j-rem][dim]) << rem;
