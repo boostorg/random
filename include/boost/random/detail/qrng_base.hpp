@@ -27,10 +27,11 @@ namespace random {
 
 namespace detail {
 
-template<typename DerivedT, typename LatticeT>
+template<typename IntType, typename DerivedT, typename LatticeT>
 class qrng_base
 {
 public:
+  typedef IntType size_type;
   typedef typename LatticeT::value_type result_type;
 
   explicit qrng_base(std::size_t dimension)
@@ -76,7 +77,7 @@ public:
   //!X::operator() invocations were executed.
   //!
   //!Throws: overflow_error.
-  void discard(std::size_t z)
+  void discard(size_type z)
   {
     const std::size_t dimension_value = dimension();
 
@@ -170,9 +171,9 @@ private:
 
   // Discards z consecutive s-dimensional vectors,
   // and preserves the position of the element-to-read
-  void discard_vector(std::size_t z)
+  void discard_vector(size_type z)
   {
-    std::size_t inc_seq_count = seq_count + z;
+    size_type inc_seq_count = seq_count + z;
     // Here we check that no overflow occurs before we
     // begin seeding the new value
     if (inc_seq_count > seq_count)
@@ -192,7 +193,7 @@ private:
 protected:
   LatticeT lattice;
   std::size_t curr_elem;
-  std::size_t seq_count;
+  size_type seq_count;
   std::vector<result_type> quasi_state;
 };
 

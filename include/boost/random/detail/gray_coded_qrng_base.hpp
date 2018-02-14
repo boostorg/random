@@ -1,6 +1,6 @@
 /* boost random/detail/gray_coded_qrng_base.hpp header file
  *
- * Copyright Justinas Vygintas Daugmaudis 2010-2017
+ * Copyright Justinas Vygintas Daugmaudis 2010-2018
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -25,18 +25,19 @@ namespace random {
 
 namespace detail {
 
-template<typename DerivedT, typename LatticeT>
-class gray_coded_qrng_base : public qrng_base<DerivedT, LatticeT>
+template<typename IntType, typename DerivedT, typename LatticeT>
+class gray_coded_qrng_base : public qrng_base<IntType, DerivedT, LatticeT>
 {
 private:
-  typedef gray_coded_qrng_base<DerivedT, LatticeT> self_t;
-  typedef qrng_base<DerivedT, LatticeT> base_t;
+  typedef gray_coded_qrng_base<IntType, DerivedT, LatticeT> self_t;
+  typedef qrng_base<IntType, DerivedT, LatticeT> base_t;
 
   // The base needs to access modifying member f-ns, and we
   // don't want these functions to be available for the public use
-  friend class qrng_base<DerivedT, LatticeT>;
+  friend class qrng_base<IntType, DerivedT, LatticeT>;
 
 public:
+  typedef typename base_t::size_type size_type;
   typedef typename LatticeT::value_type result_type;
 
   explicit gray_coded_qrng_base(std::size_t dimension)
@@ -48,7 +49,7 @@ public:
   // default assignment operator is fine
 
 protected:
-  void seed(std::size_t init, const char *msg)
+  void seed(size_type init, const char* msg)
   {
     this->curr_elem = 0;
     if (init != this->seq_count)
@@ -72,16 +73,16 @@ protected:
   }
 
 private:
-  void compute_seq(std::size_t cnt)
+  void compute_seq(size_type cnt)
   {
     // Find the position of the least-significant zero in sequence count.
     // This is the bit that changes in the Gray-code representation as
     // the count is advanced.
-    int r = multiprecision::detail::find_lsb(~cnt);
+    unsigned r = multiprecision::detail::find_lsb(~cnt);
     update_quasi(r, "compute_seq");
   }
 
-  void update_quasi(int r, const char* msg)
+  void update_quasi(unsigned r, const char* msg)
   {
     if (r < LatticeT::bit_count)
     {

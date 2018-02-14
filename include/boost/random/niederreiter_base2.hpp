@@ -1,6 +1,6 @@
 /* boost random/nierderreiter_base2.hpp header file
  *
- * Copyright Justinas Vygintas Daugmaudis 2010-2017
+ * Copyright Justinas Vygintas Daugmaudis 2010-2018
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -171,7 +171,7 @@ struct niederreiter_base2_lattice
 {
   typedef IntType value_type;
 
-  BOOST_STATIC_CONSTANT(int, bit_count = std::numeric_limits<IntType>::digits);
+  BOOST_STATIC_CONSTANT(unsigned, bit_count = std::numeric_limits<IntType>::digits);
 
   explicit niederreiter_base2_lattice(std::size_t dimension)
   {
@@ -242,7 +242,7 @@ struct niederreiter_base2_lattice
           // C from A (page 56, equation (7)).  However this can be done
           // in one step.  Here CI(J,R) corresponds to
           // Niederreiter's C(I,J,R).
-          for (int r = 0; r < bit_count; ++r) {
+          for (unsigned r = 0; r != bit_count; ++r) {
             ci[r][j] = v[r + u];
           }
         }
@@ -289,12 +289,14 @@ private:
 //! \f$L=Dimension \times 2^{digits}\f$, where digits = std::numeric_limits<IntType>::digits.
 template<typename IntType>
 class niederreiter_base2 : public detail::gray_coded_qrng_base<
-                                    niederreiter_base2<IntType>,
-                                    detail::niederreiter_base2_lattice<IntType> >
+                                     IntType
+                                     , niederreiter_base2<IntType>
+                                     , detail::niederreiter_base2_lattice<IntType>
+                                     >
 {
   typedef niederreiter_base2<IntType> self_t;
   typedef detail::niederreiter_base2_lattice<IntType> lattice_t;
-  typedef detail::gray_coded_qrng_base<self_t, lattice_t> base_t;
+  typedef detail::gray_coded_qrng_base<IntType, self_t, lattice_t> base_t;
 
 public:
   typedef IntType result_type;
@@ -343,7 +345,7 @@ public:
   //!\endcode
   //!
   //!\brief Throws: overflow_error.
-  void seed(std::size_t init)
+  void seed(IntType init)
   {
     base_t::seed(init, "niederreiter_base2::seed");
   }
@@ -376,7 +378,7 @@ public:
   //!\endcode
   //!
   //!Throws: overflow_error.
-  void discard(std::size_t z)
+  void discard(IntType z)
   {
     base_t::discard(z);
   }

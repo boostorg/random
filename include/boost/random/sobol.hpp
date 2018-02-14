@@ -1,6 +1,6 @@
 /* boost random/sobol.hpp header file
  *
- * Copyright Justinas Vygintas Daugmaudis 2010-2017
+ * Copyright Justinas Vygintas Daugmaudis 2010-2018
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -956,7 +956,7 @@ struct sobol_lattice
 {
   typedef IntType value_type;
 
-  BOOST_STATIC_CONSTANT(int, bit_count = std::numeric_limits<IntType>::digits);
+  BOOST_STATIC_CONSTANT(unsigned, bit_count = std::numeric_limits<IntType>::digits);
 
   // default copy c-tor is fine
 
@@ -977,7 +977,7 @@ struct sobol_lattice
     bits.resize(boost::extents[bit_count][dimension]);
 
     // Initialize direction table in dimension 0
-    for (int k = 0; k < bit_count; ++k)
+    for (unsigned k = 0; k != bit_count; ++k)
       bits[k][0] = static_cast<IntType>(1);
 
     // Initialize in remaining dimensions.
@@ -988,10 +988,10 @@ struct sobol_lattice
           static_cast<std::size_t>(std::numeric_limits<IntType>::max())) {
         boost::throw_exception( std::range_error("sobol: polynomial value outside the given IntType range") );
       }
-      const int degree = multiprecision::detail::find_msb(poly); // integer log2(poly)
+      const unsigned degree = multiprecision::detail::find_msb(poly); // integer log2(poly)
 
       // set initial values of m from table
-      for (int k = 0; k < degree; ++k)
+      for (unsigned k = 0; k != degree; ++k)
         bits[k][dim] = sbl::sobol_tables::vinit(k, dim-1);
 
       // Calculate remaining elements for this dimension,
@@ -1047,13 +1047,14 @@ private:
 //! \copydoc friendfunctions
 template<typename IntType>
 class sobol : public detail::gray_coded_qrng_base<
-                        sobol<IntType>
+                        IntType
+                      , sobol<IntType>
                       , detail::sobol_lattice<IntType>
-                     >
+                      >
 {
   typedef sobol<IntType> self_t;
   typedef detail::sobol_lattice<IntType> lattice_t;
-  typedef detail::gray_coded_qrng_base<self_t, lattice_t> base_t;
+  typedef detail::gray_coded_qrng_base<IntType, self_t, lattice_t> base_t;
 
 public:
   typedef IntType result_type;
@@ -1081,8 +1082,8 @@ public:
     base_t::reset_state();
   }
 
-  /** @copydoc boost::random::niederreiter_base2::seed(std::size_t) */
-  void seed(std::size_t init)
+  /** @copydoc boost::random::niederreiter_base2::seed(IntType) */
+  void seed(IntType init)
   {
     base_t::seed(init, "sobol::seed");
   }
@@ -1104,8 +1105,8 @@ public:
     return base_t::operator()();
   }
 
-  /** @copydoc boost::random::niederreiter_base2::discard(std::size_t) */
-  void discard(std::size_t z)
+  /** @copydoc boost::random::niederreiter_base2::discard(IntType) */
+  void discard(IntType z)
   {
     base_t::discard(z);
   }

@@ -1,6 +1,6 @@
 /* boost random/faure.hpp header file
  *
- * Copyright Justinas Vygintas Daugmaudis 2010-2017
+ * Copyright Justinas Vygintas Daugmaudis 2010-2018
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,7 @@
 #include <cmath>
 
 #include <boost/assert.hpp>
-#include <boost/multiprecision/integer.hpp> // powm 
+#include <boost/multiprecision/integer.hpp> // powm
 
 #include <sstream>
 
@@ -89,13 +89,13 @@ inline std::size_t integer_log(std::size_t base, std::size_t arg)
   return ilog;
 }
 
-inline std::size_t integer_pow(std::size_t base, std::size_t e) 
-{ 
-  // Reuse the implementation of exponentiation by squaring, but 
-  // there is a twist that powm actually computes base^e % m, 
-  // so for m we plug-in a fully set bitset, whose modulo will be no-op. 
-  return multiprecision::powm(base, e, ~std::size_t()); 
-} 
+inline std::size_t integer_pow(std::size_t base, std::size_t e)
+{
+  // Reuse the implementation of exponentiation by squaring, but
+  // there is a twist that powm actually computes base^e % m,
+  // so for m we plug-in a fully set bitset, whose modulo will be no-op.
+  return multiprecision::powm(base, e, ~std::size_t());
+}
 
 // Computes a table of binomial coefficients modulo qs.
 template<typename RealType>
@@ -132,24 +132,24 @@ struct binomial_coefficients
       const std::size_t hisum = n_elements(seq);
       if( coeff.size() != size_hint(hisum) )
         recompute_tables(hisum);
-  
+
       typename std::vector<RealType>::iterator it = quasi.begin();
-  
+
       *it = compute_recip(seq, hisum, ytemp.rbegin());
-  
+
       // Find other components using the Faure method.
       ++it;
       for ( ; it != quasi.end(); ++it)
       {
         *it = RealType();
         RealType r = inv_qs_base;
-  
+
         for (std::size_t i = 0; i != hisum; ++i)
         {
           RealType ztemp = RealType();
           for (std::size_t j = i; j != hisum; ++j)
             ztemp += ytemp[j] * upper_element(i, j, hisum);
-  
+
           // Sum ( J <= I <= HISUM ) ( old ytemp(i) * binom(i,j) ) mod QS.
           ytemp[i] = std::fmod(ztemp, static_cast<RealType>(qs_base));
           *it += ytemp[i] * r;
@@ -268,18 +268,19 @@ private:
 //!Some member functions may throw exceptions of type @c std::bad_alloc.
 //!
 //! \copydoc friendfunctions
-template<typename RealType>
+template<typename RealType, typename SeqSizeT = boost::uint64_t>
 class faure : public detail::qrng_base<
-                        faure<RealType>
-                      , detail::fr::binomial_coefficients<RealType>
-                      >
+                        SeqSizeT
+                        , faure<RealType>
+                        , detail::fr::binomial_coefficients<RealType>
+                        >
 {
-  typedef faure<RealType> self_t;
+  typedef faure<RealType, SeqSizeT> self_t;
 
   typedef detail::fr::binomial_coefficients<RealType> lattice_t;
-  typedef detail::qrng_base<self_t, lattice_t> base_t;
+  typedef detail::qrng_base<SeqSizeT, self_t, lattice_t> base_t;
 
-  friend class detail::qrng_base<self_t, lattice_t >;
+  friend class detail::qrng_base<SeqSizeT, self_t, lattice_t >;
 
 public:
   typedef RealType result_type;
@@ -310,7 +311,7 @@ public:
   /** @copydetails boost::random::niederreiter_base2::seed(std::size_t)
    * Throws: bad_alloc.
    */
-  void seed(std::size_t init)
+  void seed(SeqSizeT init)
   {
     compute_seq(init);
     this->curr_elem = 0;
@@ -337,14 +338,14 @@ public:
   /** @copydoc boost::random::niederreiter_base2::discard(std::size_t)
    * Throws: bad_alloc.
    */
-  void discard(std::size_t z)
+  void discard(SeqSizeT z)
   {
     base_t::discard(z);
   }
 
 private:
 /** @cond hide_private_members */
-  void compute_seq(std::size_t seq)
+  void compute_seq(SeqSizeT seq)
   {
     this->lattice.update(seq, this->quasi_state);
   }
