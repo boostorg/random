@@ -19,8 +19,6 @@
 #include <boost/assert.hpp>
 #include <boost/multiprecision/integer.hpp> // powm
 
-#include <sstream>
-
 //!\file
 //!Describes the quasi-random number generator class template faure.
 
@@ -63,13 +61,7 @@ struct prime_table
       1033, 1039, 1049, 1051, 1061, 1063, 1069, 1087, 1091, 1093,
       1097, 1103, 1109, 1117 };
 
-    if (n > prim_a[number_of_primes - 1])
-    {
-      std::ostringstream os;
-      os << "The Faure quasi-random number generator only supports up to "
-        << prim_a[number_of_primes - 1] << " dimensions.";
-      throw std::invalid_argument(os.str());
-    }
+    detail::dimension_assert("Faure", n, prim_a[number_of_primes - 1]);
 
     return *std::lower_bound(prim_a, prim_a + number_of_primes, n);
   }

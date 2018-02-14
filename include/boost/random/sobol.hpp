@@ -967,11 +967,8 @@ struct sobol_lattice
 
   void resize(std::size_t dimension)
   {
-    if (dimension > sbl::sobol_tables::max_dimension)
-    {
-      throw std::invalid_argument("The Sobol quasi-random number generator only supports up to "
-        BOOST_PP_STRINGIZE(BOOST_RANDOM_SOBOL_MAX_DIMENSION) " dimensions.");
-    }
+    detail::dimension_assert("Sobol",
+      dimension, sbl::sobol_tables::max_dimension);
 
     // Initialize the bit array
     bits.resize(boost::extents[bit_count][dimension]);

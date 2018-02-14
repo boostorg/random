@@ -14,6 +14,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <sstream>
 
 #include <boost/random/detail/operators.hpp>
 
@@ -201,6 +202,17 @@ protected:
   size_type seq_count;
   std::vector<result_type> quasi_state;
 };
+
+inline void dimension_assert(const char* generator, std::size_t dim, std::size_t maxdim)
+{
+  if (dim > maxdim)
+  {
+    std::ostringstream os;
+    os << "The " << generator << " quasi-random number generator only supports up to "
+      << maxdim << " dimensions.";
+    boost::throw_exception( std::invalid_argument(os.str()) );
+  }
+}
 
 }} // namespace detail::random
 

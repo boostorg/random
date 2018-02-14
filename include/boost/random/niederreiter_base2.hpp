@@ -180,11 +180,8 @@ struct niederreiter_base2_lattice
 
   void resize(std::size_t dimension)
   {
-    if (dimension > nb2::niederreiter_tables::max_dimension)
-    {
-      throw std::invalid_argument("The Niederreiter base 2 quasi-random number generator only supports up to "
-        BOOST_PP_STRINGIZE(BOOST_RANDOM_NIEDERREITER_BASE2_MAX_DIMENSION) " dimensions.");
-    }
+    detail::dimension_assert("Niederreiter base 2",
+      dimension, nb2::niederreiter_tables::max_dimension);
 
     // Initialize the bit array
     bits.resize(boost::extents[bit_count][dimension]);
