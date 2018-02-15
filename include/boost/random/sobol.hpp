@@ -90,11 +90,11 @@ struct sobol_lattice
       }
     }
 
-    // Multiply columns by appropriate power of 2.
-    IntType p = static_cast<IntType>(2);
-    for (int j = bit_count-1-1; j >= 0; --j, p <<= 1)
+    // Shift columns by appropriate power of 2.
+    IntType p = static_cast<IntType>(1);
+    for (int j = bit_count-1-1; j >= 0; --j, ++p)
       for (std::size_t dim = 0; dim != dimension; ++dim)
-        bits[j][dim] *= p;
+        bits[j][dim] <<= p;
   }
 
   value_type operator()(int i, int j) const
