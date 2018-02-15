@@ -719,7 +719,7 @@ private:
 //!Bratley, Fox, Niederreiter, ACM Trans. Model. Comp. Sim. 2, 195 (1992).
 //! \endblockquote
 //!
-//!\attention \b Important: This implementation supports up to 54 dimensions.
+//!\attention \b Important: This implementation supports up to 4720 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
 //!niederreiter_base2 returning objects of type @c IntType, u and v are the values of @c X.
@@ -754,12 +754,15 @@ public:
   static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
   { return (std::numeric_limits<IntType>::max)(); }
 
-  //!Effects: Constructs the default s-dimensional Niederreiter base 2 quasi-random number generator.
+  //!Effects: Constructs the default `s`-dimensional Niederreiter base 2 quasi-random number generator.
   //!
   //!Throws: bad_alloc, invalid_argument, range_error.
   explicit niederreiter_base2(std::size_t s)
     : base_t(s) // initialize lattice here
   {}
+
+#ifdef BOOST_RANDOM_DOXYGEN
+  //=========================Doxygen needs this!==============================
 
   //!Requirements: *this is mutable.
   //!
@@ -769,7 +772,7 @@ public:
   //!\brief Throws: nothing.
   void seed()
   {
-    base_t::reset_state();
+    base_t::seed();
   }
 
   //!Requirements: *this is mutable.
@@ -791,14 +794,12 @@ public:
     base_t::seed(init);
   }
 
-  //=========================Doxygen needs this!==============================
-
   //!Requirements: *this is mutable.
   //!
-  //!Returns: Returns a successive element of an s-dimensional
+  //!Returns: Returns a successive element of an `s`-dimensional
   //!(s = X::dimension()) vector at each invocation. When all elements are
   //!exhausted, X::operator() begins anew with the starting element of a
-  //!subsequent s-dimensional vector.
+  //!subsequent `s`-dimensional vector.
   //!
   //!Throws: overflow_error.
   result_type operator()()
@@ -808,7 +809,7 @@ public:
 
   //!Requirements: *this is mutable.
   //!
-  //!Effects: Advances *this state as if z consecutive
+  //!Effects: Advances *this state as if `z` consecutive
   //!X::operator() invocations were executed.
   //!\code
   //!X u = v;
@@ -823,6 +824,7 @@ public:
   {
     base_t::discard(z);
   }
+#endif // BOOST_RANDOM_DOXYGEN
 };
 
 } // namespace random

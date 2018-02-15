@@ -1040,8 +1040,6 @@ private:
 //!happens when the quasi-random domain is exhausted and the generator cannot produce
 //!any more values. The length of the low discrepancy sequence is given by
 //! \f$L=Dimension \times 2^{digits}\f$, where digits = std::numeric_limits<IntType>::digits.
-//!
-//! \copydoc friendfunctions
 template<typename IntType = uint64_t>
 class sobol : public detail::gray_coded_qrng_base<
                         IntType
@@ -1064,7 +1062,7 @@ public:
   static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
   { return (std::numeric_limits<IntType>::max)(); }
 
-  //!Effects: Constructs the default s-dimensional Sobol quasi-random number generator.
+  //!Effects: Constructs the default `s`-dimensional Sobol quasi-random number generator.
   //!
   //!Throws: bad_alloc, invalid_argument, range_error.
   explicit sobol(std::size_t s)
@@ -1073,10 +1071,13 @@ public:
 
   // default copy c-tor is fine
 
+#ifdef BOOST_RANDOM_DOXYGEN
+  //=========================Doxygen needs this!==============================
+
   /** @copydoc boost::random::niederreiter_base2::seed() */
   void seed()
   {
-    base_t::reset_state();
+    base_t::seed();
   }
 
   /** @copydoc boost::random::niederreiter_base2::seed(IntType) */
@@ -1085,18 +1086,7 @@ public:
     base_t::seed(init);
   }
 
-  //=========================Doxygen needs this!==============================
-
-  //!Requirements: *this is mutable.
-  //!
-  //!Returns: Returns a successive element of an s-dimensional
-  //!(s = X::dimension()) vector at each invocation. When all elements are
-  //!exhausted, X::operator() begins anew with the starting element of a
-  //!subsequent s-dimensional vector.
-  //!
-  //!Throws: overflow_error.
-
-  // Fixed in Doxygen 1.7.0 -- id 612458: Fixed problem handling @copydoc for function operators.
+  /** @copydoc boost::random::niederreiter_base2::operator()() */
   result_type operator()()
   {
     return base_t::operator()();
@@ -1107,6 +1097,7 @@ public:
   {
     base_t::discard(z);
   }
+#endif // BOOST_RANDOM_DOXYGEN
 };
 
 } // namespace random

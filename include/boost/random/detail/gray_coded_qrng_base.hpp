@@ -48,7 +48,12 @@ public:
 
   // default assignment operator is fine
 
-protected:
+  void seed()
+  {
+    base_t::set_zero();
+    update_quasi(0);
+  }
+
   void seed(size_type init)
   {
     this->curr_elem = 0;
@@ -64,12 +69,6 @@ protected:
           update_quasi(r);
       }
     }
-  }
-
-  void reset_state()
-  {
-    base_t::set_zero();
-    update_quasi(0);
   }
 
 private:

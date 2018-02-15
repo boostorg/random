@@ -112,7 +112,7 @@ doxygen reference :
         mt19937=\"@xmlonly <classname alt=\\\"boost::random::mt19937\\\">mt19937</classname> @endxmlonly\" \\
         niederreiter_base2=\"@xmlonly <classname alt=\\\"boost::random::niederreiter_base2\\\">niederreiter_base2</classname> @endxmlonly\" \\
         sobol=\"@xmlonly <classname alt=\\\"boost::random::sobol\\\">sobol</classname> @endxmlonly\" \\
-        faure=\"@xmlonly <classname alt=\\\"boost::random::faure\\\">faure</classname> @endxmlonly\" \\        
+        faure=\"@xmlonly <classname alt=\\\"boost::random::faure\\\">faure</classname> @endxmlonly\" \\
         ecuyer1988=\"@xmlonly <classname alt=\\\"boost::random::ecuyer1988\\\">ecuyer1988</classname> @endxmlonly\" \\
         lagged_fibonacci607=\"@xmlonly <classname alt=\\\"boost::random::lagged_fibonacci607\\\">lagged_fibonacci607</classname> @endxmlonly\" \\
         lagged_fibonacci44497=\"@xmlonly <classname alt=\\\"boost::random::lagged_fibonacci44497\\\">lagged_fibonacci44497</classname> @endxmlonly\" \\
@@ -133,6 +133,7 @@ doxygen reference :
         \"BOOST_PREVENT_MACRO_SUBSTITUTION=\" \\
         \"BOOST_STATIC_ASSERT(x)=\" \\
         \"BOOST_STATIC_CONSTANT(type,value)=static const type value\" \\
+        \"BOOST_CONSTEXPR=constexpr\" \\
         \"UINT64_C(value)=value ## ull\" \\
         \"BOOST_RANDOM_DECL=\" \\
         \"RealType(x)=x\" \\

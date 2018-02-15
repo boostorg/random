@@ -258,8 +258,6 @@ private:
 //!faure returning objects of type @c RealType, u and v are the values of @c X.
 //!
 //!Some member functions may throw exceptions of type @c std::bad_alloc.
-//!
-//! \copydoc friendfunctions
 template<typename RealType = double, typename SeqSizeT = boost::uint64_t>
 class faure : public detail::qrng_base<
                         SeqSizeT
@@ -300,7 +298,7 @@ public:
     seed(0);
   }
 
-  /** @copydetails boost::random::niederreiter_base2::seed(std::size_t)
+  /** @copydetails boost::random::niederreiter_base2::seed(IntType)
    * Throws: bad_alloc.
    */
   void seed(SeqSizeT init)
@@ -310,30 +308,23 @@ public:
     this->seq_count = init;
   }
 
+#ifdef BOOST_RANDOM_DOXYGEN
   //=========================Doxygen needs this!==============================
 
-  //!Requirements: *this is mutable.
-  //!
-  //!Returns: Returns a successive element of an s-dimensional
-  //!(s = X::dimension()) vector at each invocation. When all elements are
-  //!exhausted, X::operator() begins anew with the starting element of a
-  //!subsequent s-dimensional vector.
-  //!
-  //!Throws: bad_alloc.
-
-  // Fixed in Doxygen 1.7.0 -- id 612458: Fixed problem handling @copydoc for function operators.
+  /** @copydoc boost::random::niederreiter_base2::operator()() */
   result_type operator()()
   {
     return base_t::operator()();
   }
 
-  /** @copydoc boost::random::niederreiter_base2::discard(std::size_t)
+  /** @copydoc boost::random::niederreiter_base2::discard(IntType)
    * Throws: bad_alloc.
    */
   void discard(SeqSizeT z)
   {
     base_t::discard(z);
   }
+#endif // BOOST_RANDOM_DOXYGEN
 
 private:
 /** @cond hide_private_members */
