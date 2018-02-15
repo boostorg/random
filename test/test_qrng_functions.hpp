@@ -125,6 +125,12 @@ inline void discard_function(T (&pt)[N][Dimension], std::size_t skip)
   }
 }
 
+inline bool accept_all_exceptions(const std::exception& e)
+{
+  BOOST_TEST_MESSAGE( e.what() );
+  return true;
+}
+
 } // namespace test
 
 
@@ -149,6 +155,18 @@ inline void test_##QRNG##_discard(T (&pt)[N][Dimension], std::size_t skip) \
 { \
   typedef boost::random::QRNG<> engine_t; \
   test::discard_function<engine_t>(pt, skip); \
+} \
+\
+BOOST_AUTO_TEST_CASE( test_##QRNG##_zero_dimension_fails ) \
+{ \
+  typedef boost::random::QRNG<> engine_t; \
+  BOOST_REQUIRE_EXCEPTION( engine_t(0), std::invalid_argument, test::accept_all_exceptions ) \
+} \
+\
+BOOST_AUTO_TEST_CASE( test_##QRNG##_max_dimension_fails ) \
+{ \
+  typedef boost::random::QRNG<> engine_t; \
+  BOOST_REQUIRE_EXCEPTION( engine_t(100000), std::invalid_argument, test::accept_all_exceptions ) \
 } \
 /**/
 
