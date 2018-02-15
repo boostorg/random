@@ -117,7 +117,7 @@ private:
 //! SIAM J. Sci. Comput. 30, 2635-2654 (2008)].
 //! \endblockquote
 //!
-//!\attention \b Important: This implementation supports up to 21201 dimensions.
+//!\attention \b Important: This implementation supports up to 3667 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
 //!sobol returning objects of type @c IntType, u and v are the values of @c X.
