@@ -311,6 +311,9 @@ public:
 #ifdef BOOST_RANDOM_DOXYGEN
   //=========================Doxygen needs this!==============================
 
+  /** @copydoc boost::random::niederreiter_base2::dimension() */
+  std::size_t dimension() const { return base_t::dimension(); }
+
   /** @copydoc boost::random::niederreiter_base2::operator()() */
   result_type operator()()
   {

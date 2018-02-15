@@ -11,11 +11,7 @@
 
 #include <boost/random/detail/qrng_base.hpp>
 
-// Prerequisite headers for bitscan to work
-#include <limits.h>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/multiprecision/detail/bitscan.hpp> // find_lsb
+#include <boost/multiprecision/integer.hpp> // lsb
 
 //!\file
 //!Describes the gray-coded quasi-random number generator base class template.
@@ -77,7 +73,7 @@ private:
     // Find the position of the least-significant zero in sequence count.
     // This is the bit that changes in the Gray-code representation as
     // the count is advanced.
-    update_quasi(multiprecision::detail::find_lsb(~cnt));
+    update_quasi(multiprecision::lsb(~cnt));
   }
 
   void update_quasi(unsigned r)

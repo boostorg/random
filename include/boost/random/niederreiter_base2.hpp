@@ -161,7 +161,7 @@ struct niederreiter_base2_lattice
         boost::throw_exception( std::range_error("niederreiter_base2: polynomial value outside the given IntType range") );
       }
 
-      const unsigned degree = multiprecision::detail::find_msb(poly); // integer log2(poly)
+      const unsigned degree = multiprecision::msb(poly); // integer log2(poly)
       const unsigned max_degree = degree * ((bit_count / degree) + 1);
 
       v.resize(degree + max_degree);
@@ -281,6 +281,11 @@ public:
 #ifdef BOOST_RANDOM_DOXYGEN
   //=========================Doxygen needs this!==============================
 
+  //!Returns: The dimension of of the quasi-random domain.
+  //!
+  //!Throws: nothing.
+  std::size_t dimension() const { return base_t::dimension(); }
+
   //!Requirements: *this is mutable.
   //!
   //!Effects: Resets the quasi-random number generator state to
@@ -294,8 +299,8 @@ public:
 
   //!Requirements: *this is mutable.
   //!
-  //!Effects: Effectively sets the quasi-random number generator state to the init-th
-  //!vector in the s-dimensional quasi-random domain, where s == X::dimension().
+  //!Effects: Effectively sets the quasi-random number generator state to the `init`-th
+  //!vector in the `s`-dimensional quasi-random domain, where `s` == X::dimension().
   //!\code
   //!X u, v;
   //!for(int i = 0; i < N; ++i)
