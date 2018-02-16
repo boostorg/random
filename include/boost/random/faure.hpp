@@ -16,8 +16,8 @@
 
 #include <cmath>
 
+#include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
-#include <boost/multiprecision/integer.hpp> // powm
 
 //!\file
 //!Describes the quasi-random number generator class template faure_engine.
@@ -81,12 +81,18 @@ inline std::size_t integer_log(std::size_t base, std::size_t arg)
   return ilog;
 }
 
+// Perform exponentiation by squaring (potential for code reuse in multiprecision::powm)
 inline std::size_t integer_pow(std::size_t base, std::size_t e)
 {
-  // Reuse the implementation of exponentiation by squaring, but
-  // there is a twist that powm actually computes base^e % m,
-  // so for m we plug-in a fully set bitset, whose modulo will be no-op.
-  return multiprecision::powm(base, e, ~std::size_t());
+  std::size_t result = 1;
+  while (e)
+  {
+    if (e & 1)
+      result *= base;
+    e >>= 1;
+    base *= base;
+  }
+  return result;
 }
 
 // Computes a table of binomial coefficients modulo qs.
