@@ -354,7 +354,7 @@ public:
  *
  * There are exactly 4720 such primes, which yields a Niederreiter base 2 table for 4720 dimensions.
  *
- * However, it is possible to provide your own table should the default one be insufficient.
+ * However, it is possible to provide your own table \niederreiter_base2_engine should the default one be insufficient.
  */
 typedef niederreiter_base2_engine<boost::uint_least64_t,
   #ifdef BOOST_RANDOM_DOXYGEN

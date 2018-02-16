@@ -194,10 +194,12 @@ public:
  *  SIAM J. Sci. Comput. 30, 2635-2654 (2008).
  *  @endblockquote
  *
+ * See the original tables up to dimension 21201: https://web.archive.org/web/20170802022909/http://web.maths.unsw.edu.au/~fkuo/sobol/new-joe-kuo-6.21201
+ *
  * For practical reasons the default table uses only the subset of binary polynomials \f$a\f$ that
  * satisfy \f$\forall a < 2^{16}\f$.
  *
- * However, it is possible to provide your own table should the default one be insufficient.
+ * However, it is possible to provide your own table to \sobol_engine should the default one be insufficient.
  */
 typedef sobol_engine<boost::uint_least64_t,
   #ifdef BOOST_RANDOM_DOXYGEN

@@ -26,7 +26,7 @@ namespace qrng_tables {
 //     S. Joe and F. Y. Kuo, Constructing Sobol sequences with better two-dimensional projections,
 //     SIAM J. Sci. Comput. 30, 2635-2654 (2008).
 // and were derived from files provided on Joe Kuo's website
-// http://web.maths.unsw.edu.au/~fkuo/sobol/ on 15/02/2018
+// https://web.archive.org/web/20170802022909/http://web.maths.unsw.edu.au:80/~fkuo/sobol/new-joe-kuo-6.21201
 //
 // The tables were cut-off at 3667 dimensions for practical reasons. Full 21201 dimension
 // table would result in a header in 1.7Mb range. Here we cut-off the full table to the
