@@ -27,14 +27,15 @@ namespace random {
 
 /** @cond */
 namespace detail {
-namespace fr {
+
+namespace qrng_tables {
 
 // There is no particular reason why 187 first primes were chosen
 // to be put into this table. The only reason was, perhaps, that
 // the number of dimensions for Faure generator would be around
-// the same number as the number of dimensions supported by the
-// Sobol qrng.
-struct prime_table
+// the same order of magnitude as the number of dimensions supported
+// by the Sobol qrng.
+struct primes
 {
   typedef unsigned short value_type;
 
@@ -67,6 +68,11 @@ struct prime_table
   }
 };
 
+} // namespace qrng_tables
+
+
+namespace fr {
+
 // Returns the integer part of the logarithm base Base of arg.
 // In erroneous situations, e.g., integer_log(base, 0) the function
 // returns 0 and does not report the error. This is the intended
@@ -96,15 +102,16 @@ inline std::size_t integer_pow(std::size_t base, std::size_t e)
 }
 
 // Computes a table of binomial coefficients modulo qs.
-template<typename RealType>
+template<typename RealType, typename SeqSizeT, typename PrimeTable>
 struct binomial_coefficients
 {
   typedef RealType value_type;
+  typedef SeqSizeT size_type;
 
   // Binomial values modulo qs_base will never be bigger than qs_base.
   // We can choose an appropriate integer type to hold modulo values and
   // shave off memory footprint.
-  typedef prime_table::value_type packed_uint_t;
+  typedef typename PrimeTable::value_type packed_uint_t;
 
   // default copy c-tor is fine
 
@@ -115,7 +122,7 @@ struct binomial_coefficients
 
   void resize(std::size_t dimension)
   {
-    qs_base = fr::prime_table::lower_bound(dimension);
+    qs_base = PrimeTable::lower_bound(dimension);
     inv_qs_base = static_cast<RealType>(1) / static_cast<RealType>(qs_base);
 
     // Throw away previously computed coefficients.
@@ -123,7 +130,7 @@ struct binomial_coefficients
     coeff.clear();
   }
 
-  void update(std::size_t seq, std::vector<RealType>& quasi)
+  void update(size_type seq, std::vector<RealType>& quasi)
   {
     if (!quasi.empty())
     {
@@ -158,7 +165,7 @@ struct binomial_coefficients
   }
 
 private:
-  inline std::size_t n_elements(std::size_t seq) const
+  inline size_type n_elements(size_type seq) const
   {
     return integer_log(qs_base, seq) + 1;
   }
@@ -177,7 +184,7 @@ private:
   }
 
   template<typename Iterator>
-  RealType compute_recip(std::size_t seq, std::size_t n, Iterator out) const
+  RealType compute_recip(size_type seq, std::size_t n, Iterator out) const
   {
     // Here we do
     //   Sum ( 0 <= J <= HISUM ) YTEMP(J) * QS**J
@@ -258,22 +265,20 @@ private:
 //!Volume 12, Number 4, December 1986, pages 362-376.
 //! \endblockquote
 //!
-//!\attention\b Important: This implementation supports up to 1117 dimensions.
-//!
 //!In the following documentation @c X denotes the concrete class of the template
 //!faure_engine returning objects of type @c RealType, u and v are the values of @c X.
 //!
 //!Some member functions may throw exceptions of type @c std::bad_alloc.
-template<typename RealType, typename SeqSizeT>
+template<typename RealType, typename SeqSizeT, typename PrimeTable>
 class faure_engine : public detail::qrng_base<
-                          faure_engine<RealType, SeqSizeT>
-                        , detail::fr::binomial_coefficients<RealType>
+                          faure_engine<RealType, SeqSizeT, PrimeTable>
+                        , detail::fr::binomial_coefficients<RealType, SeqSizeT, PrimeTable>
                         , SeqSizeT
                         >
 {
-  typedef faure_engine<RealType, SeqSizeT> self_t;
+  typedef faure_engine<RealType, SeqSizeT, PrimeTable> self_t;
 
-  typedef detail::fr::binomial_coefficients<RealType> lattice_t;
+  typedef detail::fr::binomial_coefficients<RealType, SeqSizeT, PrimeTable> lattice_t;
   typedef detail::qrng_base<self_t, lattice_t, SeqSizeT> base_t;
 
   friend class detail::qrng_base<self_t, lattice_t, SeqSizeT>;
@@ -344,7 +349,18 @@ private:
 /** @endcond */
 };
 
-typedef faure_engine<double, boost::uint_least64_t> faure;
+/**
+ * @attention This specialization of \faure_engine supports up to 1117 dimensions.
+ *
+ * However, it is possible to provide your own prime table to \faure_engine should the default one be insufficient.
+ */
+typedef faure_engine<double, boost::uint_least64_t,
+  #ifdef BOOST_RANDOM_DOXYGEN
+    prime-table
+  #else
+    detail::qrng_tables::primes
+  #endif
+> faure;
 
 } // namespace random
 
