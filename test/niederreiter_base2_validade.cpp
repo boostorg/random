@@ -349,6 +349,10 @@ static const double niederreiter_base2_16_100[100][16] =
 
 QRNG_VALIDATION_TEST_FUNCTIONS(niederreiter_base2)
 
+BOOST_AUTO_TEST_CASE( check_max_dimension )
+{
+  test_niederreiter_base2_max_dimension(BOOST_RANDOM_NIEDERREITER_BASE2_MAX_DIMENSION);
+}
 
 BOOST_AUTO_TEST_CASE( validate_niederreiter_base2 )
 {

@@ -350,6 +350,11 @@ static const double sobol_16_100[100][16] =
 
 QRNG_VALIDATION_TEST_FUNCTIONS(sobol)
 
+BOOST_AUTO_TEST_CASE( check_max_dimension )
+{
+  test_sobol_max_dimension(BOOST_RANDOM_SOBOL_MAX_DIMENSION);
+}
+
 BOOST_AUTO_TEST_CASE( validate_sobol )
 {
   test_sobol_values(sobol_02_99, 0);

@@ -136,37 +136,35 @@ inline bool accept_all_exceptions(const std::exception& e)
 
 #define QRNG_VALIDATION_TEST_FUNCTIONS(QRNG) \
 \
+typedef boost::random::QRNG engine_t; \
+\
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_values(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG engine_t; \
   test::expected_values<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_seed(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG engine_t; \
   test::seed_function<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_discard(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG engine_t; \
   test::discard_function<engine_t>(pt, skip); \
 } \
-/*\
-BOOST_AUTO_TEST_CASE( test_##QRNG##_zero_dimension_fails ) \
+\
+inline void test_##QRNG##_max_dimension(std::size_t dim) \
 { \
-  typedef boost::random::QRNG<> engine_t; \
-  BOOST_REQUIRE_EXCEPTION( engine_t(0), std::invalid_argument, test::accept_all_exceptions ) \
+  engine_t eng(dim); /*must succeed*/ \
+  BOOST_REQUIRE_EXCEPTION( engine_t(dim+1), std::invalid_argument, test::accept_all_exceptions ); \
 } \
 \
-BOOST_AUTO_TEST_CASE( test_##QRNG##_max_dimension_fails ) \
+BOOST_AUTO_TEST_CASE( test_##QRNG##_zero_dimension_fails ) \
 { \
-  typedef boost::random::QRNG<> engine_t; \
-  BOOST_REQUIRE_EXCEPTION( engine_t(100000), std::invalid_argument, test::accept_all_exceptions ) \
+  BOOST_REQUIRE_EXCEPTION( engine_t(0), std::invalid_argument, test::accept_all_exceptions ); \
 } \
 /**/
 
