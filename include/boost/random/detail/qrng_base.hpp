@@ -82,9 +82,9 @@ public:
   {
     const std::size_t dimension_value = dimension();
 
-    std::size_t vec_n  = z / dimension_value;
-    std::size_t elem_n = z - vec_n * dimension_value; // z % Dimension
-    std::size_t vec_offset = vec_n + (curr_elem + elem_n) / dimension_value;
+    size_type vec_n  = z / dimension_value;
+    size_type elem_n = z - vec_n * dimension_value; // z % Dimension
+    size_type vec_offset = vec_n + (curr_elem + elem_n) / dimension_value;
     // Discards vec_offset consecutive s-dimensional vectors
     discard_vector(vec_offset);
     // Sets up the proper position of the element-to-read
@@ -101,7 +101,8 @@ public:
   //!Reads a @c DerivedT from a @c std::istream.
   BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, DerivedT, s)
   {
-    std::size_t dim, seed, z;
+    std::size_t dim;
+    typename DerivedT::size_type seed, z;
     if (is >> dim >> std::ws >> seed >> std::ws >> z) // initialize iff success!
     {
       if (s.dimension() != dim)
