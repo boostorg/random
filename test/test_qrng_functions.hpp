@@ -139,24 +139,24 @@ inline bool accept_all_exceptions(const std::exception& e)
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_values(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG<> engine_t; \
+  typedef boost::random::QRNG engine_t; \
   test::expected_values<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_seed(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG<> engine_t; \
+  typedef boost::random::QRNG engine_t; \
   test::seed_function<engine_t>(pt, skip); \
 } \
 \
 template<typename T, std::size_t Dimension, std::size_t N> \
 inline void test_##QRNG##_discard(T (&pt)[N][Dimension], std::size_t skip) \
 { \
-  typedef boost::random::QRNG<> engine_t; \
+  typedef boost::random::QRNG engine_t; \
   test::discard_function<engine_t>(pt, skip); \
 } \
-\
+/*\
 BOOST_AUTO_TEST_CASE( test_##QRNG##_zero_dimension_fails ) \
 { \
   typedef boost::random::QRNG<> engine_t; \

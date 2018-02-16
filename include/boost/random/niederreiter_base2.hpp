@@ -21,7 +21,7 @@
 #include <boost/multi_array.hpp>
 
 //!\file
-//!Describes the quasi-random number generator class template niederreiter_base2.
+//!Describes the quasi-random number generator class template niederreiter_base2_engine.
 //!
 //!\b Note: it is especially useful in conjunction with class template uniform_real.
 
@@ -127,12 +127,12 @@ inline void calculate_v(const boost::dynamic_bitset<Block, Allocator>& pb,
 
 } // namespace nb2
 
-template<typename IntType>
+template<typename IntType, typename Nb2Table>
 struct niederreiter_base2_lattice
 {
   typedef IntType value_type;
 
-  BOOST_STATIC_CONSTANT(unsigned, bit_count = std::numeric_limits<IntType>::digits);
+  BOOST_STATIC_CONSTANT(unsigned, bit_count = std::numeric_limits<value_type>::digits);
 
   explicit niederreiter_base2_lattice(std::size_t dimension)
   {
@@ -141,24 +141,22 @@ struct niederreiter_base2_lattice
 
   void resize(std::size_t dimension)
   {
-    detail::dimension_assert("Niederreiter base 2",
-      dimension, qrng_tables::niederreiter_base2::max_dimension);
+    detail::dimension_assert("Niederreiter base 2", dimension, Nb2Table::max_dimension);
 
     // Initialize the bit array
     bits.resize(boost::extents[bit_count][dimension]);
 
     // Reserve temporary space for lattice computation
-    boost::multi_array<IntType, 2> ci(boost::extents[bit_count][bit_count]);
+    boost::multi_array<value_type, 2> ci(boost::extents[bit_count][bit_count]);
 
-    std::vector<IntType> v;
+    std::vector<value_type> v;
 
     // Compute Niedderreiter base 2 lattice
     for (std::size_t dim = 0; dim != dimension; ++dim)
     {
-      const unsigned short poly = qrng_tables::niederreiter_base2::polynomial(dim);
-      if (static_cast<std::size_t>(poly) >
-          static_cast<std::size_t>(std::numeric_limits<IntType>::max())) {
-        boost::throw_exception( std::range_error("niederreiter_base2: polynomial value outside the given IntType range") );
+      const unsigned int poly = Nb2Table::polynomial(dim);
+      if (poly > std::numeric_limits<value_type>::max()) {
+        boost::throw_exception( std::range_error("niederreiter_base2: polynomial value outside the given value type range") );
       }
 
       const unsigned degree = multiprecision::msb(poly); // integer log2(poly)
@@ -211,7 +209,7 @@ struct niederreiter_base2_lattice
       // the values of C(I,J,R) for J from 1 to NBITS.
       for (unsigned r = 0; r != bit_count; ++r)
       {
-        IntType term = 0;
+        value_type term = 0;
         for (unsigned j = 0; j != bit_count; ++j)
           term = 2*term + ci[r][j];
         bits[r][dim] = term;
@@ -225,39 +223,37 @@ struct niederreiter_base2_lattice
   }
 
 private:
-  boost::multi_array<IntType, 2> bits;
+  boost::multi_array<value_type, 2> bits;
 };
 
 } // namespace detail
 /** @endcond */
 
-//!class template niederreiter_base2 implements a quasi-random number generator as described in
+//!class template niederreiter_base2_engine implements a quasi-random number generator as described in
 //! \blockquote
 //!Bratley, Fox, Niederreiter, ACM Trans. Model. Comp. Sim. 2, 195 (1992).
 //! \endblockquote
 //!
-//!\attention \b Important: This implementation supports up to 4720 dimensions.
-//!
 //!In the following documentation @c X denotes the concrete class of the template
-//!niederreiter_base2 returning objects of type @c IntType, u and v are the values of @c X.
+//!niederreiter_base2_engine returning objects of type @c IntType, u and v are the values of @c X.
 //!
 //!Some member functions may throw exceptions of type std::overflow_error. This
 //!happens when the quasi-random domain is exhausted and the generator cannot produce
 //!any more values. The length of the low discrepancy sequence is given by
-//! \f$L=Dimension \times 2^{digits}\f$, where digits = std::numeric_limits<IntType>::digits.
-template<typename IntType = uint64_t>
-class niederreiter_base2 : public detail::gray_coded_qrng_base<
-                                     IntType
-                                     , niederreiter_base2<IntType>
-                                     , detail::niederreiter_base2_lattice<IntType>
-                                     >
+//! \f$L=Dimension \times 2^{w}\f$, where `w` = std::numeric_limits<IntType>::digits.
+template<typename IntType, typename Nb2Table>
+class niederreiter_base2_engine : public detail::gray_coded_qrng_base<
+                                              niederreiter_base2_engine<IntType, Nb2Table>
+                                            , detail::niederreiter_base2_lattice<IntType, Nb2Table>
+                                            , IntType
+                                            >
 {
-  typedef niederreiter_base2<IntType> self_t;
-  typedef detail::niederreiter_base2_lattice<IntType> lattice_t;
-  typedef detail::gray_coded_qrng_base<IntType, self_t, lattice_t> base_t;
+  typedef niederreiter_base2_engine<IntType, Nb2Table> self_t;
+  typedef detail::niederreiter_base2_lattice<IntType, Nb2Table> lattice_t;
+  typedef detail::gray_coded_qrng_base<self_t, lattice_t, IntType> base_t;
 
 public:
-  typedef IntType result_type;
+  typedef typename base_t::result_type result_type;
 
   //!Returns: Tight lower bound on the set of values returned by operator().
   //!
@@ -269,12 +265,12 @@ public:
   //!
   //!Throws: nothing.
   static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
-  { return (std::numeric_limits<IntType>::max)(); }
+  { return (std::numeric_limits<result_type>::max)(); }
 
   //!Effects: Constructs the default `s`-dimensional Niederreiter base 2 quasi-random number generator.
   //!
   //!Throws: bad_alloc, invalid_argument, range_error.
-  explicit niederreiter_base2(std::size_t s)
+  explicit niederreiter_base2_engine(std::size_t s)
     : base_t(s) // initialize lattice here
   {}
 
@@ -348,6 +344,25 @@ public:
   }
 #endif // BOOST_RANDOM_DOXYGEN
 };
+
+
+/**
+ * @attention This specialization of \niederreiter_base2_engine supports up to 4720 dimensions.
+ *
+ * Binary irreducible polynomials (primes in the ring \f$GF(2)[X]\f$, evaluated at \f$X=2\f$) were generated
+ * while they satisfied \f$max(polynomials) < 2^{16}\f$.
+ *
+ * There are exactly 4720 such primes, which yields a Niederreiter base 2 table for 4720 dimensions.
+ *
+ * However, it is possible to provide your own table should the default one be insufficient.
+ */
+typedef niederreiter_base2_engine<boost::uint_least64_t,
+  #ifdef BOOST_RANDOM_DOXYGEN
+    niedereiter-base2-table
+  #else
+    detail::qrng_tables::niederreiter_base2
+  #endif
+> niederreiter_base2;
 
 } // namespace random
 

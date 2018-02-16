@@ -40,7 +40,7 @@ struct sobol
   // log2(polynomial(num_polynomials - 1)), i.e., integer log2 of the last polynomial in the table
   BOOST_STATIC_CONSTANT(unsigned int, max_degree = 15);
 
-  static unsigned int polynomial(std::size_t n)
+  static unsigned short polynomial(std::size_t n)
   {
     // successive primitive binary-coefficient polynomials p(z)
     //   = a_0 + a_1 z + a_2 z^2 + ... a_31 z^31, where a_i is the

@@ -21,16 +21,16 @@ namespace random {
 
 namespace detail {
 
-template<typename IntType, typename DerivedT, typename LatticeT>
-class gray_coded_qrng_base : public qrng_base<IntType, DerivedT, LatticeT>
+template<typename DerivedT, typename LatticeT, typename SizeT>
+class gray_coded_qrng_base : public qrng_base<DerivedT, LatticeT, SizeT>
 {
 private:
-  typedef gray_coded_qrng_base<IntType, DerivedT, LatticeT> self_t;
-  typedef qrng_base<IntType, DerivedT, LatticeT> base_t;
+  typedef gray_coded_qrng_base<DerivedT, LatticeT, SizeT> self_t;
+  typedef qrng_base<DerivedT, LatticeT, SizeT> base_t;
 
   // The base needs to access modifying member f-ns, and we
   // don't want these functions to be available for the public use
-  friend class qrng_base<IntType, DerivedT, LatticeT>;
+  friend class qrng_base<DerivedT, LatticeT, SizeT>;
 
 public:
   typedef typename base_t::size_type size_type;

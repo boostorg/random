@@ -28,11 +28,11 @@ namespace random {
 
 namespace detail {
 
-template<typename IntType, typename DerivedT, typename LatticeT>
+template<typename DerivedT, typename LatticeT, typename SizeT>
 class qrng_base
 {
 public:
-  typedef IntType size_type;
+  typedef SizeT size_type;
   typedef typename LatticeT::value_type result_type;
 
   explicit qrng_base(std::size_t dimension)

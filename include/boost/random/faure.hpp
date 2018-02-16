@@ -20,7 +20,7 @@
 #include <boost/multiprecision/integer.hpp> // powm
 
 //!\file
-//!Describes the quasi-random number generator class template faure.
+//!Describes the quasi-random number generator class template faure_engine.
 
 namespace boost {
 namespace random {
@@ -235,7 +235,7 @@ private:
 }} // namespace detail::fr
 /** @endcond */
 
-//!class template faure implements a quasi-random number generator as described in
+//!class template faure_engine implements a quasi-random number generator as described in
 //! \blockquote
 //!Henri Faure,
 //!Discrepance de suites associees a un systeme de numeration (en dimension s),
@@ -255,42 +255,42 @@ private:
 //!\attention\b Important: This implementation supports up to 1117 dimensions.
 //!
 //!In the following documentation @c X denotes the concrete class of the template
-//!faure returning objects of type @c RealType, u and v are the values of @c X.
+//!faure_engine returning objects of type @c RealType, u and v are the values of @c X.
 //!
 //!Some member functions may throw exceptions of type @c std::bad_alloc.
-template<typename RealType = double, typename SeqSizeT = boost::uint64_t>
-class faure : public detail::qrng_base<
-                        SeqSizeT
-                        , faure<RealType>
+template<typename RealType, typename SeqSizeT>
+class faure_engine : public detail::qrng_base<
+                          faure_engine<RealType, SeqSizeT>
                         , detail::fr::binomial_coefficients<RealType>
+                        , SeqSizeT
                         >
 {
-  typedef faure<RealType, SeqSizeT> self_t;
+  typedef faure_engine<RealType, SeqSizeT> self_t;
 
   typedef detail::fr::binomial_coefficients<RealType> lattice_t;
-  typedef detail::qrng_base<SeqSizeT, self_t, lattice_t> base_t;
+  typedef detail::qrng_base<self_t, lattice_t, SeqSizeT> base_t;
 
-  friend class detail::qrng_base<SeqSizeT, self_t, lattice_t >;
+  friend class detail::qrng_base<self_t, lattice_t, SeqSizeT>;
 
 public:
   typedef RealType result_type;
 
-  /** @copydoc boost::random::niederreiter_base2::min() */
+  /** @copydoc boost::random::niederreiter_base2_engine::min() */
   static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
-  { return static_cast<RealType>(0); }
+  { return static_cast<result_type>(0); }
 
-  /** @copydoc boost::random::niederreiter_base2::max() */
+  /** @copydoc boost::random::niederreiter_base2_engine::max() */
   static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
-  { return static_cast<RealType>(1); }
+  { return static_cast<result_type>(1); }
 
-  //!Effects: Constructs the s-dimensional default Faure quasi-random number generator.
+  //!Effects: Constructs the `s`-dimensional default Faure quasi-random number generator.
   //!
   //!Throws: bad_alloc, invalid_argument.
-  explicit faure(std::size_t s)
+  explicit faure_engine(std::size_t s)
     : base_t(s) // initialize the binomial table here
   {}
 
-  /** @copydetails boost::random::niederreiter_base2::seed()
+  /** @copydetails boost::random::niederreiter_base2_engine::seed()
    * Throws: bad_alloc.
    */
   void seed()
@@ -298,7 +298,7 @@ public:
     seed(0);
   }
 
-  /** @copydetails boost::random::niederreiter_base2::seed(IntType)
+  /** @copydetails boost::random::niederreiter_base2_engine::seed(IntType)
    * Throws: bad_alloc.
    */
   void seed(SeqSizeT init)
@@ -311,16 +311,16 @@ public:
 #ifdef BOOST_RANDOM_DOXYGEN
   //=========================Doxygen needs this!==============================
 
-  /** @copydoc boost::random::niederreiter_base2::dimension() */
+  /** @copydoc boost::random::niederreiter_base2_engine::dimension() */
   std::size_t dimension() const { return base_t::dimension(); }
 
-  /** @copydoc boost::random::niederreiter_base2::operator()() */
+  /** @copydoc boost::random::niederreiter_base2_engine::operator()() */
   result_type operator()()
   {
     return base_t::operator()();
   }
 
-  /** @copydoc boost::random::niederreiter_base2::discard(IntType)
+  /** @copydoc boost::random::niederreiter_base2_engine::discard(IntType)
    * Throws: bad_alloc.
    */
   void discard(SeqSizeT z)
@@ -337,6 +337,8 @@ private:
   }
 /** @endcond */
 };
+
+typedef faure_engine<double, boost::uint_least64_t> faure;
 
 } // namespace random
 
