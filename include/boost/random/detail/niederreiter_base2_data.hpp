@@ -26,15 +26,17 @@ struct niederreiter_base2
 {
   BOOST_STATIC_CONSTANT(unsigned, max_dimension = BOOST_RANDOM_NIEDERREITER_BASE2_MAX_DIMENSION);
 
+  typedef unsigned short value_type;
+
   // Binary irreducible polynomials (primes in the ring GF(2)[X]), evaluated at X=2.
   // Mathematica code:
   // Reap[
   //   Do[If[IrreduciblePolynomialQ[
   //       IntegerDigits[n, 2].x^Reverse[Range[0, Floor[Log[2, n]]]],
   //       Modulus -> 2], Sow[n]], {n, 2, 65535}]][[2, 1]]
-  static unsigned short polynomial(std::size_t n)
+  static value_type polynomial(std::size_t n)
   {
-    static const unsigned short nb2_a[max_dimension] = {
+    static const value_type nb2_a[max_dimension] = {
       2, 3, 7, 11, 13, 19, 25, 31, 37, 41, 47, 55, 59, 61, 67, 73, 87, 91,
       97, 103, 109, 115, 117, 131, 137, 143, 145, 157, 167, 171, 185, 191,
       193, 203, 211, 213, 229, 239, 241, 247, 253, 283, 285, 299, 301, 313,

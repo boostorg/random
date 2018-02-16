@@ -40,12 +40,14 @@ struct sobol
   // log2(polynomial(num_polynomials - 1)), i.e., integer log2 of the last polynomial in the table
   BOOST_STATIC_CONSTANT(unsigned int, max_degree = 15);
 
-  static unsigned short polynomial(std::size_t n)
+  typedef unsigned short value_type;
+
+  static value_type polynomial(std::size_t n)
   {
     // successive primitive binary-coefficient polynomials p(z)
     //   = a_0 + a_1 z + a_2 z^2 + ... a_31 z^31, where a_i is the
     //     i-th bit of sobol_a[j] for the j-th polynomial.
-    static const unsigned short sobol_a[num_polynomials] = {
+    static const value_type sobol_a[num_polynomials] = {
       3,7,11,13,19,25,37,41,47,55,
       59,61,67,91,97,103,109,115,131,137,
       143,145,157,167,171,185,191,193,203,211,
@@ -417,11 +419,11 @@ struct sobol
     return sobol_a[n];
   }
 
-  static unsigned short minit(std::size_t degree, std::size_t dim)
+  static value_type minit(std::size_t degree, std::size_t dim)
   {
     // starting direction #'s m[i] = sobol_minit[i][j] for i=0..d of the
     // degree-d primitive polynomial sobol_a[j].
-    static const unsigned short sobol_minit[max_degree * num_polynomials] = {
+    static const value_type sobol_minit[max_degree * num_polynomials] = {
       1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
       1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,
       1,3,1,0,0,0,0,0,0,0,0,0,0,0,0,
