@@ -95,7 +95,7 @@ struct sobol_lattice
         bits[j][dim] <<= p;
   }
 
-  value_type operator()(int i, int j) const
+  value_type operator()(std::size_t i, std::size_t j) const
   {
     return bits[i][j];
   }
