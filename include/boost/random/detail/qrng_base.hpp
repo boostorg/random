@@ -1,4 +1,4 @@
-/* boost random/detail/quasi_random_number_generator_base.hpp header file
+/* boost random/detail/qrng_base.hpp header file
  *
  * Copyright Justinas Vygintas Daugmaudis 2010-2017
  * Distributed under the Boost Software License, Version 1.0. (See
