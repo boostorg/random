@@ -170,13 +170,13 @@ public:
      * Returns the smallest value that the @c linear_congruential_engine
      * can produce.
      */
-    static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+    static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION ()
     { return c == 0 ? 1 : 0; }
     /**
      * Returns the largest value that the @c linear_congruential_engine
      * can produce.
      */
-    static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+    static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
     { return modulus-1; }
 
     /** Returns the next value of the @c linear_congruential_engine. */
