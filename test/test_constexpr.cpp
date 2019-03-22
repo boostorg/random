@@ -37,10 +37,6 @@ BOOST_AUTO_TEST_CASE(test_constexpr)
 
     // discard_block and subtract_with_carry
     TEST_MIN_MAX(boost::random::ranlux3);
-
-    // independent_bits
-    typedef boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::uint1024_t> indep_bits;
-    TEST_MIN_MAX(indep_bits);
     
     // inversive_congruential
     TEST_MIN_MAX(boost::random::hellekalek1995);
@@ -50,9 +46,6 @@ BOOST_AUTO_TEST_CASE(test_constexpr)
 
     // linear_congruential
     TEST_MIN_MAX(boost::random::minstd_rand0);
-
-    // linear_feedback_shift and xor_combine
-    TEST_MIN_MAX(boost::random::taus88);
 
     // mersenne_twister
     TEST_MIN_MAX(boost::random::mt19937_64);

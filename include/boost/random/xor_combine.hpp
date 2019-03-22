@@ -135,9 +135,9 @@ public:
     }
 
     /** Returns the smallest value that the generator can produce. */
-    static BOOST_CONSTEXPR result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return (std::min)((URNG1::min)(), (URNG2::min)()); }
+    static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return (std::min)((URNG1::min)(), (URNG2::min)()); }
     /** Returns the largest value that the generator can produce. */
-    static BOOST_CONSTEXPR result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return (std::max)((URNG1::min)(), (URNG2::max)()); }
+    static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () { return (std::max)((URNG1::min)(), (URNG2::max)()); }
 
     /**
      * Writes the textual representation of the generator to a @c std::ostream.
