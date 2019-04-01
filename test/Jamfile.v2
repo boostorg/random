@@ -17,7 +17,6 @@ run ../example/random_demo.cpp ;
 run test_random_device.cpp /boost//random : : : <link>static : test_random_device ;
 run test_random_device.cpp /boost//random : : : <link>shared : test_random_device_dll ;
 
-run test_constexpr.cpp /boost//unit_test_framework ;
 run test_minstd_rand0.cpp /boost//unit_test_framework ;
 run test_minstd_rand.cpp /boost//unit_test_framework ;
 run test_rand48.cpp /boost//unit_test_framework ;

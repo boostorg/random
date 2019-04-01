@@ -30,6 +30,13 @@ typedef boost::random::detail::seed_type<result_type>::type seed_type;
 #define BOOST_RANDOM_DISCARD_COUNT1 9307
 #endif
 
+#if defined BOOST_NO_CXX11_CONSTEXPR
+#define BOOST_CONSTEXPR_ASSERT(C) BOOST_TEST(C)
+#else
+#include <boost/static_assert.hpp>
+#define BOOST_CONSTEXPR_ASSERT(C) BOOST_STATIC_ASSERT(C)
+#endif
+
 template<class Converted, class URNG, class T>
 void test_seed_conversion(URNG & urng, const T & t)
 {
@@ -71,6 +78,14 @@ void test_seed(seed_type value)
     test_seed_conversion<float>(urng, value);
     test_seed_conversion<double>(urng, value);
     test_seed_conversion<long double>(urng, value);
+}
+
+BOOST_AUTO_TEST_CASE(test_constexpr)
+{
+    BOOST_CONSTEXPR_ASSERT(BOOST_RANDOM_URNG::min() <  BOOST_RANDOM_URNG::max());
+    BOOST_CONSTEXPR_ASSERT(BOOST_RANDOM_URNG::max() >  BOOST_RANDOM_URNG::min());
+    BOOST_CONSTEXPR_ASSERT(BOOST_RANDOM_URNG::min() == BOOST_RANDOM_URNG::min());
+    BOOST_CONSTEXPR_ASSERT(BOOST_RANDOM_URNG::max() == BOOST_RANDOM_URNG::max());
 }
 
 BOOST_AUTO_TEST_CASE(test_default_seed)

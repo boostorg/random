@@ -357,11 +357,11 @@ public:
     /**
      * Returns the smallest value that the generator can produce
      */
-    static uint32_t min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
+    static BOOST_CONSTEXPR uint32_t min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
     /**
      * Returns the largest value that the generator can produce
      */
-    static uint32_t max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+    static BOOST_CONSTEXPR uint32_t max BOOST_PREVENT_MACRO_SUBSTITUTION ()
     { return 0x7FFFFFFF; }
   
     /** Seeds the generator with the default seed. */
