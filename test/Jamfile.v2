@@ -53,6 +53,8 @@ run test_lagged_fibonacci9689.cpp /boost//unit_test_framework ;
 run test_lagged_fibonacci19937.cpp /boost//unit_test_framework ;
 run test_lagged_fibonacci23209.cpp /boost//unit_test_framework ;
 run test_lagged_fibonacci44497.cpp /boost//unit_test_framework ;
+run test_mixmax.cpp /boost//unit_test_framework ;
+
 run test_zero_seed.cpp /boost//unit_test_framework ;
 
 run niederreiter_base2_validate.cpp /boost//unit_test_framework ;
