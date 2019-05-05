@@ -18,23 +18,8 @@
 #include <boost/random/mixmax.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
-/*`
-  We use mixmax with the default seed as a source of
-  randomness.  The numbers produced will be the same
-  every time the program is run.  One common method to
-  change this is to seed with the current time (`std::time(0)`
-  defined in ctime).
-*/
-boost::random::mixmax gen(0,0,0,1);
-/*`
-  [note We are using a /global/ generator object here.  This
-  is important because we don't want to create a new [prng
-  pseudo-random number generator] at every call]
-*/
-/*`
-  Now we can define a function that simulates an ordinary
-  six-sided die.
-*/
+boost::random::mixmax gen(0,0,0,2); // Create a Mixmax object and initialize the RNG with four 32-bit seeds 0,0,0,1
+
 double roll() {
     boost::random::uniform_real_distribution<> dist(0,1);
     /*<< A distribution is a function object.  We generate a random
@@ -46,7 +31,28 @@ double roll() {
 
 
 int main() {
-    for(int i = 0; i < 24; ++i) {
+    std::cerr << "Welcome to the MIXMAX random number generator!\n" 
+    << "The curent matrix size is N=" << gen.rng_get_N() 
+    << "\n(the actual matrix is not kept in memory in this new efficient implementation)\n"
+    << "special entry in the matrix is " << gen.rng_get_SPECIAL()
+    << "\nspecial multiplier m=2^" << gen.rng_get_SPECIALMUL()
+    << "+1\nWorking in the Galois field with prime modulus 2^61-1\n"
+    << "Generator class size is "<< sizeof(gen) << " bytes\n\n";
+
+	std::cerr << "\nFirst print a dozen doubles on [0,1) using the boost::random::uniform_real_distribution\n";
+	std::cout.setf(std::ios::fixed);
+    for(int i = 0; i < 12; ++i) {
         std::cout << roll() << std::endl;
     }
+    
+    std::cerr << "\nNow add one billion doubles on [0,1) using the built-in method get_next_float()\n";
+    int p = 1000000000;
+    double z=0.0;
+    for (int j=0; j<p ; j++) {
+        z += gen.get_next_float();
+    }
+    printf("\n%1.16F\n", z);
+    fprintf(stdout, "ok\n");
+
+    return 0;
 }

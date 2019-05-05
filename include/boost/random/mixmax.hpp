@@ -23,14 +23,14 @@
 #include <boost/config.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
-#include <boost/random/detail/config.hpp>
-#include <boost/random/detail/ptr_helper.hpp>
-#include <boost/random/detail/seed.hpp>
-#include <boost/random/detail/seed_impl.hpp>
-#include <boost/random/detail/generator_seed_seq.hpp>
-#include <boost/random/detail/polynomial.hpp>
-
-#include <boost/random/detail/disable_warnings.hpp>
+// #include <boost/random/detail/config.hpp>
+// #include <boost/random/detail/ptr_helper.hpp>
+// #include <boost/random/detail/seed.hpp>
+// #include <boost/random/detail/seed_impl.hpp>
+// #include <boost/random/detail/generator_seed_seq.hpp>
+// #include <boost/random/detail/polynomial.hpp>
+// 
+// #include <boost/random/detail/disable_warnings.hpp>
 #include <array>
 
 namespace boost {
@@ -293,11 +293,11 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
      */
     
     
-    const	myuint skipMat240[128][240] =
-#include "mixmax_skip_N240.c"
-    ;
+//     const	myuint skipMat240[128][240] =
+// #include "mixmax_skip_N240.c"
+//     ;
     const	myuint skipMat17[128][17] =
-#include "mixmax_skip_N17.c"
+#include "boost/random/detail/mixmax_skip_N17.icc"
     ;
 //    const	myuint skipMat8[128][8] =
 //#include "mixmax_skip_N8.c"
@@ -305,9 +305,9 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
     
     const myuint* skipMat[128];
     switch (N) {
-        case 240:
-            for (int i=0; i<128; i++) { skipMat[i] = skipMat240[i];}
-            break;
+//         case 240:
+//             for (int i=0; i<128; i++) { skipMat[i] = skipMat240[i];}
+//             break;
         case 17:
             for (int i=0; i<128; i++) { skipMat[i] = skipMat17[i];}
             break;
