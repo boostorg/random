@@ -87,6 +87,4 @@
 #include <boost/random/uniform_smallint.hpp>
 #include <boost/random/weibull_distribution.hpp>
 
-#include <boost/random/generate_canonical.hpp>
-
 #endif // BOOST_RANDOM_HPP

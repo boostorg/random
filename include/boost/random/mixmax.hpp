@@ -31,14 +31,28 @@
 #include <boost/random/detail/polynomial.hpp>
 
 #include <boost/random/detail/disable_warnings.hpp>
+#include <array>
 
 namespace boost {
 namespace random {
+
+template <typename T, T __min, T __max> class _Generator
+// Boilerplate code, it is required to be compatible with std::random interfaces, see example.cpp for how to use.
+{
+public:
+    // Interface C++11 std::random
+    using result_type = T; //C++11 only
+    static constexpr T min() {return __min;}
+    static constexpr T max() {return __max;}
+    void seed (std::uint64_t val = 1);
+    std::uint64_t operator()();
+};
+
 typedef uint32_t myID_t;
 typedef uint64_t myuint;
 
 
-constexpr int Ndim = 240; // turn off for TEMPLATE use
+constexpr int Ndim = 17; // turn off for TEMPLATE use
 
 constexpr int BITS=61;
 constexpr myuint M61=2305843009213693951ULL;
@@ -61,7 +75,8 @@ constexpr double INV_MERSBASE=(0.43368086899420177360298E-18);
 */
 
 // template <int Ndim=240> // TEMPLATE
-class mixmax_engine: public _Generator<std::uint64_t, 0, 0x1FFFFFFFFFFFFFFF> // does not work with any other values
+//class mixmax_engine: public _Generator<std::uint64_t, 0, 0x1FFFFFFFFFFFFFFF> // does not work with any other values
+class mixmax_engine: public _Generator<std::uint32_t, 0, 0xFFFFFFFF> // does not work with any other values
 {
 static const int N = Ndim;
     static constexpr long long int SPECIAL   = ((N==17)? 0 : ((N==240)? 487013230256099140ULL:-1) ); // etc...
@@ -431,7 +446,7 @@ PREF void mixmax_engine POST ::BranchInplace(){
 
 //template class mixmax_engine<240>;// TEMPLATE
 //template class mixmax_engine<17>;// TEMPLATE
-
+typedef mixmax_engine mixmax;
 }
 }
 
