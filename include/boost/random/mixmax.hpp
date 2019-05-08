@@ -17,48 +17,27 @@
 #ifndef BOOST_RANDOM_MIXMAX_HPP
 #define BOOST_RANDOM_MIXMAX_HPP
 
-#include <iosfwd>
-#include <istream>
-#include <stdexcept>
-#include <boost/config.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/integer/integer_mask.hpp>
-// #include <boost/random/detail/config.hpp>
-// #include <boost/random/detail/ptr_helper.hpp>
-// #include <boost/random/detail/seed.hpp>
-// #include <boost/random/detail/seed_impl.hpp>
-// #include <boost/random/detail/generator_seed_seq.hpp>
-// #include <boost/random/detail/polynomial.hpp>
-// 
-// #include <boost/random/detail/disable_warnings.hpp>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <array>
 
 namespace boost {
 namespace random {
 
 template <typename T, T __min, T __max> class _Generator
-// Boilerplate code, it is required to be compatible with std::random interfaces, see example.cpp for how to use.
+// Boilerplate, it is required to be compatible with std::random interfaces, see example.cpp for how to use.
 {
 public:
-    // Interface C++11 std::random
+    // Interfaces required by C++11 std::random and boost::random
     using result_type = T; //C++11 only
     static constexpr T min() {return __min;}
     static constexpr T max() {return __max;}
     void seed (std::uint64_t val = 1);
     std::uint64_t operator()();
+    //std::ostream& operator<< (std::ostream&, const  _Generator&); // implementation cant be outside of class?
+    void discard(std::uint64_t nsteps);    // boost::random wants this to fast-forward the generator by nsteps
 };
-
-typedef uint32_t myID_t;
-typedef uint64_t myuint;
-
-
-constexpr int Ndim = 17; // turn off for TEMPLATE use
-
-constexpr int BITS=61;
-constexpr myuint M61=2305843009213693951ULL;
-constexpr myuint MERSBASE=M61;
-constexpr double INV_MERSBASE=(0.43368086899420177360298E-18);
-
 
 /*
  Table of parameters for MIXMAX
@@ -70,84 +49,133 @@ constexpr double INV_MERSBASE=(0.43368086899420177360298E-18);
  ------------------------------------------------------------------------------------------------------------------------|
    8         |         0                 |     53         |                none                 |    129    |    220.4   | 
   17         |         0                 |     36         |                none                 |    294    |    374.3   | 
- 240         | 487013230256099140        |     51         |   fmodmulM61( 0, SPECIAL , (k) )    |   4389    |   8679.2   |
+ 240         |     271828282             |     32         |   fmodmulM61( 0, SPECIAL , (k) )    |   4389    |   8679.2   |
 
 */
 
-// template <int Ndim=240> // TEMPLATE
-//class mixmax_engine: public _Generator<std::uint64_t, 0, 0x1FFFFFFFFFFFFFFF> // does not work with any other values
-class mixmax_engine: public _Generator<std::uint32_t, 0, 0xFFFFFFFF> // does not work with any other values
+//template <int Ndim=240, int SPECIALMUL=32, std::int64_t SPECIAL=271828282> // TEMPLATE
+template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // TEMPLATE
+class mixmax_engine: public _Generator<std::uint64_t, 0, 0x1FFFFFFFFFFFFFFF> // does not work with any other values
 {
-static const int N = Ndim;
-    static constexpr long long int SPECIAL   = ((N==17)? 0 : ((N==240)? 487013230256099140ULL:-1) ); // etc...
-    static constexpr long long int SPECIALMUL= ((N==17)? 36: ((N==240)? 51                   : 0) ); // etc...
-    // Note the potential for confusion...
+private: // DATATYPES
+    static const int N = Ndim;
 
-struct rng_state_st
-{
-    std::array<myuint, N> V;
-    myuint sumtot;
-    int counter;
-};
+    struct rng_state_st
+    {
+        std::array<std::uint64_t, N> V;
+        std::uint64_t sumtot;
+        int counter;
+    };
     
-typedef struct rng_state_st rng_state_t;     // struct alias
+    typedef struct rng_state_st rng_state_t;     // struct alias
+    rng_state_t S;
+    
+public: // FUNCTIONS
+    mixmax_engine();              // Constructor, unit vector as initial state
+    mixmax_engine(std::uint64_t); // Constructor, one 64-bit seed
+    mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );       // Constructor with four 32-bit seeds
+    void seed(std::uint64_t seedval){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} // seed with one 64-bit seed
 
-rng_state_t S;
-    
-public:
-	//using T = result_type;								  // should it be double?
-    static constexpr int rng_get_N() {return N;}
+    static constexpr           int rng_get_N()          {return N;}          // return internal parameters
     static constexpr long long int rng_get_SPECIAL()    {return SPECIAL;}
-    static constexpr int rng_get_SPECIALMUL() {return SPECIALMUL;}
-    void seed_uniquestream( rng_state_t* Xin, myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID );
-    void print_state();
-// void read_state(const char filename[] );
-    myuint get_next() ;
-    double get_next_float();
+    static constexpr           int rng_get_SPECIALMUL() {return SPECIALMUL;}
 
-   // int iterate();
+    std::uint64_t get_next() ;
+    double get_next_float();
+    std::uint64_t operator()() {return get_next();}          // return one uint64 between min=0 and max=2^61-1
+    double operator++(int unused) {return get_next_float();} // postfix ++ is increments state by one step, returns a double on [0,1]
+
+    /* return a new generator with deterministically determined state, but statistically independent stream
+       useful when you need to simulate a branching random process
+     */
     mixmax_engine Branch();
     void BranchInplace();
+    mixmax_engine& operator=(const mixmax_engine& other ); // simple copy
+
+    void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} // required in boost
     
-    mixmax_engine(myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID );	   // Constructor with four 32-bit seeds
-    void seed(uint64_t seedval){seed_uniquestream( &S, 0, 0, (myID_t)(seedval>>32), (myID_t)seedval );} // seed with one 64-bit seed
-    mixmax_engine(); // Constructor, no seeds
-    
-    mixmax_engine& operator=(const mixmax_engine& other );
-    
-inline std::uint64_t operator()()
+#ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
+    friend std::ostream& operator<< (std::ostream& ost, const mixmax_engine& me) // save the state of RNG to stream
     {
-        return get_next();
+        int j;
+        ost << "mixmax state, file version 1.0\n" ;
+        ost << "N=" << me.rng_get_N() << "; V[N]={";
+        for (j=0; (j< (me.rng_get_N()-1) ); j++) {
+            ost <<  (std::uint64_t)me.S.V[j] << ", ";
+        }
+        ost << me.S.V[me.rng_get_N()-1] ;
+        ost << "}; " ;
+        ost << "counter=" << (std::uint64_t)me.S.counter << "; ";
+        ost << "sumtot=" << (std::uint64_t)me.S.sumtot << ";\n";
+        ost.flush();
+        return ost;
     }
     
+    friend std::istream& operator>> (std::istream &in, mixmax_engine& me){
+        // will throw an exception if format is not right
+        std::array<std::uint64_t, N> vec;
+        std::uint64_t sum=0, sumtmp=0, counter=0;
+        std::string line;
+        std::string token;
+        //in.ignore(150,'='); // up to N=
+        try{
+            if(std::getline(in, line)){
+                std::istringstream iss(line);
+                iss.ignore(150,'='); // up to N=
+                std::getline(iss, token, ';');
+                int i=std::stoi(token);
+                if(i!=Ndim) { std::cerr << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n"; }else{std::cerr <<"Dim ok "<< i << "\n";}
+                iss.ignore(15,'{'); // up to V[N]={
+                for(int j=0;j<Ndim-1;j++) {
+                    std::getline(iss, token, ','); if (!iss.fail() ) { vec[j]=std::stoull(token);sum=me.modadd(sum,vec[j]);std::cerr <<vec[j]<<"; ";}
+                }
+                std::getline(iss, token, '}');
+                if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token);std::cerr <<vec[Ndim-1]<<"; ";}else{std::cerr << "ERROR: last elem empty\n";}
+                iss.ignore(10,'='); std::getline(iss, token, ';'); counter=std::stoi(token);
+                iss.ignore(10,'='); std::getline(iss, token, ';'); sumtmp=std::stoull(token);
+            }else{std::cerr << "ERROR: nothing to read\n";}
+            }catch (const std::exception& e) {
+                std::cerr << "ERROR: Exception caught in MIXMAX RNG while reading state: " << e.what() << "\nfrom string='"<<token<<"'\n"; //
+                in.setstate(std::ios::failbit);
+                throw;
+            }
+        sum=me.modadd(sum,MERSBASE-vec[0]);
+        me.S.V=vec; me.S.counter = counter; me.S.sumtot=sumtmp;
+        if (sum == sumtmp && counter>0 && counter<N){
+            me.S.V=vec; me.S.counter = counter; me.S.sumtot=sumtmp;
+        }else{
+            std::cerr << "ERROR: incorrect checksum or out of range counter while reading  MIXMAX RNG state.\n"
+                        <<counter<<" "<<sumtmp<<" "<<sum<<"\n";
+            in.setstate(std::ios::failbit);
+        }
+        return in;
+    }
+#endif
+    
+    
 private:
-    myuint MOD_MULSPEC(myuint k);
+    static constexpr int BITS=61;
+    static constexpr std::uint64_t M61=2305843009213693951ULL;
+    static constexpr std::uint64_t MERSBASE=M61;
+    static constexpr double INV_MERSBASE=(0.43368086899420177360298E-18);
+    std::uint64_t MOD_MERSENNE(std::uint64_t k) {return ((((k)) & MERSBASE) + (((k)) >> BITS) );}
+    std::uint64_t MOD_MULSPEC(std::uint64_t k);
+    std::uint64_t MULWU(std::uint64_t k);
     void seed_vielbein(rng_state_t* X, unsigned int i); // seeds with the i-th unit vector, i = 0..N-1,  for testing only
-    myuint iterate_raw_vec(myuint* Y, myuint sumtotOld);
-    myuint apply_bigskip(myuint* Vout, myuint* Vin, myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID );
-    myuint modadd(myuint foo, myuint bar);
-    myuint fmodmulM61(myuint cum, myuint s, myuint a);
+    void seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
+    std::uint64_t iterate_raw_vec(std::uint64_t* Y, std::uint64_t sumtotOld);
+    std::uint64_t apply_bigskip(std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
+    std::uint64_t modadd(std::uint64_t foo, std::uint64_t bar);
+    std::uint64_t fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a);
 #if defined(__x86_64__)
-    inline myuint mod128(__uint128_t s);
+    inline std::uint64_t mod128(__uint128_t s);
 #endif
 };
 
+#define MIXMAX_PREF template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // TEMPLATE
+#define MIXMAX_POST              <Ndim,     SPECIALMUL,              SPECIAL> // TEMPLATE
 
-#define ARRAY_INDEX_OUT_OF_BOUNDS   0xFF01
-#define SEED_WAS_ZERO               0xFF02
-#define ERROR_READING_STATE_FILE    0xFF03
-#define ERROR_READING_STATE_COUNTER       0xFF04
-#define ERROR_READING_STATE_CHECKSUM      0xFF05
-
-#define MOD_PAYNE(k) ((((k)) & MERSBASE) + (((k)) >> BITS) )
-#define MOD_MERSENNE(k) MOD_PAYNE(k)
-
-#define PREF 
-#define POST
-//#define PREF template <int Ndim> // TEMPLATE
-//#define POST <Ndim>              // TEMPLATE
-
-PREF myuint mixmax_engine POST::MOD_MULSPEC(myuint k){
+MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST::MOD_MULSPEC(std::uint64_t k){
     switch (N) {
         case 17:
             return 0;
@@ -160,38 +188,42 @@ PREF myuint mixmax_engine POST::MOD_MULSPEC(myuint k){
             break;
         default:
             std::cerr << "MIXMAX ERROR: " << "Disallowed value of parameter N\n";
-            break;
+            std::terminate();
     }
 }
 
-PREF mixmax_engine POST ::mixmax_engine()
+MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine()
 // constructor, with no params, fast and seeds with a unit vector
 {
     seed_vielbein(&S,0);
 }
 
-PREF mixmax_engine POST ::mixmax_engine(myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID)
+MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine(std::uint64_t seedval)
+// constructor, one uint64_t seed
+{
+    seed_uniquestream( &S, 0,  0,  (uint32_t)(seedval>>32), (uint32_t)seedval );
+}
+
+MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID)
 // constructor, no need to allocate, just seed
 {
     seed_uniquestream( &S, clusterID,  machineID,  runID,  streamID );
 }
 
-#define MULWU(k) (( (k)<<(SPECIALMUL) & M61) | ( (k) >> (BITS-SPECIALMUL))  )
+MIXMAX_PREF uint64_t mixmax_engine MIXMAX_POST ::MULWU (uint64_t k){ return (( (k)<<(SPECIALMUL) & M61) ^ ( (k) >> (BITS-SPECIALMUL))  )  ;}
 
-PREF myuint mixmax_engine POST ::iterate_raw_vec(myuint* Y, myuint sumtotOld){
+MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::iterate_raw_vec(std::uint64_t* Y, std::uint64_t sumtotOld){
     // operates with a raw vector, uses known sum of elements of Y
     int i;
     
-    myuint temp2 = Y[1];
-    
-    
-    myuint  tempP, tempV;
+    std::uint64_t temp2 = Y[1];
+    std::uint64_t  tempP, tempV;
     Y[0] = ( tempV = sumtotOld);
-    myuint sumtot = Y[0], ovflow = 0; // will keep a running sum of all new elements
-    tempP = 0;              // will keep a partial sum of all old elements
+    std::uint64_t sumtot = Y[0], ovflow = 0; // will keep a running sum of all new elements
+    tempP = 0;                               // will keep a partial sum of all old elements
     for (i=1; i<N; i++){
         if (SPECIALMUL!=0){
-            myuint tempPO = MULWU(tempP);
+            std::uint64_t tempPO = MULWU(tempP);
             tempP = modadd(tempP, Y[i]);
             tempV = MOD_MERSENNE(tempV+tempP+tempPO); // new Y[i] = old Y[i] + old partial * m
         }else{
@@ -210,7 +242,7 @@ PREF myuint mixmax_engine POST ::iterate_raw_vec(myuint* Y, myuint sumtotOld){
     return MOD_MERSENNE(MOD_MERSENNE(sumtot) + (ovflow <<3 ));
 }
 
-PREF myuint mixmax_engine POST ::get_next() {
+MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::get_next() {
     int i;
     i=S.counter;
     
@@ -224,12 +256,12 @@ PREF myuint mixmax_engine POST ::get_next() {
     }
 }
 
-PREF double mixmax_engine POST ::get_next_float()				// Returns a random double with all 53 bits random, in the range (0,1]
+MIXMAX_PREF double mixmax_engine MIXMAX_POST ::get_next_float()				// Returns a random double with all 53 bits random, in the range (0,1]
 {    /* cast to signed int trick suggested by Andrzej Görlich     */
     int64_t Z=(int64_t)get_next();
     double F;
 #if defined(__GNUC__) && (__GNUC__ < 5) && (!defined(__ICC)) && defined(__x86_64__) && defined(__SSE2_MATH__) && defined(USE_INLINE_ASM)
-    //#warning Using the inline assembler
+#warning Using inline assembler to zero xmm register
     /* using SSE inline assemly to zero the xmm register, just before int64 -> double conversion,
      not necessary in GCC-5 or better, but huge penalty on earlier compilers
      */
@@ -239,12 +271,10 @@ PREF double mixmax_engine POST ::get_next_float()				// Returns a random double 
 #endif
     F=Z;
     return F*INV_MERSBASE;
-    
 }
 
-PREF void mixmax_engine POST ::seed_vielbein(rng_state_t* X, unsigned int index)
+MIXMAX_PREF void mixmax_engine MIXMAX_POST ::seed_vielbein(rng_state_t* X, unsigned int index)
 {
-    //rng_state_t S=&X;
     int i;
     if (index<N){
         for (i=0; i < N; i++){
@@ -252,8 +282,7 @@ PREF void mixmax_engine POST ::seed_vielbein(rng_state_t* X, unsigned int index)
         }
         X->V[index] = 1;
     }else{
-        //fprintf(stderr, "Out of bounds index, is not ( 0 <= index < N  )\n");
-        std::cerr << "MIXMAX ERROR: " << ARRAY_INDEX_OUT_OF_BOUNDS << "Out of bounds index, is not ( 0 <= index < N  )\n";
+        std::cerr << "MIXMAX ERROR: " << "Out of bounds index, is not ( 0 <= index < N  )\n";
         std::terminate();
     }
     X->counter = N;  // set the counter to N if iteration should happen right away
@@ -261,17 +290,15 @@ PREF void mixmax_engine POST ::seed_vielbein(rng_state_t* X, unsigned int index)
 }
 
 
-PREF void mixmax_engine POST ::seed_uniquestream( rng_state_t* Xin, myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID ){
+MIXMAX_PREF void mixmax_engine MIXMAX_POST ::seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID ){
     seed_vielbein(Xin,0);
-    //print_state();
     Xin->sumtot = apply_bigskip(Xin->V.data(), Xin->V.data(),  clusterID,  machineID,  runID,   streamID );
-    //   if (Xin->fh==NULL){Xin->fh=stdout;} // if the filehandle is not yet set, make it stdout
-    std::cerr << "seeding with: " << clusterID << ", " << machineID << ", " <<   runID <<  ", " <<  streamID << "\n";
+    std::cerr << "seeding mixmax with: {" << clusterID << ", " << machineID << ", " <<   runID <<  ", " <<  streamID << "}\n";
     Xin->counter = 1;
 }
 
 
-PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_t clusterID, myID_t machineID, myID_t runID, myID_t  streamID ){
+MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::apply_bigskip( std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID ){
     /*
      makes a derived state vector, Vout, from the mother state vector Vin
      by skipping a large number of steps, determined by the given seeding ID's
@@ -280,7 +307,7 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
      1) at least one bit of ID is different
      2) less than 10^100 numbers are drawn from the stream
      (this is good enough : a single CPU will not exceed this in the lifetime of the universe, 10^19 sec,
-     even if it had a clock cycle of Planch time, 10^44 Hz )
+     even if it had a clock cycle of Planck time, 10^44 Hz )
      
      Caution: never apply this to a derived vector, just choose some mother vector Vin, for example the unit vector by seed_vielbein(X,0),
      and use it in all your runs, just change runID to get completely nonoverlapping streams of random numbers on a different day.
@@ -293,21 +320,21 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
      */
     
     
-//     const	myuint skipMat240[128][240] =
-// #include "mixmax_skip_N240.c"
-//     ;
-    const	myuint skipMat17[128][17] =
+    const	std::uint64_t skipMat240[128][240] =
+#include "boost/random/detail/mixmax_skip_N240.icc"
+    ;
+    const	std::uint64_t skipMat17[128][17] =
 #include "boost/random/detail/mixmax_skip_N17.icc"
     ;
-//    const	myuint skipMat8[128][8] =
+//    const	std::uint64_t skipMat8[128][8] =
 //#include "mixmax_skip_N8.c"
     ;
     
-    const myuint* skipMat[128];
+    const std::uint64_t* skipMat[128];
     switch (N) {
-//         case 240:
-//             for (int i=0; i<128; i++) { skipMat[i] = skipMat240[i];}
-//             break;
+        case 240:
+            for (int i=0; i<128; i++) { skipMat[i] = skipMat240[i];}
+            break;
         case 17:
             for (int i=0; i<128; i++) { skipMat[i] = skipMat17[i];}
             break;
@@ -316,17 +343,17 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
 //            break;
             
         default:
-            exit(-1);
-            break;
+        	std::cerr << "disallowed value of N\n";
+            std::terminate();
     }
     
-    myID_t IDvec[4] = {streamID, runID, machineID, clusterID};
+    uint32_t IDvec[4] = {streamID, runID, machineID, clusterID};
     int r,i,j,  IDindex;
-    myID_t id;
-    myuint Y[N], cum[N];
-    myuint coeff;
-    myuint* rowPtr;
-    myuint sumtot=0;
+    uint32_t id;
+    std::uint64_t Y[N], cum[N];
+    std::uint64_t coeff;
+    std::uint64_t* rowPtr;
+    std::uint64_t sumtot=0;
     
     
     for (i=0; i<N; i++) { Y[i] = Vin[i]; sumtot = modadd( sumtot, Vin[i]); } ;
@@ -336,8 +363,7 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
         r = 0;
         while (id){
             if (id & 1) {
-                rowPtr = (myuint*)skipMat[r + IDindex*8*sizeof(myID_t)];
-                //printf("free coeff for row %d is %llu\n", r, rowPtr[0]);
+                rowPtr = (std::uint64_t*)skipMat[r + IDindex*8*sizeof(uint32_t)];
                 for (i=0; i<N; i++){ cum[i] = 0; }
                 for (j=0; j<N; j++){              // j is lag, enumerates terms of the poly
                     // for zero lag Y is already given
@@ -359,24 +385,24 @@ PREF myuint mixmax_engine POST ::apply_bigskip( myuint* Vout, myuint* Vin, myID_
 }
 
 #if defined(__x86_64__)
-PREF inline myuint mixmax_engine POST ::mod128(__uint128_t s){
-    myuint s1;
-    s1 = ( (  ((myuint)s)&MERSBASE )    + (  ((myuint)(s>>64)) * 8 )  + ( ((myuint)s) >>BITS) );
+MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::mod128(__uint128_t s){
+    std::uint64_t s1;
+    s1 = ( (  ((std::uint64_t)s)&MERSBASE )    + (  ((std::uint64_t)(s>>64)) * 8 )  + ( ((std::uint64_t)s) >>BITS) );
     return	MOD_MERSENNE(s1);
 }
 
-PREF inline myuint mixmax_engine POST ::fmodmulM61(myuint cum, myuint a, myuint b){
+MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::fmodmulM61(std::uint64_t cum, std::uint64_t a, std::uint64_t b){
     __uint128_t temp;
     temp = (__uint128_t)a*(__uint128_t)b + cum;
     return mod128(temp);
 }
 
 #else // on all other platforms, including 32-bit linux, PPC and PPC64, ARM and all Windows
-#define MASK32 0xFFFFFFFFULL
+const std::uint64_t MASK32=0xFFFFFFFFULL;
 
-PREF inline myuint mixmax_engine POST ::fmodmulM61(myuint cum, myuint s, myuint a)
+MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a)
 {
-    register myuint o,ph,pl,ah,al;
+    register std::uint64_t o,ph,pl,ah,al;
     o=(s)*a;
     ph = ((s)>>32);
     pl = (s) & MASK32;
@@ -389,10 +415,10 @@ PREF inline myuint mixmax_engine POST ::fmodmulM61(myuint cum, myuint s, myuint 
 }
 #endif
 
-PREF myuint mixmax_engine POST ::modadd(myuint foo, myuint bar){
-#if (defined(__x86_64__) || defined(__i386__)) &&  defined(__GNUC__) && defined(USE_INLINE_ASM)
-    //#warning Using assembler routine in modadd
-    myuint out;
+MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::modadd(std::uint64_t foo, std::uint64_t bar){
+#if (defined(__x86_64__) || defined(__i386__)) &&  defined(__GNUC__)  && (!defined(__ICC)) && !defined(__clang__) && defined(USE_INLINE_ASM)
+#warning Using assembler routine in modadd
+    std::uint64_t out;
     /* Assembler trick suggested by Andrzej Görlich     */
     __asm__ ("addq %2, %0; "
              "btrq $61, %0; "
@@ -406,48 +432,39 @@ PREF myuint mixmax_engine POST ::modadd(myuint foo, myuint bar){
 #endif
 }
 
-PREF void mixmax_engine POST ::print_state(){ // (std::ostream& ost){
-    int j;
-    fprintf(stdout, "mixmax state, file version 1.0\n" );
-    fprintf(stdout, "N=%u; V[N]={", rng_get_N() );
-    for (j=0; (j< (rng_get_N()-1) ); j++) {
-        fprintf(stdout, "%llu, ", S.V[j] );
-    }
-    fprintf(stdout, "%llu", S.V[rng_get_N()-1] );
-    fprintf(stdout, "}; " );
-    fprintf(stdout, "counter=%u; ", S.counter );
-    fprintf(stdout, "sumtot=%llu;\n", S.sumtot );
-}
-
-PREF mixmax_engine POST mixmax_engine POST ::Branch(){
+MIXMAX_PREF mixmax_engine MIXMAX_POST mixmax_engine MIXMAX_POST ::Branch(){
     S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot); S.counter = N-1;
     mixmax_engine tmp=*this;
     tmp.BranchInplace();
     return tmp;
 }
 
-PREF mixmax_engine POST & mixmax_engine POST ::operator=(const mixmax_engine& other ){
+MIXMAX_PREF mixmax_engine MIXMAX_POST & mixmax_engine MIXMAX_POST ::operator=(const mixmax_engine& other ){
     S.V = other.S.V;
     S.sumtot = other.S.sumtot;
     S.counter = other.S.counter;
     return *this;
 }
 
-PREF void mixmax_engine POST ::BranchInplace(){
+MIXMAX_PREF void mixmax_engine MIXMAX_POST ::BranchInplace(){
     // Dont forget to iterate the mother, when branching the daughter, or else will have collisions!
     // a 64-bit LCG from Knuth line 26, is used to mangle a vector component
-    constexpr myuint MULT64=6364136223846793005ULL;
-    myuint tmp=S.V[1];
+    constexpr std::uint64_t MULT64=6364136223846793005ULL;
+    std::uint64_t tmp=S.V[1];
     S.V[1] *= MULT64; S.V[1] &= MERSBASE;
     S.sumtot = modadd( S.sumtot , S.V[1] - tmp + MERSBASE);
-    S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot);// printf("iterating!\n");
+    S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot);
     S.counter = 1;
 }
 
-//template class mixmax_engine<240>;// TEMPLATE
-//template class mixmax_engine<17>;// TEMPLATE
-typedef mixmax_engine mixmax;
+template class mixmax_engine<240,32,271828282>;    // TEMPLATE instantiation
+template class mixmax_engine<17,36,0>;             // TEMPLATE instantiation
+typedef mixmax_engine<17,36,0>          mixmaxN17;
+typedef mixmax_engine<240,32,271828282> mixmax;
 }
 }
+
+#undef MIXMAX_PREF
+#undef MIXMAX_POST
 
 #endif // BOOST_RANDOM_MIXMAX_HPP
