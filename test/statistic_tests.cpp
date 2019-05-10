@@ -462,10 +462,10 @@ int main(int argc, char* argv[])
   TEST(ecuyer1988);
   TEST(kreutzer1986);
   TEST(taus88);
-  TEST(hellekalek1995);
+  //TEST(hellekalek1995);
   TEST(mt11213b);
   TEST(mt19937);
-  TEST(mixmax);
+    TEST(random::mixmax);
   TEST(lagged_fibonacci607);
   TEST(lagged_fibonacci1279);
   TEST(lagged_fibonacci2281);

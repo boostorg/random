@@ -37,6 +37,7 @@ public:
     std::uint64_t operator()();
     //std::ostream& operator<< (std::ostream&, const  _Generator&); // implementation cant be outside of class?
     void discard(std::uint64_t nsteps);    // boost::random wants this to fast-forward the generator by nsteps
+    BOOST_STATIC_CONSTANT(bool, has_fixed_range = false);
 };
 
 /*
@@ -484,6 +485,8 @@ template class mixmax_engine<240,32,271828282>;    // TEMPLATE instantiation
 template class mixmax_engine<17,36,0>;             // TEMPLATE instantiation
 typedef mixmax_engine<17,36,0>          mixmaxN17;
 typedef mixmax_engine<240,32,271828282> mixmax;
+    using random::mixmax;
+    using random::mixmaxN17;
 }
 }
 
