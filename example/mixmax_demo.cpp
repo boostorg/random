@@ -1,4 +1,4 @@
-// mixmax_demo.cpp
+// mixmax_demo.cpp : g++-mp-8 -std=c++11 -O3 mixmax_demo.cpp -I /usr/local/include/
 //
 // Copyright (c) 2019
 // Kostas Savvidis
@@ -26,9 +26,9 @@ double flat() {
         number by calling `dist` with the generator.
     >>*/
     
-    //return double(gen())*(1.0/gen.max()); // 5% faster, why is random::uniform_real_distribution with dist(0,1) not specialized to this?
-    //return gen++; // 10% faster, built-in method is hand-optimized
     return dist(gen);
+    //return double(gen())*(1.0/gen.max()); // 5% faster,  why is random::uniform_real_distribution with dist(0,1) not specialized to this?
+    //return gen++;                         // 10% faster, built-in method is hand-optimized
 }
 
 
@@ -48,13 +48,13 @@ int main() {
         std::cout << flat() << std::endl;
     }
     
-    //gen.discard(100); // throw away 100 values
+    gen.discard(100); // throw away 100 values
     
     std::cerr << "\nNow add one billion doubles on [0,1] using the built-in method get_next_float()\n";
     int p = 1000000000;
     double z=0.0;
     for (int j=0; j<p ; j++) {
-        //z += gen++;    // why not? overloaded postfix ++ increments state by one step, returns a double
+        z += gen++;    // why not? overloaded postfix ++ increments state by one step, returns a double on [0,1]
         //z += flat(); // about 10% slower, due to the overhead of random::uniform_real_distribution
     }
     printf("\n%1.16F\n", z);
@@ -65,6 +65,6 @@ int main() {
 	std::cout << "Now, read the state of the generator from stdin:\n";
 	boost::random::mixmax gen2;
 	std::cin >> gen2;
-	p=100; do{if(gen++==gen2++) {std::cout << "OK, same state\n";}else{std::cout << "NOT OK";}  }while(p--!=0);
+	p=10; do{if(gen++==gen2++) {std::cout << "OK, same state\n";}else{std::cout << "NOT OK\n";}  }while(p--!=0);
     return 0;
 }

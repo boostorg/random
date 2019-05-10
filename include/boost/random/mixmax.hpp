@@ -80,8 +80,8 @@ public: // FUNCTIONS
     static constexpr long long int rng_get_SPECIAL()    {return SPECIAL;}
     static constexpr           int rng_get_SPECIALMUL() {return SPECIALMUL;}
 
-    std::uint64_t get_next() ;
-    double get_next_float();
+    inline std::uint64_t get_next();
+    inline double get_next_float();
     std::uint64_t operator()() {return get_next();}          // return one uint64 between min=0 and max=2^61-1
     double operator++(int unused) {return get_next_float();} // postfix ++ is increments state by one step, returns a double on [0,1]
 
@@ -117,20 +117,20 @@ public: // FUNCTIONS
         std::uint64_t sum=0, sumtmp=0, counter=0;
         std::string line;
         std::string token;
-        //in.ignore(150,'='); // up to N=
+        in.ignore(150,'='); // eat chars up to N=
         try{
             if(std::getline(in, line)){
                 std::istringstream iss(line);
-                iss.ignore(150,'='); // up to N=
                 std::getline(iss, token, ';');
                 int i=std::stoi(token);
-                if(i!=Ndim) { std::cerr << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n"; }else{std::cerr <<"Dim ok "<< i << "\n";}
-                iss.ignore(15,'{'); // up to V[N]={
+                if(i!=Ndim) { std::cerr << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n"; }//else{std::cerr <<"Dim ok "<< i << "\n";}
+                iss.ignore(15,'{'); // eat chars up to V[N]={
                 for(int j=0;j<Ndim-1;j++) {
-                    std::getline(iss, token, ','); if (!iss.fail() ) { vec[j]=std::stoull(token);sum=me.modadd(sum,vec[j]);std::cerr <<vec[j]<<"; ";}
+                    std::getline(iss, token, ',');
+                    if (!iss.fail() ) { vec[j]=std::stoull(token);sum=me.MOD_MERSENNE(sum+vec[j]);} //std::cerr <<vec[j]<<" + ";}
                 }
                 std::getline(iss, token, '}');
-                if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token);std::cerr <<vec[Ndim-1]<<"; ";}else{std::cerr << "ERROR: last elem empty\n";}
+                if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[N-1]);}else{std::cerr << "ERROR: last elem empty\n";}
                 iss.ignore(10,'='); std::getline(iss, token, ';'); counter=std::stoi(token);
                 iss.ignore(10,'='); std::getline(iss, token, ';'); sumtmp=std::stoull(token);
             }else{std::cerr << "ERROR: nothing to read\n";}
@@ -139,13 +139,11 @@ public: // FUNCTIONS
                 in.setstate(std::ios::failbit);
                 throw;
             }
-        sum=me.modadd(sum,MERSBASE-vec[0]);
-        me.S.V=vec; me.S.counter = counter; me.S.sumtot=sumtmp;
         if (sum == sumtmp && counter>0 && counter<N){
             me.S.V=vec; me.S.counter = counter; me.S.sumtot=sumtmp;
         }else{
             std::cerr << "ERROR: incorrect checksum or out of range counter while reading  MIXMAX RNG state.\n"
-                        <<counter<<" "<<sumtmp<<" "<<sum<<"\n";
+                        <<counter<<" "<<sumtmp<<" vs "<<sum<<"\n";
             in.setstate(std::ios::failbit);
         }
         return in;
@@ -156,17 +154,18 @@ public: // FUNCTIONS
 private:
     static constexpr int BITS=61;
     static constexpr std::uint64_t M61=2305843009213693951ULL;
-    static constexpr std::uint64_t MERSBASE=M61;
-    static constexpr double INV_MERSBASE=(0.43368086899420177360298E-18);
-    std::uint64_t MOD_MERSENNE(std::uint64_t k) {return ((((k)) & MERSBASE) + (((k)) >> BITS) );}
-    std::uint64_t MOD_MULSPEC(std::uint64_t k);
-    std::uint64_t MULWU(std::uint64_t k);
-    void seed_vielbein(rng_state_t* X, unsigned int i); // seeds with the i-th unit vector, i = 0..N-1,  for testing only
-    void seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
-    std::uint64_t iterate_raw_vec(std::uint64_t* Y, std::uint64_t sumtotOld);
-    std::uint64_t apply_bigskip(std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
-    std::uint64_t modadd(std::uint64_t foo, std::uint64_t bar);
-    std::uint64_t fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a);
+    static constexpr double INV_M61=(0.43368086899420177360298E-18);
+    inline std::uint64_t MOD_MERSENNE(std::uint64_t k) {return ((((k)) & M61) + (((k)) >> BITS) );}
+    inline std::uint64_t MOD_MULSPEC(std::uint64_t k);
+    inline std::uint64_t MULWU(std::uint64_t k);
+    inline void seed_vielbein(rng_state_t* X, unsigned int i); // seeds with the i-th unit vector, i = 0..N-1,  for testing only
+    inline void seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
+    inline std::uint64_t iterate_raw_vec(std::uint64_t* Y, std::uint64_t sumtotOld);
+    inline std::uint64_t apply_bigskip(std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
+    inline std::uint64_t modadd(std::uint64_t foo, std::uint64_t bar);
+    inline std::uint64_t fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a);
+    inline double convert1double(uint64_t);
+    inline double get_next_float_packbits();
 #if defined(__x86_64__)
     inline std::uint64_t mod128(__uint128_t s);
 #endif
@@ -193,19 +192,21 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST::MOD_MULSPEC(std::uint64_t k
 }
 
 MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine()
-// constructor, with no params, fast and seeds with a unit vector
+// constructor, with no params, seeds with seed=1.
+//    random numbers are as good as from any other seed
 {
-    seed_vielbein(&S,0);
+    seed_uniquestream( &S, 0,  0, 0, 1);
 }
 
 MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine(std::uint64_t seedval)
 // constructor, one uint64_t seed
+// random numbers are statistically independent from any two distinct seeds, e.g. consecutive seeds are ok
 {
     seed_uniquestream( &S, 0,  0,  (uint32_t)(seedval>>32), (uint32_t)seedval );
 }
 
 MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID)
-// constructor, no need to allocate, just seed
+// constructor, four 32-bit seeds for 128-bit seeding flexibility
 {
     seed_uniquestream( &S, clusterID,  machineID,  runID,  streamID );
 }
@@ -242,7 +243,7 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::iterate_raw_vec(std::uint6
     return MOD_MERSENNE(MOD_MERSENNE(sumtot) + (ovflow <<3 ));
 }
 
-MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::get_next() {
+MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::get_next() {
     int i;
     i=S.counter;
     
@@ -256,8 +257,14 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::get_next() {
     }
 }
 
-MIXMAX_PREF double mixmax_engine MIXMAX_POST ::get_next_float()				// Returns a random double with all 53 bits random, in the range (0,1]
-{    /* cast to signed int trick suggested by Andrzej Görlich     */
+MIXMAX_PREF inline double mixmax_engine MIXMAX_POST ::get_next_float()				// Returns a random double with all 53 bits random, in the range (0,1]
+{
+#if defined(__GNUC__) && (__GNUC__ > 6) && (!defined(__ICC)) && defined(__x86_64__)
+#warning other method
+    return get_next_float_packbits();
+#endif
+
+    /* cast to signed int trick suggested by Andrzej Görlich     */
     int64_t Z=(int64_t)get_next();
     double F;
 #if defined(__GNUC__) && (__GNUC__ < 5) && (!defined(__ICC)) && defined(__x86_64__) && defined(__SSE2_MATH__) && defined(USE_INLINE_ASM)
@@ -270,8 +277,24 @@ MIXMAX_PREF double mixmax_engine MIXMAX_POST ::get_next_float()				// Returns a 
                           );
 #endif
     F=Z;
-    return F*INV_MERSBASE;
+    return F*INV_M61;
 }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+MIXMAX_PREF inline double mixmax_engine MIXMAX_POST ::convert1double(uint64_t u){
+    const double one = 1;
+    const uint64_t onemask = *(uint64_t*)&one;
+    uint64_t tmp = (u>>9) | onemask; // bits between 52 and 62 dont affect the result!
+    double d = *(double*)&tmp;
+    return d-1.0;
+}
+
+MIXMAX_PREF inline double mixmax_engine MIXMAX_POST ::get_next_float_packbits(){
+    uint64_t Z=get_next();
+    return convert1double(Z);
+}
+#pragma GCC diagnostic pop
 
 MIXMAX_PREF void mixmax_engine MIXMAX_POST ::seed_vielbein(rng_state_t* X, unsigned int index)
 {
@@ -387,7 +410,7 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST ::apply_bigskip( std::uint64
 #if defined(__x86_64__)
 MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::mod128(__uint128_t s){
     std::uint64_t s1;
-    s1 = ( (  ((std::uint64_t)s)&MERSBASE )    + (  ((std::uint64_t)(s>>64)) * 8 )  + ( ((std::uint64_t)s) >>BITS) );
+    s1 = ( (  ((std::uint64_t)s)&M61 )    + (  ((std::uint64_t)(s>>64)) * 8 )  + ( ((std::uint64_t)s) >>BITS) );
     return	MOD_MERSENNE(s1);
 }
 
@@ -451,8 +474,8 @@ MIXMAX_PREF void mixmax_engine MIXMAX_POST ::BranchInplace(){
     // a 64-bit LCG from Knuth line 26, is used to mangle a vector component
     constexpr std::uint64_t MULT64=6364136223846793005ULL;
     std::uint64_t tmp=S.V[1];
-    S.V[1] *= MULT64; S.V[1] &= MERSBASE;
-    S.sumtot = modadd( S.sumtot , S.V[1] - tmp + MERSBASE);
+    S.V[1] *= MULT64; S.V[1] &= M61;
+    S.sumtot = modadd( S.sumtot , S.V[1] - tmp + M61);
     S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot);
     S.counter = 1;
 }
