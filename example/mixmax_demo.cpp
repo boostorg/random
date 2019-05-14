@@ -19,9 +19,9 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
-//boost::random::mixmax gen(0,0,0,1); // Create a Mixmax object and initialize the RNG with four 32-bit seeds 0,0,0,1
+boost::random::mixmax gen; //gen(0,0,0,1); // Create a Mixmax object and initialize the RNG with four 32-bit seeds 0,0,0,1
 //boost::mt19937_64 gen(1);           // 64-bit Mersenne Twister, comparable state size and quality to MIXMAX, but much slower
-//boost::mt19937 gen(1);              // 32-bit Mersenne Twister, "double" precision numbers with 32 random bits in the mantissa, does not pass tests
+//boost::mt19937 gen(1);              // 32-bit Mersenne Twister, "double" precision numbers with 32 random bits in the mantissa, does not pass testU01 suite
 
 double flat() {
     boost::random::uniform_real_distribution<> dist(0,1);
@@ -44,20 +44,22 @@ int main() {
 //    << "\n Working in the Galois field with prime modulus 2^61-1"
     << "\n Generator class size is "<< sizeof(gen) << " bytes\n\n";
 
-	std::cerr << "\nFirst print a dozen doubles on [0,1] using the boost::random::uniform_real_distribution\n";
-	std::cout.setf(std::ios::fixed);
+    gen.discard(10000); // throw away 10000 values
+    std::cout << "threw away first 10000 values and got:" << gen.get_next();
+
+    std::cerr << "\nFirst print a dozen doubles on [0,1] using the boost::random::uniform_real_distribution\n";
+    std::cout.setf(std::ios::fixed);
     for(int i = 0; i < 12; ++i) {
         std::cout << flat() << std::endl;
     }
     
-    gen.discard(100); // throw away 100 values
     
     std::cerr << "\nNow add one billion doubles on [0,1] using the built-in method get_next_float()\n";
     int p = 1000000000;
     double z=0.0;
     for (int j=0; j<p ; j++) {
-        //z += gen++;    // why not? overloaded postfix ++ increments state by one step, returns a double on [0,1]
-        z += flat(); // about 10% slower, due to the overhead of random::uniform_real_distribution
+        z += gen++;    // why not? overloaded postfix ++ increments state by one step, returns a double on [0,1]
+        //z += flat(); // about 10% slower, due to the overhead of random::uniform_real_distribution
     }
     printf("\n%1.16F\n", z);
     std::cout << "ok\n\n";
