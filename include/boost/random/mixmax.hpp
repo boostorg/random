@@ -22,18 +22,28 @@
 #include <sstream>
 #include <array>
 
+#include <boost/random/detail/seed.hpp>
+#include <boost/random/detail/seed_impl.hpp>
+
 namespace boost {
 namespace random {
 
+#ifdef BOOST_STATIC_CONSTEXPR
+#define MIXMAX_CONSTEXPR BOOST_STATIC_CONSTEXPR
+#else
+#define MIXMAX_CONSTEXPR static constexpr
+#endif
+    
 template <typename T, T __min, T __max> class _Generator
 // Boilerplate, it is required to be compatible with std::random interfaces, see example.cpp for how to use.
 {
 public:
     // Interfaces required by C++11 std::random and boost::random
-    using result_type = T; //C++11 only
-    static constexpr T min() {return __min;}
-    static constexpr T max() {return __max;}
-    void seed (std::uint64_t val = 1);
+    //using result_type = T; //C++11 only
+    typedef std::uint64_t result_type ;
+    MIXMAX_CONSTEXPR T min() {return __min;}
+    MIXMAX_CONSTEXPR T max() {return __max;}
+    void seed (std::uint64_t val = 0);
     std::uint64_t operator()();
     //std::ostream& operator<< (std::ostream&, const  _Generator&); // implementation cant be outside of class?
     void discard(std::uint64_t nsteps);    // boost::random wants this to fast-forward the generator by nsteps
@@ -63,7 +73,10 @@ private: // DATATYPES
 
     struct rng_state_st
     {
-        std::array<std::uint64_t, N> V;
+        union{
+            std::array<std::uint64_t, N> V;
+            std::uint64_t raw[N];
+        };
         std::uint64_t sumtot;
         int counter;
     };
@@ -72,20 +85,49 @@ private: // DATATYPES
     rng_state_t S;
     
 public: // FUNCTIONS
-    typedef std::uint64_t result_type ;
     mixmax_engine();              // Constructor, unit vector as initial state
     mixmax_engine(std::uint64_t); // Constructor, one 64-bit seed
     mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );       // Constructor with four 32-bit seeds
-    void seed(std::uint64_t seedval){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} // seed with one 64-bit seed
+    void seed(std::uint64_t seedval=0){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} // seed with one 64-bit seed
+    template<class It> mixmax_engine(It& first, It last) { seed(first,last); }
+    template<typename SeedSeq> mixmax_engine(SeedSeq & seq){}; //(boost::random::seed_seq){};
 
-    static constexpr           int rng_get_N()          {return N;}          // return internal parameters
-    static constexpr long long int rng_get_SPECIAL()    {return SPECIAL;}
-    static constexpr           int rng_get_SPECIALMUL() {return SPECIALMUL;}
+    /** Sets the state of the generator using values from an iterator range. */
+    template<class It>
+    void seed(It& first, It last)
+    {
+        uint32_t v[4];
+        //detail::fill_array_int<4>(first, last, v);
+        int i=0;
+        uint32_t* ptr=v;
+        do{
+            *ptr++ = uint32_t(*first++); i++;
+        }while (first != last && i<4);
+        seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
+     }
+
+    BOOST_RANDOM_DETAIL_SEED_SEQ_SEED(mixmax_engine, SeeqSeq, seq)
+    {
+        detail::seed_array_int<61>(seq, S.raw);
+    }
+//    BOOST_RANDOM_DETAIL_GENERATOR_SEED(mixmax_engine, Gen, gen)
+//    {
+//        detail::generator_seed_seq<Gen> seq(gen);
+//        base_type::seed(seq);
+//    }
+
+    MIXMAX_CONSTEXPR           int rng_get_N()          {return N;}          // return internal parameters
+    MIXMAX_CONSTEXPR long long int rng_get_SPECIAL()    {return SPECIAL;}
+    MIXMAX_CONSTEXPR           int rng_get_SPECIALMUL() {return SPECIALMUL;}
 
     inline std::uint64_t get_next();
     inline double get_next_float();
     std::uint64_t operator()() {return get_next();}          // return one uint64 between min=0 and max=2^61-1
     double operator++(int unused) {return get_next_float();} // postfix ++ is increments state by one step, returns a double on [0,1]
+    
+    template<class Iter>
+    void generate(Iter first, Iter last)               /* Fills a range with random values */
+    { detail::generate_from_int(*this, first, last); }
 
     /* return a new generator with deterministically determined state, but statistically independent stream
        useful when you need to simulate a branching random process
@@ -97,7 +139,9 @@ public: // FUNCTIONS
     void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} // required in boost
     
 #ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
-    friend std::ostream& operator<< (std::ostream& ost, const mixmax_engine& me) // save the state of RNG to stream
+    template<class CharT, class Traits>
+    friend std::basic_ostream<CharT,Traits>&
+    operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me) // save the state of RNG to stream
     {
         int j;
         ost << "mixmax state, file version 1.0\n" ;
@@ -113,31 +157,36 @@ public: // FUNCTIONS
         return ost;
     }
     
-    friend std::istream& operator>> (std::istream &in, mixmax_engine& me){
+    template<class CharT, class Traits>
+    friend std::basic_istream<CharT,Traits>&
+    operator>> (std::basic_istream<CharT,Traits> &in, mixmax_engine& me){
         // will throw an exception if format is not right
         std::array<std::uint64_t, N> vec;
         std::uint64_t sum=0, sumtmp=0, counter=0;
-        std::string line;
-        std::string token;
+        std::basic_string<CharT> line;
+        std::basic_string<CharT> token;
         in.ignore(150,'='); // eat chars up to N=
+        CharT xxxchar;
+//        using std::wistream;
+        using std::getline;
         try{
-            if(std::getline(in, line)){
-                std::istringstream iss(line);
-                std::getline(iss, token, ';');
+            if(getline( in, line)){
+                std::basic_istringstream<CharT> iss(line);
+                getline(iss, token, xxxchar=(';'));
                 int i=std::stoi(token);
                 if(i!=Ndim) { std::cerr << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n"; }//else{std::cerr <<"Dim ok "<< i << "\n";}
                 iss.ignore(15,'{'); // eat chars up to V[N]={
                 for(int j=0;j<Ndim-1;j++) {
-                    std::getline(iss, token, ',');
+                    std::getline(iss, token, xxxchar=',');
                     if (!iss.fail() ) { vec[j]=std::stoull(token);sum=me.MOD_MERSENNE(sum+vec[j]);} //std::cerr <<vec[j]<<" + ";}
                 }
-                std::getline(iss, token, '}');
+                getline(iss, token, xxxchar='}');
                 if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[N-1]);}else{std::cerr << "ERROR: last elem empty\n";}
-                iss.ignore(10,'='); std::getline(iss, token, ';'); counter=std::stoi(token);
-                iss.ignore(10,'='); std::getline(iss, token, ';'); sumtmp=std::stoull(token);
+                iss.ignore(10,'='); std::getline(iss, token, xxxchar=';'); counter=std::stoi(token);
+                iss.ignore(10,'='); std::getline(iss, token, xxxchar=';'); sumtmp=std::stoull(token);
             }else{std::cerr << "ERROR: nothing to read\n";}
             }catch (const std::exception& e) {
-                std::cerr << "ERROR: Exception caught in MIXMAX RNG while reading state: " << e.what() << "\nfrom string='"<<token<<"'\n"; //
+                std::cerr << "ERROR: Exception caught in MIXMAX RNG while reading state: " << e.what() << "'\n"; // "\nfrom string='" << token <<
                 in.setstate(std::ios::failbit);
                 throw;
             }
@@ -151,12 +200,18 @@ public: // FUNCTIONS
         return in;
     }
 #endif
-    
+    friend bool operator==(const mixmax_engine & x,
+                           const mixmax_engine & y){return x.S==y.S; }; // && x.counter == y.counter;
+    friend bool operator!=(const mixmax_engine & x,
+                           const mixmax_engine & y){return !(x.S==y.S);}; // && x.counter == y.counter
+
     
 private:
-    static constexpr int BITS=61;
-    static constexpr std::uint64_t M61=2305843009213693951ULL;
-    static constexpr double INV_M61=(0.43368086899420177360298E-18);
+BOOST_STATIC_CONSTANT(int, BITS=61);
+BOOST_STATIC_CONSTANT(std::uint64_t, M61=2305843009213693951ULL);
+//    MIXMAX_CONSTEXPR int BITS=61;
+//    MIXMAX_CONSTEXPR std::uint64_t M61=2305843009213693951ULL;
+//    MIXMAX_CONSTEXPR double INV_M61=(0.43368086899420177360298E-18);
     inline std::uint64_t MOD_MERSENNE(std::uint64_t k) {return ((((k)) & M61) + (((k)) >> BITS) );}
     inline std::uint64_t MOD_MULSPEC(std::uint64_t k);
     inline std::uint64_t MULWU(std::uint64_t k);
@@ -181,9 +236,6 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST::MOD_MULSPEC(std::uint64_t k
         case 17:
             return 0;
             break;
-        case 8:
-            return 0;
-            break;
         case 240:
             return fmodmulM61( 0, SPECIAL , (k) );
             break;
@@ -194,10 +246,10 @@ MIXMAX_PREF std::uint64_t mixmax_engine MIXMAX_POST::MOD_MULSPEC(std::uint64_t k
 }
 
 MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine()
-// constructor, with no params, seeds with seed=1.
+// constructor, with no params, seeds with seed=0.
 //    random numbers are as good as from any other seed
 {
-    seed_uniquestream( &S, 0,  0, 0, 1);
+    seed_uniquestream( &S, 0,  0, 0, 0);
 }
 
 MIXMAX_PREF mixmax_engine MIXMAX_POST ::mixmax_engine(std::uint64_t seedval)
@@ -261,8 +313,8 @@ MIXMAX_PREF inline std::uint64_t mixmax_engine MIXMAX_POST ::get_next() {
 
 MIXMAX_PREF inline double mixmax_engine MIXMAX_POST ::get_next_float()				// Returns a random double with all 53 bits random, in the range (0,1]
 {
-#if defined(__GNUC__) && (__GNUC__ > 6) && (!defined(__ICC)) && defined(__x86_64__)
-#warning other method
+#if defined(__GNUC__) && (__GNUC__ > 9) && (!defined(__ICC)) && defined(__x86_64__)
+#warning using the quick method for conversion to double
     return get_next_float_packbits();
 #endif
 
@@ -279,6 +331,7 @@ MIXMAX_PREF inline double mixmax_engine MIXMAX_POST ::get_next_float()				// Ret
                           );
 #endif
     F=Z;
+    const double INV_M61=(0.43368086899420177360298E-18);
     return F*INV_M61;
 }
 
@@ -474,7 +527,7 @@ MIXMAX_PREF mixmax_engine MIXMAX_POST & mixmax_engine MIXMAX_POST ::operator=(co
 MIXMAX_PREF void mixmax_engine MIXMAX_POST ::BranchInplace(){
     // Dont forget to iterate the mother, when branching the daughter, or else will have collisions!
     // a 64-bit LCG from Knuth line 26, is used to mangle a vector component
-    constexpr std::uint64_t MULT64=6364136223846793005ULL;
+    MIXMAX_CONSTEXPR std::uint64_t MULT64=6364136223846793005ULL;
     std::uint64_t tmp=S.V[1];
     S.V[1] *= MULT64; S.V[1] &= M61;
     S.sumtot = modadd( S.sumtot , S.V[1] - tmp + M61);

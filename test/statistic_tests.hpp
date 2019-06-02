@@ -201,6 +201,7 @@ public:
       >::init(result_type());
     result_type previous = init;
     unsigned int length = 0;
+      std::cout << "running with n=" << n << " and " << "classes="<<classes() << "\n"<< std::flush;;
     for(int i = 0; i < n; ++i) {
       result_type val = f();
       if(up ? previous <= val : previous >= val) {
@@ -236,6 +237,7 @@ public:
   {
     typedef typename NumberGenerator::result_type result_type;
     unsigned int length = 0;
+      std::cout << "running with n=" << n << " and " << "classes="<<classes() << "\n"<< std::flush;;
     for(int i = 0; i < n; ) {
       result_type value = f();
       if(value < low || value > high)
@@ -278,6 +280,7 @@ public:
     assert((f.min)() == 0);
     assert((f.max)() == static_cast<result_type>(range-1));
     std::vector<result_type> v(classes());
+      std::cout << "running with n=" << n << " and " << "classes="<<classes() << "\n"<< std::flush;;
     for(int i = 0; i < n; ++i) {
       for(unsigned int j = 0; j < classes(); ++j)
         v[j] = f();
@@ -325,6 +328,7 @@ public:
     assert((f.min)() == 0);
     assert((f.max)() == static_cast<result_type>(d-1));
     std::vector<bool> occurs(d);
+      std::cout << "running with n=" << n << " and " << "classes="<<classes() << "\n"<< std::flush;;
     for(int i = 0; i < n; ++i) {
       occurs.assign(d, false);
       unsigned int r = 0;            // length of current sequence
@@ -372,6 +376,7 @@ public:
   {
     typedef typename UniformRandomNumberGenerator::result_type result_type;
     std::vector<result_type> v(t);
+      std::cout << "running with n=" << n <<  "\n";
     for(int i = 0; i < n; ++i) {
       for(int j = 0; j < t; ++j) {
         v[j] = f();
@@ -406,7 +411,7 @@ public:
     assert(std::numeric_limits<result_type>::is_integer);
     assert((f.min)() == 0);
     assert((f.max)() == static_cast<result_type>(m-1));
-   
+      std::cout << "running with n=" << n << " and " << "classes="<<classes() << "n_total=" << n_total<< "\n"<< std::flush;
     for(int j = 0; j < n_total; j++) {
       std::vector<result_type> v(n);
       std::generate_n(v.begin(), n, f);

@@ -396,6 +396,7 @@ int main(int argc, char*argv[])
   distrib(iter, "kreutzer1986", boost::kreutzer1986());
 
   distrib(iter, "mt19937", boost::mt19937());
+  distrib(iter, "mt19937_64", boost::mt19937_64());
     
   distrib(iter, "mixmax", boost::random::mixmax());
   

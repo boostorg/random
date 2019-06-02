@@ -64,6 +64,7 @@ public:
     variate_generator<RNG&, uniform_smallint<> > uint_linear(rng, uniform_smallint<>(0, classes-1));
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(equi, uint_linear, n1), n2));
+            std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square, 
                          experiment_generator(equi, uint_linear, n1), 2*n2));
 
@@ -74,6 +75,7 @@ public:
     variate_generator<RNG&, uniform_smallint<> > uint_square(rng, uniform_smallint<>(0, root-1));
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(equi_2d, uint_square, n1), n2));
+            std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(equi_2d, uint_square, n1), 2*n2));
     std::cout << std::endl;
@@ -106,6 +108,7 @@ public:
     kolmogorov_experiment ks(n1);
     check_(run_experiment(test_distrib_chi_square,
                          ks_experiment_generator(ks, rng, dist), n2));
+            std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          ks_experiment_generator(ks, rng, dist), 2*n2));
     std::cout << std::endl;
@@ -132,6 +135,7 @@ public:
 
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(r_up, rng, n1), n2));
+            std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(r_up, rng, n1), 2*n2));
 
@@ -139,6 +143,7 @@ public:
     runs_experiment<false> r_down(classes);
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(r_down, rng, n1), n2));
+      std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(r_down, rng, n1), 2*n2));
 
@@ -173,10 +178,12 @@ public:
   {
     using namespace boost;
     std::cout << "gaps: " << std::flush;
-    gap_experiment gap(classes, dist, 0.2, 0.8);
-
+    //gap_experiment gap(classes, dist, 0.2, 0.8);
+      gap_experiment gap(classes, dist, 0.0, 0.0625);  // (.., alpha, beta)
+      std::cout << "alpha=" << "0.0" << ",  beta=0.0625: \n";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(gap, rng, n1), n2));
+      std::cout << ", with twice the n2:    ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(gap, rng, n1), 2*n2));
 
@@ -201,10 +208,11 @@ public:
   {
     using namespace boost;
     std::cout << "poker: " << std::flush;
-    poker_experiment poker(8, classes);
-    variate_generator<RNG&, uniform_smallint<> > usmall(rng, uniform_smallint<>(0, 7));
+    poker_experiment poker(32, classes);
+    variate_generator<RNG&, uniform_smallint<> > usmall(rng, uniform_smallint<>(0, 32-1));
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(poker, usmall, n1), n2));
+    std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(poker, usmall, n1), 2*n2));
     std::cout << std::endl;
@@ -213,6 +221,33 @@ private:
   unsigned int classes;
   distribution_experiment test_distrib_chi_square;
 };
+
+//class poker_test64 : test_base
+//{
+//public:
+//    poker_test64(test_environment & env, unsigned int classes,
+//               unsigned int high_classes)
+//    : test_base(env), classes(classes),
+//    test_distrib_chi_square(boost::math::chi_squared(classes-1), high_classes)
+//    { }
+//
+//    template<class RNG>
+//    void run(RNG & rng, int n1, int n2)
+//    {
+//        using namespace boost;
+//        std::cout << "poker: " << std::flush;
+//        poker_experiment poker(64, classes);
+//        variate_generator<RNG&, uniform_smallint<> > usmall(rng, uniform_smallint<>(0, 7));
+//        check_(run_experiment(test_distrib_chi_square,
+//                              experiment_generator(poker, usmall, n1), n2));
+//        check_(run_experiment(test_distrib_chi_square,
+//                              experiment_generator(poker, usmall, n1), 2*n2));
+//        std::cout << std::endl;
+//    }
+//private:
+//    unsigned int classes;
+//    distribution_experiment test_distrib_chi_square;
+//};
 
 class coupon_collector_test : test_base
 {
@@ -228,11 +263,12 @@ public:
   {
     using namespace boost;
     std::cout << "coupon collector: " << std::flush;
-    coupon_collector_experiment coupon(5, classes);
+    coupon_collector_experiment coupon(8, classes);
 
-    variate_generator<RNG&, uniform_smallint<> > usmall(rng, uniform_smallint<>(0, 4));
+    variate_generator<RNG&, uniform_smallint<> > usmall(rng, uniform_smallint<>(0, 8-1));
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(coupon, usmall, n1), n2));
+      std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(coupon, usmall, n1), 2*n2));
     std::cout << std::endl;
@@ -263,6 +299,7 @@ public:
     RNG& gen_ref(rng);
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(perm, gen_ref, n1), n2));
+      std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(perm, gen_ref, n1), 2*n2));
     std::cout << std::endl;
@@ -272,10 +309,10 @@ private:
   distribution_experiment test_distrib_chi_square;
 };
 
-class maximum_test : test_base
+class maxoft_test : test_base
 {
 public:
-  maximum_test(test_environment & env, unsigned int high_classes)
+  maxoft_test(test_environment & env, unsigned int high_classes)
     : test_base(env),
       test_distrib_chi_square(kolmogorov_smirnov_probability(1000),
                               high_classes)
@@ -286,8 +323,9 @@ public:
   {
     using namespace boost;
     std::cout << "maximum-of-t: " << std::flush;
-    maximum_experiment<RNG> mx(rng, n1, 5);    
+    maximum_experiment<RNG> mx(rng, n1, 10);
     check_(run_experiment(test_distrib_chi_square, mx, n2));
+            std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square, mx, 2*n2));
     std::cout << std::endl;
   }
@@ -307,11 +345,13 @@ public:
   void run(RNG & rng, int n1, int n2)
   {
     using namespace boost;
-    std::cout << "birthday spacing: " << std::flush;
+    std::cout << "birthday spacing: (512,2^25)" << std::flush;
     boost::variate_generator<RNG&, boost::uniform_int<> > uni(rng, boost::uniform_int<>(0, (1<<25)-1));
     birthday_spacing_experiment bsp(4, 512, (1<<25));
+      
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(bsp, uni, n1), n2));
+      std::cout << ", with twice the n2:   ";
     check_(run_experiment(test_distrib_chi_square,
                          experiment_generator(bsp, uni, n1), 2*n2));
     std::cout << std::endl;
@@ -334,13 +374,13 @@ public:
       test_distrib_chi_square6(boost::math::chi_squared(7-1), classes),
       ksdist_test(*this, classes),
       equi_test(*this, 100, classes),
-      rns_test(*this, 7, classes),
-      gp_test(*this, 7, classes),
-      pk_test(*this, 5, classes),
-      cpn_test(*this, 15, classes),
+      runs_test_instance(*this, 7, classes),
+      gap_test_instance(*this, 7, classes),
+      poker_test_instance(*this, 5, classes),
+      coupon_test(*this, 15, classes),
       perm_test(*this, 5, classes),
-      max_test(*this, classes),
-      bday_test(*this, classes)
+      maxoft_test_instance(*this, classes),
+      birthday_test_instance(*this, classes)
   {
     std::cout << "Confidence level: " << confid 
               << "; 1-alpha = " << (1-confid)
@@ -379,15 +419,17 @@ public:
 
     RNG rng(1234567);
 
-    ksdist_test.run(rng, 5000, 250);
-    equi_test.run(rng, 5000, 250);
-    rns_test.run(rng, 100000, 250);
-    gp_test.run(rng, 10000, 250);
-    pk_test.run(rng, 5000, 250);
-    cpn_test.run(rng, 500, 250);
-    perm_test.run(rng, 1200, 250);
-    max_test.run(rng, 1000, 250);
-    bday_test.run(rng, 1000, 150);
+      
+      gap_test_instance.run(rng, 1000000, 250);
+      birthday_test_instance.run(rng, 50000, 150);
+      poker_test_instance.run(rng, 1000000, 250);
+      //pk64_test.run(rng, 10000000, 250);
+      coupon_test.run(rng, 1000000, 250);
+      perm_test.run(rng, 1000000, 250);
+      maxoft_test_instance.run(rng, 1000000, 250);
+      ksdist_test.run(rng, 1000000, 250);
+      equi_test.run(rng, 1000000, 250);
+      runs_test_instance.run(rng, 1000000, 250);
 
     std::cout << std::endl;
   }
@@ -402,10 +444,10 @@ public:
     RNG rng;
     variate_generator<RNG&, Dist> vgen(rng, dist);
     
-    ksdist_test.run(vgen, expected_dist, 5000, 250);
-    rns_test.run(vgen, 100000, 250);
-    gp_test.run(vgen, expected_dist, 10000, 250);
-    perm_test.run(vgen, 1200, 250);
+    ksdist_test.run(vgen, expected_dist, 1000000, 250);
+    runs_test_instance.run(vgen, 1000000, 250);
+    gap_test_instance.run(vgen, expected_dist, 1000000, 250);
+    perm_test.run(vgen, 1000000, 250);
 
     std::cout << std::endl;
   }
@@ -416,13 +458,14 @@ private:
   distribution_experiment test_distrib_chi_square6;
   ks_distribution_test ksdist_test;
   equidistribution_test equi_test;
-  runs_test rns_test;
-  gap_test gp_test;
-  poker_test pk_test;
-  coupon_collector_test cpn_test;
+  runs_test runs_test_instance;
+  gap_test gap_test_instance;
+  poker_test poker_test_instance;
+  //poker_test64 pk64_test;
+  coupon_collector_test coupon_test;
   permutation_test perm_test;
-  maximum_test max_test;
-  birthday_test bday_test;
+  maxoft_test maxoft_test_instance;
+  birthday_test birthday_test_instance;
 };
 
 void test_base::check_(double val) const
@@ -457,48 +500,49 @@ int main(int argc, char* argv[])
     env.run_test<boost::name>(#name)
 
   TEST(minstd_rand0);
-  TEST(minstd_rand);
-  TEST(rand48);
-  TEST(ecuyer1988);
-  TEST(kreutzer1986);
-  TEST(taus88);
-  //TEST(hellekalek1995);
-  TEST(mt11213b);
-  TEST(mt19937);
-    TEST(random::mixmax);
-  TEST(lagged_fibonacci607);
-  TEST(lagged_fibonacci1279);
-  TEST(lagged_fibonacci2281);
-  TEST(lagged_fibonacci3217);
-  TEST(lagged_fibonacci4423);
-  TEST(lagged_fibonacci9689);
-  TEST(lagged_fibonacci19937);
-  TEST(lagged_fibonacci23209);
-  TEST(lagged_fibonacci44497);
-  TEST(ranlux3);
-  TEST(ranlux4);
+//  TEST(minstd_rand);
+//  TEST(rand48);
+//  TEST(ecuyer1988);
+//  TEST(kreutzer1986);
+//  TEST(taus88);
+//  //TEST(hellekalek1995);
+//  //TEST(mt11213b);
+//  TEST(mt19937);
+//    TEST(random::mixmax);
+//  TEST(lagged_fibonacci607);
+////  TEST(lagged_fibonacci1279);
+////  TEST(lagged_fibonacci2281);
+////  TEST(lagged_fibonacci3217);
+////  TEST(lagged_fibonacci4423);
+////  TEST(lagged_fibonacci9689);
+////  TEST(lagged_fibonacci19937);
+////  TEST(lagged_fibonacci23209);
+//  TEST(lagged_fibonacci44497);
+//  TEST(ranlux3);
+//  TEST(ranlux4);
+//
+//#if !defined(BOOST_NO_INT64_T) && !defined(BOOST_NO_INTEGRAL_INT64_T)
+//  TEST(ranlux64_3);
+//  TEST(ranlux64_4);
+//#endif
+//
+////  TEST(ranlux3_01);
+////  TEST(ranlux4_01);
+////  TEST(ranlux64_3_01);
+////  TEST(ranlux64_4_01);
+//
+//  if(args.check_("normal"))
+//    env.run_test<boost::mt19937>("normal", boost::normal_distribution<>(), boost::math::normal());
+//  if(args.check_("triangle"))
+//    env.run_test<boost::mt19937>("triangle", boost::triangle_distribution<>(0, 1, 3), boost::math::triangular(0, 1, 3));
+//  if(args.check_("cauchy"))
+//    env.run_test<boost::mt19937>("cauchy", boost::cauchy_distribution<>(), boost::math::cauchy());
+//  if(args.check_("gamma"))
+//    env.run_test<boost::mt19937>("gamma", boost::gamma_distribution<>(1), boost::math::gamma_distribution<>(1));
+//  if(args.check_("exponential"))
+//    env.run_test<boost::mt19937>("exponential", boost::exponential_distribution<>(), boost::math::exponential());
+//  if(args.check_("lognormal"))
+//    env.run_test<boost::mt19937>("lognormal", boost::lognormal_distribution<>(1, 1),
+//      boost::math::lognormal(std::log(1.0/std::sqrt(2.0)), std::sqrt(std::log(2.0))));
 
-#if !defined(BOOST_NO_INT64_T) && !defined(BOOST_NO_INTEGRAL_INT64_T)
-  TEST(ranlux64_3);
-  TEST(ranlux64_4);
-#endif
-
-  TEST(ranlux3_01);
-  TEST(ranlux4_01);
-  TEST(ranlux64_3_01);
-  TEST(ranlux64_4_01);
-  
-  if(args.check_("normal"))
-    env.run_test<boost::mt19937>("normal", boost::normal_distribution<>(), boost::math::normal());
-  if(args.check_("triangle"))
-    env.run_test<boost::mt19937>("triangle", boost::triangle_distribution<>(0, 1, 3), boost::math::triangular(0, 1, 3));
-  if(args.check_("cauchy"))
-    env.run_test<boost::mt19937>("cauchy", boost::cauchy_distribution<>(), boost::math::cauchy());
-  if(args.check_("gamma"))
-    env.run_test<boost::mt19937>("gamma", boost::gamma_distribution<>(1), boost::math::gamma_distribution<>(1));
-  if(args.check_("exponential"))
-    env.run_test<boost::mt19937>("exponential", boost::exponential_distribution<>(), boost::math::exponential());
-  if(args.check_("lognormal"))
-    env.run_test<boost::mt19937>("lognormal", boost::lognormal_distribution<>(1, 1),
-      boost::math::lognormal(std::log(1.0/std::sqrt(2.0)), std::sqrt(std::log(2.0))));
 }
