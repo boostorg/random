@@ -1,6 +1,7 @@
 # random
 Boost.org random module - with MIXMAX RNG
-Not in usable state yet!
+
+In usable state - but not finished yet!
 
 The fork exists to develop and contribute the MIXMAX Random Number Generator to Boost.
 It is the leading RNG, in terms of its theoretical guarantees regarding uniformness and statistical
