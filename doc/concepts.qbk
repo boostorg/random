@@ -16,9 +16,15 @@ Random numbers are required in a number of different problem domains, such as
 * testing (random coverage in white-box tests)
 
 The Boost Random Number Generator Library provides a framework for random
-number generators with well-defined properties so that the generators can be
-used in the demanding numerics and security domains. For a general
-introduction to random numbers in numerics, see
+number generators with well-understood properties so that the generators can be
+used in the most demanding applications in numerics, games and testing. For security,
+especially key generation, you must use the tools provided with your platform 
+such as the officially supported packages from OpenSSL or a commercial vendor.
+For an introduction to random numbers, see the classic work,
+
+[:"Art of Computer Programming, Volume 2: Seminumerical Algorithms", Donald E. Knuth, 3rd ed., 1997, pp. 1-193
+
+and, for the of random numbers in numerical algorithms, see
 
 [:"Numerical Recipes in C: The art of scientific computing", William H. Press,
 Saul A. Teukolsky, William A. Vetterling, Brian P. Flannery, 2nd ed., 1992,
