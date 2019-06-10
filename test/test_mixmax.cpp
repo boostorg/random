@@ -75,5 +75,3 @@ BOOST_AUTO_TEST_CASE(test_special_seed) {
         BOOST_CHECK_EQUAL(gen1, gen2);
     }
 }
-
-int main(){return 0;}
