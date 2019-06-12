@@ -71,7 +71,6 @@ explicit test_lagged_fibonacci1279 test_lagged_fibonacci2281
 
 run test_seed_seq.cpp /boost//unit_test_framework ;
 
-run test_mixmax.cpp /boost//unit_test_framework ;
 run test_binomial.cpp ;
 run test_binomial_distribution.cpp /boost//unit_test_framework ;
 run test_poisson.cpp ;

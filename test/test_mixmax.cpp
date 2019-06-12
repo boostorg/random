@@ -14,64 +14,40 @@
 
 #define BOOST_RANDOM_URNG boost::random::mixmax
 
-#define BOOST_RANDOM_SEED_WORDS 1
+#define BOOST_RANDOM_SEED_WORDS 4
 
 //#define BOOST_RANDOM_VALIDATION_VALUE 1U
-#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE 1U
-#define BOOST_RANDOM_ITERATOR_VALIDATION_VALUE 1U
+#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE 48757672604362303U
+#define BOOST_RANDOM_ITERATOR_VALIDATION_VALUE 3802490769389764U
 
-// 10000th invocation with default constructor should give:
-#define BOOST_RANDOM_VALIDATION_VALUE UINT64_C(545605927039957370)
-#define BOOST_RANDOM_GENERATE_VALUES { 0x0U, 0x0U, 0x0U, 0x0U }
+// 10000th invocation of MIXMAX with N=17, with default constructor should give:
+#define BOOST_RANDOM_VALIDATION_VALUE UINT64_C(1842572666014501720)
+#define BOOST_RANDOM_GENERATE_VALUES {  3132207748, 2861541672, 3191701354, 4046050275 }
 
 #include "test_generator.ipp"
 
 struct seed_seq_0 {
     template<class It>
     void generate(It begin, It end) const {
-        std::fill(begin, end, boost::uint32_t(0));
-    }
-};
-
-struct seed_seq_1 {
-    template<class It>
-    void generate(It begin, It end) const {
-        std::fill(begin, end, boost::uint32_t(0));
-        *(end - 1) = 1;
+        std::fill(begin, end, boost::uint32_t(1));
     }
 };
 
 BOOST_AUTO_TEST_CASE(test_special_seed) {
     {
-        seed_seq_1 seed;
-        std::vector<boost::uint32_t> vec(624);
-        seed.generate(vec.begin(), vec.end());
-        
-        std::vector<boost::uint32_t>::iterator it = vec.begin();
-        boost::random::mixmax gen1(it, vec.end());
-        BOOST_CHECK_EQUAL(gen1(), 0u);
-        BOOST_CHECK_EQUAL(gen1(), 0u);
-        
-        boost::random::mixmax gen2(seed);
-        BOOST_CHECK_EQUAL(gen2(), 0u);
-        BOOST_CHECK_EQUAL(gen2(), 0u);
-        
-        BOOST_CHECK_EQUAL(gen1, gen2);
-    }
-    {
         seed_seq_0 seed;
-        std::vector<boost::uint32_t> vec(61);
-        seed.generate(vec.begin(), vec.end());
-        
+        std::vector<boost::uint32_t> vec(17);
+        seed.generate(vec.begin(), vec.end()); // fill vec with ones
+
         std::vector<boost::uint32_t>::iterator it = vec.begin();
-        boost::random::mixmax gen1(it, vec.end());
-        BOOST_CHECK_EQUAL(gen1(), 1141379330u);
-        BOOST_CHECK_EQUAL(gen1(), 0u);
-        
-        boost::random::mixmax gen2(seed);
-        BOOST_CHECK_EQUAL(gen2(), 1141379330u);
-        BOOST_CHECK_EQUAL(gen2(), 0u);
-        
+        boost::random::mixmax gen1(it, vec.end()); // init gen1 with vec
+        BOOST_CHECK_EQUAL(gen1(), 2259517229785768901);
+        BOOST_CHECK_EQUAL(gen1(), 1108860485784717644);
+
+        boost::random::mixmax gen2(seed); // init gen2 with vec
+        BOOST_CHECK_EQUAL(gen2(), 2259517229785768901);
+        BOOST_CHECK_EQUAL(gen2(), 1108860485784717644);
+
         BOOST_CHECK_EQUAL(gen1, gen2);
     }
 }
