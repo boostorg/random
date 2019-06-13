@@ -1,16 +1,17 @@
 # random
 Boost.org random module - with MIXMAX RNG
 
-In usable state - but not finished yet!
-
 The fork exists to develop and contribute the MIXMAX Random Number Generator to Boost.
 It is the leading RNG, in terms of its theoretical guarantees regarding uniformness and statistical
 equidistribution of its double-precision floating-point output.
 
-If you are reading this because you want to use MIXMAX here and now, please go to http://mixmax.hepforge.org
-and get the latest standalone distribution of mixmax. Its features are well-tested, mature and stable.
+If you are reading this because you want to use the cutting edge capabilities of
+MIXMAX, you need to decide whether to use the boost version whose featured are equivalent 
+to those required by the ISO-2011 C++ standard 
+or to use the standalone distribution of MIXMAX which has some additional powerful features.
+The latest standalone distribution is at http://mixmax.hepforge.org. Its features are well-tested, mature and stable.
 There are both C and C++ versions available there. The C++ interface is compatible with C++11
-way of doing distributions by plugging into a RNG engine.
+way of doing distributions by plugging into a RNG engine, and also provides a native method for producing uniform random numbers on \[0,1). I am available on a consulting basis to integrate further cutting-edge features into your Monte-Carlo application typical of particle/nuclear physics and chemistry, such as gaussian distributed numbers, unit 3d random-direction vectors, and AVX vectorized implementations of the above. Typically, this is capable of giving significant boosts to your final application.
 
 The MIXMAX RNG was proposed in the paper by my parents in 1986:
    G.K.Savvidy and N.G.Ter-Arutyunian,
