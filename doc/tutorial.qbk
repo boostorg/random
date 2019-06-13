@@ -22,7 +22,7 @@
 
 [section Generating a random password]
 
-[import ../example/password.cpp]
+[import ../example/mixmax_demo.cpp]
 [password]
 
 [endsect]

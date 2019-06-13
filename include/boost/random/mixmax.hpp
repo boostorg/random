@@ -13,7 +13,27 @@
  * Revision history
  *  2019-04-23 created
  */
- 
+
+ /*  MIXMAX generator
+ *
+ *  G.K.Savvidy and N.G.Ter-Arutyunian,
+ *  On the Monte Carlo simulation of physical systems,
+ *  J.Comput.Phys. 97, 566 (1991);
+ *  Preprint EPI-865-16-86, Yerevan, Jan. 1986
+ *  http://dx.doi.org/10.1016/0021-9991(91)90015-D
+ *
+ *  K.Savvidy
+ *  The MIXMAX random number generator
+ *  Comp. Phys. Commun. 196 (2015), pp 161–165
+ *  http://dx.doi.org/10.1016/j.cpc.2015.06.003
+ *
+ *  K.Savvidy and G.Savvidy
+ *  Spectrum and Entropy of C-systems. MIXMAX random number generator
+ *  Chaos, Solitons & Fractals, Volume 91, (2016) pp. 33–38
+ *  http://dx.doi.org/10.1016/j.chaos.2016.05.003
+ *
+ */
+
 #ifndef BOOST_RANDOM_MIXMAX_HPP
 #define BOOST_RANDOM_MIXMAX_HPP
 
@@ -27,9 +47,23 @@
 
 namespace boost {
 namespace random {
+
+template <typename T, T mixmax_min, T mixmax_max> class mixmax_generic
+///< Boilerplate class, it is required to be compatible with std::random interfaces
+{
+public:
+    // Interfaces required by C++11 std::random and boost::random
+    typedef std::uint64_t result_type ;
+    BOOST_STATIC_CONSTEXPR result_type min() {return mixmax_min;}
+    BOOST_STATIC_CONSTEXPR result_type max() {return mixmax_max;}
+    void seed (std::uint64_t val = 1);
+    std::uint64_t operator()();
+    void discard(std::uint64_t nsteps);            // boost::random wants this to fast-forward the generator by nsteps
+    static const bool has_fixed_range = false;
+};
     /**
-     * Instantiations of class template mixmax_engine model a
-     * \pseudo_random_number_generator. It uses the algorithms from
+     * Instantiations of class template mixmax_engine model,
+     * \pseudo_random_number_generator . It uses the algorithms from:
      *
      *  @blockquote
      *  G.K.Savvidy and N.G.Ter-Arutyunian,
@@ -53,34 +87,21 @@ namespace random {
      * parameters. The valid sets of parameters are from the published papers above.
      *
      */
-template <typename T, T mixmax_min, T mixmax_max> class mixmax_generic
-// Boilerplate, it is required to be compatible with std::random interfaces, see example.cpp for how to use.
-{
-public:
-    // Interfaces required by C++11 std::random and boost::random
-    typedef std::uint64_t result_type ;
-    BOOST_STATIC_CONSTEXPR result_type min() {return mixmax_min;}
-    BOOST_STATIC_CONSTEXPR result_type max() {return mixmax_max;}
-    void seed (std::uint64_t val = 1);
-    std::uint64_t operator()();
-    void discard(std::uint64_t nsteps);            // boost::random wants this to fast-forward the generator by nsteps
-    static const bool has_fixed_range = false;
-};
 
-/**
- *    @blockquote
- *       Table of parameters for MIXMAX
- *
- *       Figure of merit is entropy:
- *
- *       Vector size |                                                                                    period q
- *       N           |    SPECIAL                |   SPECIALMUL   |           MOD_MULSPEC               | log10(q)  |   entropy  |
- *       ------------------------------------------------------------------------------------------------------------------------|
- *         8         |         0                 |     53         |                none                 |    129    |    220.4   |
- *        17         |         0                 |     36         |                none                 |    294    |    374.3   |
- *       240         |     271828282             |     32         |   fmodmulM61( 0, SPECIAL , (k) )    |   4389    |   8679.2   |
- *    @endblockquote
-*/
+    /**
+     *    @code
+     *           Table of parameters for MIXMAX
+     *
+     *           Figure of merit is entropy:
+     *
+     *           Vector size |                                                                                    period q
+     *           N           |    SPECIAL                |   SPECIALMUL   |           MOD_MULSPEC               | log10(q)  |   entropy  |
+     *           ------------------------------------------------------------------------------------------------------------------------|
+     *             8         |         0                 |     53         |                none                 |    129    |    220.4   |
+     *            17         |         0                 |     36         |                none                 |    294    |    374.3   |
+     *           240         |     271828282             |     32         |   fmodmulM61( 0, SPECIAL , (k) )    |   4389    |   8679.2   |
+     *    @endcode
+    */
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // TEMPLATE
 class mixmax_engine: public mixmax_generic<std::uint64_t, 0, ((1ULL<<61)-1)> // does not work with any other values
@@ -106,7 +127,7 @@ public: // CONSTRUCTORS AND FUNCTIONS
     BOOST_STATIC_CONSTANT(int,N=Ndim);     ///< The main internal parameter, size of the defining MIXMAX matrix
     mixmax_engine();                       ///< Constructor, unit vector as initial state
     mixmax_engine(std::uint64_t);          ///< Constructor, one 64-bit seed
-    mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );       ///< Constructor with four 32-bit seeds
+    mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );  ///< Constructor, four 32-bit seeds for 128-bit seeding flexibility
     void seed(std::uint64_t seedval=default_seed){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} ///< seed with one 64-bit seed
     template<class It> mixmax_engine(It& first, It last) { seed(first,last); }
     BOOST_RANDOM_DETAIL_SEED_SEQ_CONSTRUCTOR(mixmax_engine,  SeedSeq, seq){ seed(seq); }
@@ -129,8 +150,9 @@ public: // CONSTRUCTORS AND FUNCTIONS
 
     std::uint64_t operator()() {return get_next();}          ///< return one uint64 between min=0 and max=2^61-1
     
+    /** Fills a range with random values */
     template<class Iter>
-    void generate(Iter first, Iter last)               /** Fills a range with random values */
+    void generate(Iter first, Iter last)
     { detail::generate_from_int(*this, first, last); }
 
     mixmax_engine& operator=(const mixmax_engine& other ); ///< simple copy
@@ -138,9 +160,10 @@ public: // CONSTRUCTORS AND FUNCTIONS
     void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} ///< discard n steps, required in boost::random
     
 #ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
+    /** save the state of the RNG to a stream */
     template<class CharT, class Traits>
     friend std::basic_ostream<CharT,Traits>&
-    operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me) ///< save the state of RNG to stream
+    operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me)
     {
         int j;
         ost << "mixmax state, file version 1.0\n" ;
@@ -156,6 +179,7 @@ public: // CONSTRUCTORS AND FUNCTIONS
         return ost;
     }
     
+    /** read the state of the RNG from a stream */
     template<class CharT, class Traits>
     friend std::basic_istream<CharT,Traits>&
     operator>> (std::basic_istream<CharT,Traits> &in, mixmax_engine& me){
@@ -246,7 +270,7 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, 
 }
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID)
-///< constructor, four 32-bit seeds for 128-bit seeding flexibility
+// constructor, four 32-bit seeds for 128-bit seeding flexibility
 {
     seed_uniquestream( &S, clusterID,  machineID,  runID,  streamID );
 }
@@ -450,7 +474,8 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, 
 
 template class mixmax_engine<17,36,0>;             ///< TEMPLATE instantiation
 
-    /** @copydoc boost::random::detail::mixmax_engine_doc */
+    /* @copydoc boost::random::detail::mixmax_engine_doc */
+    /** Instantiation with a valid parameter set. */
 typedef mixmax_engine<17,36,0>          mixmax;
 }// namespace random
 using boost::random::mixmax;

@@ -41,6 +41,7 @@ doxygen_files =
     linear_feedback_shift
     lognormal_distribution
     mersenne_twister
+    mixmax
     negative_binomial_distribution
     niederreiter_base2
     non_central_chi_squared_distribution
