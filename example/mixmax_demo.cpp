@@ -20,8 +20,6 @@
 #include <boost/random/uniform_real_distribution.hpp>
 
 boost::random::mixmax gen;            // Create a Mixmax object and initialize the RNG with four 32-bit seeds 0,0,0,1
-//boost::mt19937_64 gen(1);           // 64-bit Mersenne Twister, comparable state size and quality to MIXMAX, but much slower
-//boost::mt19937 gen(1);              // 32-bit Mersenne Twister, "double" precision numbers with 32 random bits in the mantissa, does not pass testU01 suite
 
 boost::random::uniform_real_distribution<> dist(0,1);
 /*<< A distribution is a function object.  We generate a random
@@ -29,12 +27,12 @@ boost::random::uniform_real_distribution<> dist(0,1);
  >>*/
 
 int main() {
-    std::cerr << "\n Generator class size is "<< sizeof(gen) << " bytes\n\n";
+    std::cerr << "\n MIXMAX Generator with N="<< gen.N << " has the class size equal to "<< sizeof(gen) << " bytes\n\n";
 
-    gen.discard(10000); // throw away 10000 values
-    std::cout << "threw away first 10000 values and got: " << gen();
-
-    std::cerr << "\n\nFirst print a dozen doubles on [0,1] using the boost::random::uniform_real_distribution\n";
+    gen.discard(9999); // throw away 9999 values
+    std::cout << "the 10000th value is: " << gen() << "\n";
+    
+    std::cout << "\n\nFirst print a dozen doubles on [0,1] using the boost::random::uniform_real_distribution\n";
     std::cout.setf(std::ios::fixed);
     for(int i = 0; i < 12; ++i) {
         std::cout << dist(gen) << std::endl;
@@ -46,7 +44,6 @@ int main() {
     double z=0.0;
     for (int j=0; j<p ; j++) {
         z += dist(gen);
-        //z += gen.get_next_float();
     }
     printf("\nSUM=%1.16F\n", z);
     std::cout << "ok\n\n";

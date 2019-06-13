@@ -71,7 +71,7 @@ public:
  *    @blockquote
  *       Table of parameters for MIXMAX
  *
- *       Figure of merit is entropy: best generator overall is N=240
+ *       Figure of merit is entropy:
  *
  *       Vector size |                                                                                    period q
  *       N           |    SPECIAL                |   SPECIALMUL   |           MOD_MULSPEC               | log10(q)  |   entropy  |
@@ -83,7 +83,7 @@ public:
 */
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // TEMPLATE
-class mixmax_engine: public mixmax_generic<std::uint64_t, 0, 0x1FFFFFFFFFFFFFFF> // does not work with any other values
+class mixmax_engine: public mixmax_generic<std::uint64_t, 0, ((1ULL<<61)-1)> // does not work with any other values
 {
 private: // DATATYPES
     struct rng_state_st
@@ -99,16 +99,16 @@ private: // DATATYPES
     typedef struct rng_state_st rng_state_t;     // struct alias
     rng_state_t S;
     
-    inline std::uint64_t get_next();
-    inline double get_next_float();
+    inline std::uint64_t get_next();    // output a random integer on [0,2^61-1]
+    inline double flat01();             // output a random double  on [0,1]
     
-public: // FUNCTIONS
-    mixmax_engine();              ///< Constructor, unit vector as initial state
-    mixmax_engine(std::uint64_t); ///< Constructor, one 64-bit seed
+public: // CONSTRUCTORS AND FUNCTIONS
+    BOOST_STATIC_CONSTANT(int,N=Ndim);     ///< The main internal parameter, size of the defining MIXMAX matrix
+    mixmax_engine();                       ///< Constructor, unit vector as initial state
+    mixmax_engine(std::uint64_t);          ///< Constructor, one 64-bit seed
     mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );       ///< Constructor with four 32-bit seeds
     void seed(std::uint64_t seedval=default_seed){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} ///< seed with one 64-bit seed
     template<class It> mixmax_engine(It& first, It last) { seed(first,last); }
-    //template<typename SeedSeq> mixmax_engine(SeedSeq & seq){seed();}; ///< Constructor from a SeedSeq
     BOOST_RANDOM_DETAIL_SEED_SEQ_CONSTRUCTOR(mixmax_engine,  SeedSeq, seq){ seed(seq); }
     
     /** Sets the state of the generator using values from an iterator range. */
@@ -116,35 +116,18 @@ public: // FUNCTIONS
     void seed(It& first, It last)
     {
         uint32_t v[4];//={7,8,9,10};
-        It tmp=first;
-        //detail::fill_array_int<4>(first, last, v);
-        int i=0;
-        uint32_t* ptr=v;
-        //if(std::distance(last,first)>0)
-        {
-        do{
-            *ptr++ = uint32_t(*(first)); i++; first++; //std::cout << i << " ";
-        }while (first!=last && i<4);
-        //if(std::distance(last,first)<4 || i<4 || (v[0]==0 && v[1]==0 && v[2]==0 && v[3]==0) ){
-        if( i<4 || (v[0]==0 && v[1]==0 && v[2]==0 && v[3]==0) ){
-            throw std::invalid_argument("MIXMAX: Too few elements in init array");
-        }
-        //std::cout << "seeding with seed muterator, got:" << v[0] << ", "<< v[1] << ", " << v[2]<< ", " << v[3] << "\n";
-        seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
-        }
-        first=++(++(++(++tmp)));
-     }
-
+        detail::fill_array_int<4>(first, last, v);
+            seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
+    }
+    /** Sets the state of the generator using values from a seed_seq. */
     BOOST_RANDOM_DETAIL_SEED_SEQ_SEED(mixmax_engine, SeeqSeq, seq)
     {
         uint32_t v[4];
         detail::seed_array_int<32>(seq, v);
         seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
-//        S.sumtot=0; S.counter=1;
-//        for (int i=0; i<Ndim; i++){ S.sumtot += S.V[i]; } ;
     }
 
-    std::uint64_t operator()() {return get_next();}          // return one uint64 between min=0 and max=2^61-1
+    std::uint64_t operator()() {return get_next();}          ///< return one uint64 between min=0 and max=2^61-1
     
     template<class Iter>
     void generate(Iter first, Iter last)               /** Fills a range with random values */
@@ -152,12 +135,12 @@ public: // FUNCTIONS
 
     mixmax_engine& operator=(const mixmax_engine& other ); ///< simple copy
 
-    void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} // required in boost::random
+    void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} ///< discard n steps, required in boost::random
     
 #ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
     template<class CharT, class Traits>
     friend std::basic_ostream<CharT,Traits>&
-    operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me) // save the state of RNG to stream
+    operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me) ///< save the state of RNG to stream
     {
         int j;
         ost << "mixmax state, file version 1.0\n" ;
@@ -234,8 +217,6 @@ BOOST_STATIC_CONSTANT(std::uint64_t, default_seed=1);
     inline std::uint64_t apply_bigskip(std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
     inline std::uint64_t modadd(std::uint64_t foo, std::uint64_t bar);
     inline std::uint64_t fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a);
-    inline double convert1double(uint64_t);
-    inline double get_next_float_packbits();
 #if defined(__x86_64__)
     inline std::uint64_t mod128(__uint128_t s);
 #endif
@@ -245,9 +226,6 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_e
     switch (Ndim) {
         case 17:
             return 0;
-            break;
-        case 240:
-            return fmodmulM61( 0, SPECIAL , (k) );
             break;
         default:
             std::cerr << "MIXMAX ERROR: " << "Disallowed value of parameter Ndim\n";
@@ -319,7 +297,7 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline std::uint64_t m
     }
 }
 
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::get_next_float()
+template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::flat01()
 // Returns a random double with all 53 bits random, in the range (0,1]
 {
     /* cast to signed int trick suggested by Andrzej Görlich     */
@@ -328,25 +306,6 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_e
     F=Z;
     const double INV_M61=(0.43368086899420177360298E-18);
     return F*INV_M61;
-}
-
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::convert1double(uint64_t u){
-    union{
-        double one;
-        std::uint64_t onemask;
-    };
-    union{
-        double d;
-        std::uint64_t tmp;
-    };
-    one=1.0;
-    tmp = (u>>9) | onemask; // bits between 52 and 62 dont affect the result!
-    return d-1.0;
-}
-
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::get_next_float_packbits(){
-    uint64_t Z=get_next();
-    return convert1double(Z);
 }
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::seed_vielbein(rng_state_t* X, unsigned int index)
@@ -396,18 +355,12 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_e
      */
     
     
-    const	std::uint64_t skipMat240[128][240] =
-#include "boost/random/detail/mixmax_skip_N240.ipp"
-    ;
     const	std::uint64_t skipMat17[128][17] =
 #include "boost/random/detail/mixmax_skip_N17.ipp"
     ;
     
     const std::uint64_t* skipMat[128];
     switch (Ndim) {
-        case 240:
-            for (int i=0; i<128; i++) { skipMat[i] = skipMat240[i];}
-            break;
         case 17:
             for (int i=0; i<128; i++) { skipMat[i] = skipMat17[i];}
             break;
@@ -495,16 +448,12 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, 
     return *this;
 }
 
-template class mixmax_engine<240,32,271828282>;    ///< TEMPLATE instantiation
 template class mixmax_engine<17,36,0>;             ///< TEMPLATE instantiation
 
     /** @copydoc boost::random::detail::mixmax_engine_doc */
 typedef mixmax_engine<17,36,0>          mixmax;
-    /** @copydoc boost::random::detail::mixmax_engine_doc */
-typedef mixmax_engine<240,32,271828282> mixmaxN240;
 }// namespace random
 using boost::random::mixmax;
-using boost::random::mixmaxN240;
 }// namespace boost
 
 #endif // BOOST_RANDOM_MIXMAX_HPP
