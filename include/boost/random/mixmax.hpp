@@ -37,8 +37,6 @@
 #ifndef BOOST_RANDOM_MIXMAX_HPP
 #define BOOST_RANDOM_MIXMAX_HPP
 
-#include <iostream>
-#include <fstream>
 #include <sstream>
 #include <array>
 
@@ -48,19 +46,6 @@
 namespace boost {
 namespace random {
 
-template <typename T, T mixmax_min, T mixmax_max> class mixmax_generic
-///< Boilerplate class, it is required to be compatible with std::random interfaces
-{
-public:
-    // Interfaces required by C++11 std::random and boost::random
-    typedef std::uint64_t result_type ;
-    BOOST_STATIC_CONSTEXPR result_type min() {return mixmax_min;}
-    BOOST_STATIC_CONSTEXPR result_type max() {return mixmax_max;}
-    void seed (std::uint64_t val = 1);
-    std::uint64_t operator()();
-    void discard(std::uint64_t nsteps);            // boost::random wants this to fast-forward the generator by nsteps
-    static const bool has_fixed_range = false;
-};
     /**
      * Instantiations of class template mixmax_engine model,
      * \pseudo_random_number_generator . It uses the algorithms from:
@@ -88,31 +73,30 @@ public:
      *
      */
 
-    /**
-     *    @code
-     *           Table of parameters for MIXMAX
-     *
-     *           Figure of merit is entropy:
-     *
-     *           Vector size |                                                                                    period q
-     *           N           |    SPECIAL                |   SPECIALMUL   |           MOD_MULSPEC               | log10(q)  |   entropy  |
-     *           ------------------------------------------------------------------------------------------------------------------------|
-     *             8         |         0                 |     53         |                none                 |    129    |    220.4   |
-     *            17         |         0                 |     36         |                none                 |    294    |    374.3   |
-     *           240         |     271828282             |     32         |   fmodmulM61( 0, SPECIAL , (k) )    |   4389    |   8679.2   |
-     *    @endcode
-    */
-
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // TEMPLATE
-class mixmax_engine: public mixmax_generic<std::uint64_t, 0, ((1ULL<<61)-1)> // does not work with any other values
+template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> // MIXMAX TEMPLATE PARAMETERS
+class mixmax_engine
 {
+    public:
+    // Interfaces required by C++11 std::random and boost::random
+        typedef std::uint64_t result_type ;
+        BOOST_STATIC_CONSTANT(std::uint64_t,mixmax_min=0);
+        BOOST_STATIC_CONSTANT(std::uint64_t,mixmax_max=((1ULL<<61)-1));
+        BOOST_STATIC_CONSTEXPR result_type min() {return mixmax_min;}
+        BOOST_STATIC_CONSTEXPR result_type max() {return mixmax_max;}
+        //void seed (std::uint64_t val = 1);
+        //std::uint64_t operator()();
+        static const bool has_fixed_range = false;
+        BOOST_STATIC_CONSTANT(int,N=Ndim);     ///< The main internal parameter, size of the defining MIXMAX matrix
+    // CONSTRUCTORS:
+        mixmax_engine();                       ///< Constructor, unit vector as initial state, acted on by A^2^512
+        mixmax_engine(std::uint64_t);          ///< Constructor, one 64-bit seed
+        mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );  ///< Constructor, four 32-bit seeds for 128-bit seeding flexibility
+        void seed(std::uint64_t seedval=default_seed){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} ///< seed with one 64-bit seed
+
 private: // DATATYPES
     struct rng_state_st
     {
-        union{
-            std::array<std::uint64_t, Ndim> V;
-            std::uint64_t raw[Ndim];
-        };
+        std::array<std::uint64_t, Ndim> V;
         std::uint64_t sumtot;
         int counter;
     };
@@ -121,14 +105,8 @@ private: // DATATYPES
     rng_state_t S;
     
     inline std::uint64_t get_next();    // output a random integer on [0,2^61-1]
-    inline double flat01();             // output a random double  on [0,1]
     
-public: // CONSTRUCTORS AND FUNCTIONS
-    BOOST_STATIC_CONSTANT(int,N=Ndim);     ///< The main internal parameter, size of the defining MIXMAX matrix
-    mixmax_engine();                       ///< Constructor, unit vector as initial state
-    mixmax_engine(std::uint64_t);          ///< Constructor, one 64-bit seed
-    mixmax_engine(uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );  ///< Constructor, four 32-bit seeds for 128-bit seeding flexibility
-    void seed(std::uint64_t seedval=default_seed){seed_uniquestream( &S, 0, 0, (uint32_t)(seedval>>32), (uint32_t)seedval );} ///< seed with one 64-bit seed
+public: // SEEDING FUNCTIONS
     template<class It> mixmax_engine(It& first, It last) { seed(first,last); }
     BOOST_RANDOM_DETAIL_SEED_SEQ_CONSTRUCTOR(mixmax_engine,  SeedSeq, seq){ seed(seq); }
     
@@ -136,8 +114,8 @@ public: // CONSTRUCTORS AND FUNCTIONS
     template<class It>
     void seed(It& first, It last)
     {
-        uint32_t v[4];//={7,8,9,10};
-        detail::fill_array_int<4>(first, last, v);
+        uint32_t v[4];
+        detail::fill_array_int<32>(first, last, v);
             seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
     }
     /** Sets the state of the generator using values from a seed_seq. */
@@ -166,15 +144,13 @@ public: // CONSTRUCTORS AND FUNCTIONS
     operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me)
     {
         int j;
-        ost << "mixmax state, file version 1.0\n" ;
-        ost << "N=" << Ndim << "; V[N]={";
+        ost << Ndim << ", ";
+        ost << me.S.counter << ", ";
+        ost << me.S.sumtot << ", ";
         for (j=0; (j< (Ndim-1) ); j++) {
             ost <<  (std::uint64_t)me.S.V[j] << ", ";
         }
-        ost << me.S.V[Ndim-1] ;
-        ost << "}; " ;
-        ost << "counter=" << (std::uint64_t)me.S.counter << "; ";
-        ost << "sumtot=" << (std::uint64_t)me.S.sumtot << ";\n";
+        ost << me.S.V[Ndim-1] << "\n";
         ost.flush();
         return ost;
     }
@@ -188,35 +164,37 @@ public: // CONSTRUCTORS AND FUNCTIONS
         std::uint64_t sum=0, sumtmp=0, counter=0;
         std::basic_string<CharT> line;
         std::basic_string<CharT> token;
-        in.ignore(150,'='); // eat chars up to N=
         CharT xxxchar;
         try{
             if(std::getline( in, line)){
                 std::basic_istringstream<CharT> iss(line);
-                getline(iss, token, xxxchar=(';'));
+                getline(iss, token, xxxchar=',');
                 int i=std::stoi(token);
-                if(i!=Ndim) { std::cerr << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n"; }//else{std::cerr <<"Dim ok "<< i << "\n";}
-                iss.ignore(15,'{'); // eat chars up to V[N]={
+                if(i!=Ndim) {
+                    throw;
+                    // std::cout << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n";
+                    }
+                std::getline(iss, token, xxxchar=','); counter=std::stoull(token);
+                std::getline(iss, token, xxxchar=','); sumtmp=std::stoull(token);
                 for(int j=0;j<Ndim-1;j++) {
                     std::getline(iss, token, xxxchar=',');
-                    if (!iss.fail() ) { vec[j]=std::stoull(token);sum=me.MOD_MERSENNE(sum+vec[j]);} //std::cerr <<vec[j]<<" + ";}
+                    if (!iss.fail() ) { vec[j]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[j]);}
                 }
-                std::getline(iss, token, xxxchar='}');
-                if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[Ndim-1]);}else{std::cerr << "ERROR: last elem empty\n";}
-                iss.ignore(10,'='); std::getline(iss, token, xxxchar=';'); counter=std::stoi(token);
-                iss.ignore(10,'='); std::getline(iss, token, xxxchar=';'); sumtmp=std::stoull(token);
-            }else{std::cerr << "ERROR: nothing to read\n";}
+                std::getline(iss, token);
+                if (!iss.fail() ) { vec[Ndim-1]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[Ndim-1]);
+                }else{throw;}
+            }else{throw;}
             }catch (const std::exception& e) {
-                std::cerr << "ERROR: Exception caught in MIXMAX RNG while reading state: " << e.what() << "'\n"; // "\nfrom string='" << token <<
                 in.setstate(std::ios::failbit);
                 throw;
             }
         if (sum == sumtmp && counter>0 && counter<Ndim){
             me.S.V=vec; me.S.counter = counter; me.S.sumtot=sumtmp;
         }else{
-            std::cerr << "ERROR: incorrect checksum or out of range counter while reading  MIXMAX RNG state.\n"
-                        <<counter<<" "<<sumtmp<<" vs "<<sum<<"\n";
+//            std::cout << "ERROR: incorrect checksum or out of range counter while reading  MIXMAX RNG state.\n"
+//                        <<counter<<" "<<sumtmp<<" vs "<<sum<<"\n";
             in.setstate(std::ios::failbit);
+            throw;
         }
         return in;
     }
@@ -233,7 +211,6 @@ BOOST_STATIC_CONSTANT(int, BITS=61);
 BOOST_STATIC_CONSTANT(std::uint64_t, M61=2305843009213693951ULL);
 BOOST_STATIC_CONSTANT(std::uint64_t, default_seed=1);
     inline std::uint64_t MOD_MERSENNE(std::uint64_t k) {return ((((k)) & M61) + (((k)) >> BITS) );}
-    inline std::uint64_t MOD_MULSPEC(std::uint64_t k);
     inline std::uint64_t MULWU(std::uint64_t k);
     inline void seed_vielbein(rng_state_t* X, unsigned int i); // seeds with the i-th unit vector, i = 0..Ndim-1,  for testing only
     inline void seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
@@ -241,21 +218,10 @@ BOOST_STATIC_CONSTANT(std::uint64_t, default_seed=1);
     inline std::uint64_t apply_bigskip(std::uint64_t* Vout, std::uint64_t* Vin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID );
     inline std::uint64_t modadd(std::uint64_t foo, std::uint64_t bar);
     inline std::uint64_t fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a);
-#if defined(__x86_64__)
+#if defined(BOOST_HAS_INT128)
     inline std::uint64_t mod128(__uint128_t s);
 #endif
 };
-
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_engine  <Ndim, SPECIALMUL, SPECIAL>::MOD_MULSPEC(std::uint64_t k){
-    switch (Ndim) {
-        case 17:
-            return 0;
-            break;
-        default:
-            std::cerr << "MIXMAX ERROR: " << "Disallowed value of parameter Ndim\n";
-            std::terminate();
-    }
-}
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::mixmax_engine()
 ///< constructor, with no params, seeds with seed=0,  random numbers are as good as from any other seed
@@ -300,7 +266,6 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_e
         sumtot += tempV; if (sumtot < tempV) {ovflow++;}
     }
     if ( SPECIAL !=0 ){
-        temp2 = MOD_MULSPEC(temp2);
         Y[2] = modadd( Y[2] , temp2 );
         sumtot += temp2; if (sumtot < temp2) {ovflow++;}
     }
@@ -321,17 +286,6 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline std::uint64_t m
     }
 }
 
-template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline double mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::flat01()
-// Returns a random double with all 53 bits random, in the range (0,1]
-{
-    /* cast to signed int trick suggested by Andrzej Görlich     */
-    int64_t Z=(int64_t)get_next();
-    double F;
-    F=Z;
-    const double INV_M61=(0.43368086899420177360298E-18);
-    return F*INV_M61;
-}
-
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::seed_vielbein(rng_state_t* X, unsigned int index)
 {
     int i;
@@ -341,7 +295,6 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <N
         }
         X->V[index] = 1;
     }else{
-        std::cerr << "MIXMAX ERROR: " << "Out of bounds index, is not ( 0 <= index < Ndim  )\n";
         std::terminate();
     }
     X->counter = Ndim;  // set the counter to Ndim if iteration should happen right away
@@ -352,7 +305,7 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <N
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::seed_uniquestream( rng_state_t* Xin, uint32_t clusterID, uint32_t machineID, uint32_t runID, uint32_t  streamID ){
     seed_vielbein(Xin,0);
     Xin->sumtot = apply_bigskip(Xin->V.data(), Xin->V.data(),  clusterID,  machineID,  runID,   streamID );
-    std::cerr << "seeding mixmax with: {" << clusterID << ", " << machineID << ", " <<   runID <<  ", " <<  streamID << "}\n";
+    //std::cout << "seeding mixmax with: {" << clusterID << ", " << machineID << ", " <<   runID <<  ", " <<  streamID << "}\n";
     Xin->counter = 1;
 }
 
@@ -389,7 +342,7 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_e
             for (int i=0; i<128; i++) { skipMat[i] = skipMat17[i];}
             break;
         default:
-        	std::cerr << "disallowed value of Ndim\n";
+        	//std::cout << "disallowed value of Ndim\n";
             std::terminate();
     }
     
@@ -430,7 +383,7 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_e
     return (sumtot) ;
 }
 
-#if defined(__x86_64__)
+#if defined(BOOST_HAS_INT128)
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline std::uint64_t mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::mod128(__uint128_t s){
     std::uint64_t s1;
     s1 = ( (  ((std::uint64_t)s)&M61 )    + (  ((std::uint64_t)(s>>64)) * 8 )  + ( ((std::uint64_t)s) >>BITS) );
@@ -448,7 +401,7 @@ const std::uint64_t MASK32=0xFFFFFFFFULL;
 
 template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> inline std::uint64_t mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::fmodmulM61(std::uint64_t cum, std::uint64_t s, std::uint64_t a)
 {
-    register std::uint64_t o,ph,pl,ah,al;
+    std::uint64_t o,ph,pl,ah,al;
     o=(s)*a;
     ph = ((s)>>32);
     pl = (s) & MASK32;
@@ -472,13 +425,10 @@ template <int Ndim, int SPECIALMUL, std::int64_t SPECIAL> mixmax_engine  <Ndim, 
     return *this;
 }
 
-template class mixmax_engine<17,36,0>;             ///< TEMPLATE instantiation
-
     /* @copydoc boost::random::detail::mixmax_engine_doc */
     /** Instantiation with a valid parameter set. */
 typedef mixmax_engine<17,36,0>          mixmax;
 }// namespace random
-using boost::random::mixmax;
 }// namespace boost
 
 #endif // BOOST_RANDOM_MIXMAX_HPP

@@ -48,11 +48,15 @@ int main() {
     printf("\nSUM=%1.16F\n", z);
     std::cout << "ok\n\n";
     
-//    std::cout << "Now, save the state of the generator to stdout:\n";
-//    std::cout << gen;
-//    std::cout << "Now, read the state of the generator from stdin:\n(you may copy&paste the above)";
-//    boost::random::mixmax gen2;
-//    std::cin >> gen2;
-//    p=10; do{if(gen++==gen2++) {std::cout << "OK, same state\n";}else{std::cout << "NOT OK\n";}  }while(p--!=0);
+    std::cout << "Now, save the state of the generator to stdout:\n";
+    std::cout << gen;
+    std::cout << "Now, read the state of the generator from stdin:\n(you may copy&paste the line above):\n";
+    boost::random::mixmax gen2;
+    std::cin >> gen2;
+    if (std::cin.fail()) {
+    perror("stream failbit (or badbit). error state");
+    }
+    std::cout << "Read back :" << gen2;
+    p=10; do{if(gen()==gen2()) {std::cout << "OK, same state\n";}else{std::cout << "NOT OK\n";}  }while(p--!=0);
     return 0;
 }
