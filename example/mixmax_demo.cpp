@@ -48,6 +48,13 @@ int main() {
     printf("\nSUM=%1.16F\n", z);
     std::cout << "ok\n\n";
     
+    {
+        std::cout << "Now fill a vector with 100 int values:\n";
+        std::vector<int> v(100);
+        gen.generate(v.begin(), v.end());
+        for(auto &x:v) std::cout << x << " "; std::cout << "\n";
+    }
+    
     std::cout << "Now, save the state of the generator to stdout:\n";
     std::cout << gen;
     std::cout << "Now, read the state of the generator from stdin:\n(you may copy&paste the line above):\n";

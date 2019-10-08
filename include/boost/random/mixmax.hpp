@@ -132,7 +132,7 @@ public: // SEEDING FUNCTIONS
     template<class Iter>
     void generate(Iter first, Iter last)
     { detail::generate_from_int(*this, first, last); }
-
+    
     mixmax_engine& operator=(const mixmax_engine& other ); ///< simple copy
 
     void discard(std::uint64_t nsteps) {for(std::uint64_t j = 0; j < nsteps; ++j)  (*this)();} ///< discard n steps, required in boost::random
@@ -144,11 +144,11 @@ public: // SEEDING FUNCTIONS
     operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me)
     {
         int j;
-        ost << Ndim << ", ";
-        ost << me.S.counter << ", ";
-        ost << me.S.sumtot << ", ";
+        ost << Ndim << " ";
+        ost << me.S.counter << " ";
+        ost << me.S.sumtot << " ";
         for (j=0; (j< (Ndim-1) ); j++) {
-            ost <<  (std::uint64_t)me.S.V[j] << ", ";
+            ost <<  (std::uint64_t)me.S.V[j] << " ";
         }
         ost << me.S.V[Ndim-1] << "\n";
         ost.flush();
@@ -168,16 +168,16 @@ public: // SEEDING FUNCTIONS
         try{
             if(std::getline( in, line)){
                 std::basic_istringstream<CharT> iss(line);
-                getline(iss, token, xxxchar=',');
+                getline(iss, token, xxxchar=' ');
                 int i=std::stoi(token);
                 if(i!=Ndim) {
                     throw;
                     // std::cout << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n";
                     }
-                std::getline(iss, token, xxxchar=','); counter=std::stoull(token);
-                std::getline(iss, token, xxxchar=','); sumtmp=std::stoull(token);
+                std::getline(iss, token, xxxchar=' '); counter=std::stoull(token);
+                std::getline(iss, token, xxxchar=' '); sumtmp=std::stoull(token);
                 for(int j=0;j<Ndim-1;j++) {
-                    std::getline(iss, token, xxxchar=',');
+                    std::getline(iss, token, xxxchar=' ');
                     if (!iss.fail() ) { vec[j]=std::stoull(token); sum=me.MOD_MERSENNE(sum+vec[j]);}
                 }
                 std::getline(iss, token);
