@@ -39,7 +39,6 @@ BOOST_AUTO_TEST_CASE(test_special_seed) {
         seed_seq_0 seed;
         std::vector<boost::uint32_t> vec(17);
         seed.generate(vec.begin(), vec.end()); // fill vec with ones
-
         std::vector<boost::uint32_t>::iterator it = vec.begin();
         boost::random::mixmax gen1(it, vec.end()); // init gen1 with vec iterator
         BOOST_CHECK_EQUAL(gen1(), 2259517229785768901ULL);
