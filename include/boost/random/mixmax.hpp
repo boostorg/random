@@ -64,8 +64,6 @@ class mixmax_engine
         BOOST_STATIC_CONSTANT(std::uint64_t,mixmax_max=((1ULL<<61)-1));
         BOOST_STATIC_CONSTEXPR result_type min() {return mixmax_min;}
         BOOST_STATIC_CONSTEXPR result_type max() {return mixmax_max;}
-        //void seed (std::uint64_t val = 1);
-        //std::uint64_t operator()();
         static const bool has_fixed_range = false;
         BOOST_STATIC_CONSTANT(int,N=Ndim);     ///< The main internal parameter, size of the defining MIXMAX matrix
     // CONSTRUCTORS:
@@ -84,8 +82,6 @@ private: // DATATYPES
     
     typedef struct rng_state_st rng_state_t;     // struct alias
     rng_state_t S;
-    
-public:     inline std::uint64_t get_next();    // output a random integer on [0,2^61-1]
     
 public: // SEEDING FUNCTIONS
     template<class It> mixmax_engine(It& first, It last) { seed(first,last); }
@@ -107,8 +103,21 @@ public: // SEEDING FUNCTIONS
         seed_uniquestream( &S, v[0], v[1], v[2], v[3]);
     }
 
-    std::uint64_t operator()() {return get_next();}          ///< return one uint64 between min=0 and max=2^61-1
-    
+ std::uint64_t operator()()    ///< return one uint64 between min=0 and max=2^61-1
+ {
+     int i;
+     i=S.counter;
+     
+     if (i<=(Ndim-1) ){
+         S.counter++;
+         return S.V[i];
+     }else{
+         S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot);
+         S.counter=2;
+         return S.V[1];
+     }
+ }
+
     /** Fills a range with random values */
     template<class Iter>
     void generate(Iter first, Iter last)
@@ -148,8 +157,8 @@ public: // SEEDING FUNCTIONS
         if(std::getline( in, line)){
                 std::basic_istringstream<CharT> iss(line);
                 getline(iss, token, xxxchar=' ');
-                int i=std::stoi(token);
-                BOOST_ASSERT(i==Ndim);    // std::cout << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n";
+                //int i=std::stoi(token);
+                //if(!(i==Ndim))  std::cout << "ERROR: Wrong dimension of the MIXMAX RNG state on input, "<<i<<" vs "<<Ndim<<"\n";
                 std::getline(iss, token, xxxchar=' '); counter=std::stoull(token);
                 std::getline(iss, token, xxxchar=' '); sumtmp=std::stoull(token);
                 for(int j=0;j<Ndim-1;j++) {
@@ -218,44 +227,19 @@ template <int Ndim, unsigned int SPECIALMUL, std::int64_t SPECIAL> uint64_t mixm
 template <int Ndim, unsigned int SPECIALMUL, std::int64_t SPECIAL> std::uint64_t mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::iterate_raw_vec(std::uint64_t* Y, std::uint64_t sumtotOld){
     // operates with a raw vector, uses known sum of elements of Y
     int i;
-    
-    std::uint64_t temp2 = Y[1];
     std::uint64_t  tempP, tempV;
     Y[0] = ( tempV = sumtotOld);
     std::uint64_t sumtot = Y[0], ovflow = 0; // will keep a running sum of all new elements
     tempP = 0;                               // will keep a partial sum of all old elements
     for (i=1; i<Ndim; i++){
-        if (SPECIALMUL!=0){
             std::uint64_t tempPO = MULWU(tempP);
-            tempV = MOD_MERSENNE(tempV+tempPO);
+            tempV = (tempV+tempPO);
             tempP = modadd(tempP, Y[i]);
             tempV = MOD_MERSENNE(tempV+tempP); // new Y[i] = old Y[i] + old partial * m
-        }else{
-            tempP = modadd(tempP , Y[i]);
-            tempV = modadd(tempV , tempP);
-        }
-        Y[i] = tempV;
-        sumtot += tempV; if (sumtot < tempV) {ovflow++;}
-    }
-    if ( SPECIAL !=0 ){
-        Y[2] = modadd( Y[2] , temp2 );
-        sumtot += temp2; if (sumtot < temp2) {ovflow++;}
+            Y[i] = tempV;
+            sumtot += tempV; if (sumtot < tempV) {ovflow++;}
     }
     return MOD_MERSENNE(MOD_MERSENNE(sumtot) + (ovflow <<3 ));
-}
-
-template <int Ndim, unsigned int SPECIALMUL, std::int64_t SPECIAL> inline std::uint64_t mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::get_next() {
-    int i;
-    i=S.counter;
-    
-    if (i<=(Ndim-1) ){
-        S.counter++;
-        return S.V[i];
-    }else{
-        S.sumtot = iterate_raw_vec(S.V.data(), S.sumtot);
-        S.counter=2;
-        return S.V[1];
-    }
 }
 
 template <int Ndim, unsigned int SPECIALMUL, std::int64_t SPECIAL> void mixmax_engine  <Ndim, SPECIALMUL, SPECIAL> ::seed_vielbein(rng_state_t* X, unsigned int index)
