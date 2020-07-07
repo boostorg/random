@@ -47,9 +47,11 @@ using namespace Platform;
 using namespace Windows::Security::Cryptography;
 #endif
 
-#define BOOST_AUTO_LINK_NOMANGLE
-#define BOOST_LIB_NAME "Advapi32"
-#include <boost/config/auto_link.hpp>
+#if !defined(BOOST_RANDOM_NO_LIB) && !defined(BOOST_ALL_NO_LIB)
+#   define BOOST_AUTO_LINK_NOMANGLE
+#   define BOOST_LIB_NAME "Advapi32"
+#   include <boost/config/auto_link.hpp>
+#endif
 
 #ifdef __MINGW32__
 
