@@ -148,7 +148,7 @@ public:
      * Constructs a uniform_real_distribution. @c min and @c max are
      * the parameters of the distribution.
      *
-     * Requires: min <= max
+     * Requires: min < max
      */
     explicit uniform_real_distribution(
         RealType min_arg = RealType(0.0),
