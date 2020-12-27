@@ -48,11 +48,11 @@ public:
          *
          * Requires: k >=0 && 0 <= p <= 1
          */
-        explicit param_type(IntType k_arg = 1, RealType p_arg = RealType (0.5))
+        explicit param_type(RealType k_arg = 1, RealType p_arg = RealType (0.5))
           : _k(k_arg), _p(p_arg)
         {}
         /** Returns the @c k parameter of the distribution. */
-        IntType k() const { return _k; }
+        RealType k() const { return _k; }
         /** Returns the @c p parameter of the distribution. */
         RealType p() const { return _p; }
 #ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
@@ -86,7 +86,7 @@ public:
             return !(lhs == rhs);
         }
     private:
-        IntType _k;
+        RealType _k;
         RealType _p;
     };
     
@@ -96,7 +96,7 @@ public:
      *
      * Requires: k >=0 && 0 <= p <= 1
      */
-    explicit negative_binomial_distribution(IntType k_arg = 1,
+    explicit negative_binomial_distribution(RealType k_arg = 1,
                                             RealType p_arg = RealType(0.5))
       : _k(k_arg), _p(p_arg)
     {}
@@ -132,7 +132,7 @@ public:
     }
 
     /** Returns the @c k parameter of the distribution. */
-    IntType k() const { return _k; }
+    RealType k() const { return _k; }
     /** Returns the @c p parameter of the distribution. */
     RealType p() const { return _p; }
 
@@ -207,7 +207,7 @@ private:
     }
 
     // parameters
-    IntType _k;
+    RealType _k;
     RealType _p;
 
     /// @endcond
