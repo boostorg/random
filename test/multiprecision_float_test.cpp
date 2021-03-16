@@ -20,6 +20,7 @@
 #include <boost/multiprecision/debug_adaptor.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/random.hpp>
+#include <boost/mpl/list.hpp>
 #include <sstream>
 
 
