@@ -32,6 +32,7 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/uniform_smallint.hpp>
 #include <boost/random/discrete_distribution.hpp>
+#include <boost/mpl/list.hpp>
 #include <sstream>
 
 typedef boost::mpl::list <
