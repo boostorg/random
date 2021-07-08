@@ -147,6 +147,29 @@ private:
   const std::string provider;
 };
 
+#elif defined(__CloudABI__)
+
+#include <stdlib.h>
+
+namespace {
+const char * const default_token = "";
+}
+
+// CloudABI does not provide access to the global filesystem namespace.
+// The only way to obtain random data is by calling arcrandom_buf().
+class boost::random::random_device::impl
+{
+public:
+  impl(const std::string & token) {}
+  ~impl() {}
+
+  unsigned int next() {
+    unsigned int result;
+    arc4random_buf(&result, sizeof(result));
+    return result;
+  }
+};
+
 #else
 
 namespace {
