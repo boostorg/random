@@ -77,7 +77,7 @@ typedef boost::mpl::list <
    boost::random::lognormal_distribution<big_float>,
    boost::random::normal_distribution<big_float>,
 #ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
-   boost::random::piecewise_constant_distribution<big_float>,
+   boost::random::piecewise_constant_distribution<big_float, big_float>,
    boost::random::piecewise_linear_distribution<big_float>,
 #endif
    boost::random::student_t_distribution<big_float>,
