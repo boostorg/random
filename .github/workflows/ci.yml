@@ -264,7 +264,7 @@ jobs:
         run: git submodule update --init tools/boostdep
         working-directory: ../boost-root
       - name: Copy files
-        run: cp -r $GITHUB_WORKSPACE/* libs/random
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\random
         working-directory: ../boost-root
       - name: Install deps
         run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" random
@@ -305,7 +305,7 @@ jobs:
         run: git submodule update --init tools/boostdep
         working-directory: ../boost-root
       - name: Copy files
-        run: cp -r $GITHUB_WORKSPACE/* libs/random
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\random
         working-directory: ../boost-root
       - name: Install deps
         run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" random
@@ -346,7 +346,7 @@ jobs:
         run: git submodule update --init tools/boostdep
         working-directory: ../boost-root
       - name: Copy files
-        run: cp -r $GITHUB_WORKSPACE/* libs/random
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\random
         working-directory: ../boost-root
       - name: Install deps
         run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" random
@@ -387,7 +387,7 @@ jobs:
         run: git submodule update --init tools/boostdep
         working-directory: ../boost-root
       - name: Copy files
-        run: cp -r $GITHUB_WORKSPACE/* libs/random
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\random
         working-directory: ../boost-root
       - name: Install deps
         run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" random
@@ -429,7 +429,7 @@ jobs:
             apt update
             apt -y install gcc g++ git python
             echo $PWD
-            config=$PWD
+            random=$PWD
             cd ..
             git clone -b develop --depth 1 https://github.com/boostorg/boost.git boost-root
             cd boost-root
@@ -465,7 +465,7 @@ jobs:
             apt update
             apt -y install clang gcc g++ git python
             echo $PWD
-            config=$PWD
+            random=$PWD
             cd ..
             git clone -b develop --depth 1 https://github.com/boostorg/boost.git boost-root
             cd boost-root
