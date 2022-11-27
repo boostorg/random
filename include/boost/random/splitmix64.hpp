@@ -1,13 +1,18 @@
 /* 
- * Copyright David Blackman and Sebastiano Vigna 2018
+ * Copyright Sebastiano Vigna 2015.
  * Copyright Matt Borland 2022.
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
- *
- * See http://www.boost.org for most recent version including documentation.
  * 
- * Use when you need 64 bits of state (e.g. seeding xoshiro256)
+ *  This is a fixed-increment version of Java 8's SplittableRandom generator
+ *  See http://dx.doi.org/10.1145/2714064.2660195 and
+ *  http://docs.oracle.com/javase/8/docs/api/java/util/SplittableRandom.html
+ *  It is a very fast generator passing BigCrush, and it can be useful if
+ *  for some reason you absolutely want 64 bits of state; otherwise, we
+ *  rather suggest to use a xoroshiro128+ (for moderately parallel
+ *  computations) or xorshift1024* (for massively parallel computations)
+ *  generator.
  */
 
 #ifndef BOOST_RANDOM_SPLITMIX64_HPP
