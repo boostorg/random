@@ -54,7 +54,7 @@ public:
     }
 
     template <typename FIter>
-    void fill(FIter first, FIter last)
+    void generate(FIter first, FIter last)
     {
         while (first != last)
         {
