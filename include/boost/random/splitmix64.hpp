@@ -24,6 +24,8 @@ private:
     std::uint64_t state_;
 
 public:
+    using result_type = std::uint64_t;
+    
     splitmix64() : state_ {0xF24B76E3A206C3E6ULL} {}
     explicit splitmix64(std::uint64_t state) : state_ {state} {}
 
