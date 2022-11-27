@@ -33,7 +33,7 @@ int main(void)
     }
 
     std::array<std::uint64_t, 1000> test_array {};
-    rng.fill(test_array.begin(), test_array.end());
+    rng.generate(test_array.begin(), test_array.end());
 
     return 0;
 }
