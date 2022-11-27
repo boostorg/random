@@ -8,13 +8,10 @@
  */
 
 #include <cstdint>
-#include <cassert>
 #include <array>
 #include <limits>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/random/splitmix64.hpp>
-
-// Avoids warning about C-style asserts
-#define TEST_ASSERT(x) assert(x)
 
 int main(void)
 {
@@ -22,18 +19,19 @@ int main(void)
     constexpr auto const_max = (std::numeric_limits<std::uint64_t>::max)();
     
     boost::random::splitmix64 rng;
-    std::uint64_t prev {};
+    
+    double entropy = rng.entropy();
+    BOOST_TEST_GE(entropy, 0);
+
     for(int i = 0; i < 1000; ++i) 
     {
         std::uint64_t val = rng();
-        TEST_ASSERT(val > const_min);
-        TEST_ASSERT(val < const_max);
-        TEST_ASSERT(prev != val);
-        prev = val;
+        BOOST_TEST_GE(val, const_min);
+        BOOST_TEST_LE(val, const_max);
     }
 
     std::array<std::uint64_t, 1000> test_array {};
     rng.generate(test_array.begin(), test_array.end());
 
-    return 0;
+    return boost::report_errors();
 }
