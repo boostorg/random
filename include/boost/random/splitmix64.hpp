@@ -33,6 +33,10 @@ public:
     
     splitmix64() : state_ {0xF24B76E3A206C3E6ULL} {}
     explicit splitmix64(std::uint64_t state) : state_ {state} {}
+    
+    // Copying is explicity deleted to avoid two generators with the same state by mistake
+    splitmix64(const splitmix64&) = delete;
+    splitmix64 operator=(const splitmix64&) = delete;
 
     std::uint64_t next() noexcept
     {
