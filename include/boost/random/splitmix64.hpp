@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <random>
 
 namespace boost { namespace random {
 
@@ -31,7 +32,16 @@ private:
 public:
     using result_type = std::uint64_t;
     
-    splitmix64() : state_ {0xF24B76E3A206C3E6ULL} {}
+    splitmix64()
+    {
+        // std::random_device provides a 32-bit result. Concatenate two for the initial 64-bit state
+        std::random_device rng;
+        std::uint32_t word1 {rng()};
+        std::uint32_t word2 {rng()};
+
+        state_ = static_cast<std::uint64_t>(word1) << 32 | word2;
+    }
+
     explicit splitmix64(std::uint64_t state) : state_ {state} {}
     
     // Copying is explicity deleted to avoid two generators with the same state by mistake
