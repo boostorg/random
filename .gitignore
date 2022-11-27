@@ -6,3 +6,7 @@
 Makefile
 *.cmake
 CMakeFiles/**
+
+# Editor Options
+.vscode
+.idea
