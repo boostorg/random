@@ -19,10 +19,6 @@ int main(void)
     constexpr auto const_max = (std::numeric_limits<std::uint64_t>::max)();
     
     boost::random::splitmix64 rng;
-    
-    double entropy = rng.entropy();
-    BOOST_TEST_GE(entropy, 0);
-
     for(int i = 0; i < 1000; ++i) 
     {
         std::uint64_t val = rng();

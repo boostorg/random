@@ -72,17 +72,6 @@ public:
         return (std::numeric_limits<std::uint64_t>::min)();
     }
 
-    // From https://en.cppreference.com/w/cpp/numeric/random/random_device/entropy
-    // This function is not fully implemented in some standard libraries. 
-    // For example, LLVM libc++ prior to version 12 always returns zero even though the device is non-deterministic. 
-    // In comparison, Microsoft Visual C++ implementation always returns 32, and boost.random returns 10.
-    // The entropy of the Linux kernel device /dev/urandom may be obtained using ioctl RNDGETENTCNT - 
-    // that's what std::random_device::entropy() in GNU libstdc++ uses as of version 8.1
-    constexpr double entropy() const noexcept
-    {
-        return 10.0;
-    }
-
     template <typename FIter>
     void generate(FIter first, FIter last)
     {
