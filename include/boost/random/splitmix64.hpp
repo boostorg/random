@@ -32,23 +32,28 @@ private:
 public:
     using result_type = std::uint64_t;
     
-    splitmix64()
+    splitmix64(std::uint64_t state = 0)
     {
-        // std::random_device provides a 32-bit result. Concatenate two for the initial 64-bit state
-        std::random_device rng;
-        std::uint32_t word1 {rng()};
-        std::uint32_t word2 {rng()};
+        if (state == 0)
+        {
+            // std::random_device provides a 32-bit result. Concatenate two for the initial 64-bit state
+            std::random_device rng;
+            std::uint32_t word1 {rng()};
+            std::uint32_t word2 {rng()};
 
-        state_ = static_cast<std::uint64_t>(word1) << 32 | word2;
+            state_ = static_cast<std::uint64_t>(word1) << 32 | word2;
+        }
+        else
+        {
+            state_ = state;
+        }
     }
-
-    explicit splitmix64(std::uint64_t state) : state_ {state} {}
     
     // Copying is explicity deleted to avoid two generators with the same state by mistake
     splitmix64(const splitmix64&) = delete;
     splitmix64 operator=(const splitmix64&) = delete;
 
-    std::uint64_t next() noexcept
+    inline std::uint64_t next() noexcept
     {
         std::uint64_t z {state_ += UINT64_C(0x9E3779B97F4A7C15)};
 	    z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
@@ -57,23 +62,23 @@ public:
         return z ^ (z >> 31);
     }
 
-    std::uint64_t operator()() noexcept
+    inline std::uint64_t operator()() noexcept
     {
         return next();
     }
 
-    constexpr std::uint64_t (max)() const noexcept
+    static constexpr std::uint64_t (max)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::max)();
     }
 
-    constexpr std::uint64_t (min)() const noexcept
+    static constexpr std::uint64_t (min)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::min)();
     }
 
     template <typename FIter>
-    void generate(FIter first, FIter last)
+    inline void generate(FIter first, FIter last)
     {
         while (first != last)
         {
