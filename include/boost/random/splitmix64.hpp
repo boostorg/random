@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <limits>
 #include <random>
+#include <array>
 
 namespace boost { namespace random {
 
@@ -29,31 +30,52 @@ class splitmix64
 private:
     std::uint64_t state_;
 
+    inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2)
+    {
+        return static_cast<std::uint64_t>(word1) << 32 | word2;
+    }
+
 public:
     using result_type = std::uint64_t;
+
+    static constexpr bool has_fixed_range {false};
     
-    splitmix64(std::uint64_t state = 0)
+    void seed(result_type value = 0)
     {
-        if (state == 0)
+        if (value == 0)
         {
             // std::random_device provides a 32-bit result. Concatenate two for the initial 64-bit state
             std::random_device rng;
             std::uint32_t word1 {rng()};
             std::uint32_t word2 {rng()};
 
-            state_ = static_cast<std::uint64_t>(word1) << 32 | word2;
+            state_ = concatenate(word1, word2);
         }
         else
         {
-            state_ = state;
+            state_ = value;
         }
+    }
+
+    template <typename Sseq>
+    void seed(Sseq& seq)
+    {
+        std::array<std::uint32_t, 2> seeds;
+        seq.generate(seeds.begin(), seeds.end());
+
+        state_ = concatenate(seeds[0], seeds[1]);
+    }
+
+    splitmix64(std::uint64_t state = 0)
+    {
+        seed(state);
     }
     
     // Copying is explicity deleted to avoid two generators with the same state by mistake
     splitmix64(const splitmix64&) = delete;
     splitmix64 operator=(const splitmix64&) = delete;
 
-    inline std::uint64_t next() noexcept
+    inline result_type next() noexcept
     {
         std::uint64_t z {state_ += UINT64_C(0x9E3779B97F4A7C15)};
 	    z = (z ^ (z >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
@@ -62,7 +84,7 @@ public:
         return z ^ (z >> 31);
     }
 
-    inline std::uint64_t operator()() noexcept
+    inline result_type operator()() noexcept
     {
         return next();
     }
@@ -82,12 +104,12 @@ public:
         return !(lhs == rhs);
     }
 
-    static constexpr std::uint64_t (max)() noexcept
+    static constexpr result_type (max)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::max)();
     }
 
-    static constexpr std::uint64_t (min)() noexcept
+    static constexpr result_type (min)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::min)();
     }
