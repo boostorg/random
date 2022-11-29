@@ -67,6 +67,21 @@ public:
         return next();
     }
 
+    inline friend bool operator==(const splitmix64& lhs, const splitmix64& rhs) noexcept
+    {
+        if (lhs.state_ == rhs.state_)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    inline friend bool operator!=(const splitmix64& lhs, const splitmix64& rhs) noexcept
+    {
+        return !(lhs == rhs);
+    }
+
     static constexpr std::uint64_t (max)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::max)();
