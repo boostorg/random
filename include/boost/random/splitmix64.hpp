@@ -76,15 +76,6 @@ public:
     {
         return (std::numeric_limits<std::uint64_t>::min)();
     }
-
-    template <typename FIter>
-    inline void generate(FIter first, FIter last)
-    {
-        while (first != last)
-        {
-            *first++ = next();
-        }
-    }
 };
 
 }} // Namespace boost::random
