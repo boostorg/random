@@ -78,11 +78,14 @@ public:
         seed(state);
     }
 
-    template <typename Sseq>
+    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, splitmix64>::value, bool>::type = true>
     explicit splitmix64(Sseq& seq)
     {
         seed(seq);
     }
+
+    splitmix64(const splitmix64& other) = default;
+    splitmix64& operator=(const splitmix64& other) = default;
 
     inline result_type next() noexcept
     {
