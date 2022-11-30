@@ -26,6 +26,7 @@
 #include <string>
 #include <ios>
 #include <iostream>
+#include <type_traits>
 
 namespace boost { namespace random {
 
@@ -49,12 +50,7 @@ public:
     {
         if (value == 0)
         {
-            // std::random_device provides a 32-bit result. Concatenate two for the initial 64-bit state
-            std::random_device rng;
-            std::uint32_t word1 {rng()};
-            std::uint32_t word2 {rng()};
-
-            state_ = concatenate(word1, word2);
+            state_ = UINT64_C(0xA164B43C8F634A13);
         }
         else
         {
@@ -62,13 +58,19 @@ public:
         }
     }
 
-    template <typename Sseq>
+    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
     void seed(Sseq& seq)
     {
         std::array<std::uint32_t, 2> seeds;
         seq.generate(seeds.begin(), seeds.end());
 
         state_ = concatenate(seeds[0], seeds[1]);
+    }
+
+    template <typename T, typename std::enable_if<std::is_convertible<T, std::uint64_t>::value, bool>::type = true>
+    void seed(T value = 0)
+    {
+        seed(static_cast<std::uint64_t>(value));
     }
 
     explicit splitmix64(std::uint64_t state = 0)
@@ -147,6 +149,15 @@ public:
         e.state_ = std::strtoull(sstate.c_str(), nullptr, 10);
 
         return ist;
+    }
+
+    template <typename FIter>
+    inline void generate(FIter first, FIter last)
+    {
+        while (first != last)
+        {
+            *first++ = next();
+        }
     }
 
     static constexpr result_type (max)() noexcept
