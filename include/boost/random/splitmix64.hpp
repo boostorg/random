@@ -92,6 +92,14 @@ public:
         return next();
     }
 
+    inline void discard(unsigned long long val)
+    {
+        for (unsigned long long i {}; i < val; ++i)
+        {
+            next();
+        }
+    }
+
     inline friend bool operator==(const splitmix64& lhs, const splitmix64& rhs) noexcept
     {
         if (lhs.state_ == rhs.state_)
