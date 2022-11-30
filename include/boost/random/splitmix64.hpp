@@ -19,9 +19,13 @@
 #define BOOST_RANDOM_SPLITMIX64_HPP
 
 #include <cstdint>
+#include <cstdlib>
 #include <limits>
 #include <random>
 #include <array>
+#include <string>
+#include <ios>
+#include <iostream>
 
 namespace boost { namespace random {
 
@@ -113,6 +117,36 @@ public:
     inline friend bool operator!=(const splitmix64& lhs, const splitmix64& rhs) noexcept
     {
         return !(lhs == rhs);
+    }
+
+    template <typename CharT, typename Traits>
+    inline friend std::basic_ostream<CharT,Traits>& operator<<(std::basic_ostream<CharT,Traits>& ost, 
+                                                               const splitmix64& e)
+    {
+        std::string sstate = std::to_string(e.state_);
+        for (const auto i : sstate)
+        {
+            ost << i;
+        }
+
+        return ost;
+    }
+
+    template <typename CharT, typename Traits>
+    friend std::basic_istream<CharT,Traits>& operator>>(std::basic_istream<CharT,Traits>& ist, 
+                                                        splitmix64& e)
+    {
+        std::string sstate;
+        for (std::size_t i {}; i < std::numeric_limits<std::uint64_t>::digits10; ++i)
+        {
+            CharT val;
+            ist >> val >> std::ws;
+            sstate.push_back(val);
+        }
+        
+        e.state_ = std::strtoull(sstate.c_str(), nullptr, 10);
+
+        return ist;
     }
 
     static constexpr result_type (max)() noexcept
