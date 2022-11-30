@@ -139,7 +139,7 @@ public:
                                                         splitmix64& e)
     {
         std::string sstate;
-        for (std::size_t i {}; i < std::numeric_limits<std::uint64_t>::digits10; ++i)
+        for (std::size_t i {}; i <= std::numeric_limits<std::uint64_t>::digits10; ++i)
         {
             CharT val;
             ist >> val >> std::ws;
