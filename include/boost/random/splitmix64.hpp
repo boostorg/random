@@ -37,6 +37,7 @@ private:
 
 public:
     using result_type = std::uint64_t;
+    using seed_type = std::uint64_t;
 
     static constexpr bool has_fixed_range {false};
     
@@ -66,14 +67,16 @@ public:
         state_ = concatenate(seeds[0], seeds[1]);
     }
 
-    splitmix64(std::uint64_t state = 0)
+    explicit splitmix64(std::uint64_t state = 0)
     {
         seed(state);
     }
-    
-    // Copying is explicity deleted to avoid two generators with the same state by mistake
-    splitmix64(const splitmix64&) = delete;
-    splitmix64 operator=(const splitmix64&) = delete;
+
+    template <typename Sseq>
+    explicit splitmix64(Sseq& seq)
+    {
+        seed(seq);
+    }
 
     inline result_type next() noexcept
     {
