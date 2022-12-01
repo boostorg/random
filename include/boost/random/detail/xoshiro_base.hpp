@@ -18,11 +18,13 @@
 #include <utility>
 #include <stdexcept>
 #include <string>
+#include <limits>
 #include <initializer_list>
 #include <boost/random/splitmix64.hpp>
 
 namespace boost { namespace random { namespace detail {
 
+// N is the number of words (e.g. for xoshiro 256 N=4)
 template <std::size_t N>
 class xoshiro
 {
@@ -32,6 +34,42 @@ protected:
     inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2)
     {
         return static_cast<std::uint64_t>(word1) << 32 | word2;
+    }
+
+    template <typename T>
+    inline T rotl(T x, int s) noexcept
+    {
+        constexpr auto N = std::numeric_limits<T>::digits;
+        auto r = s % N;
+
+        if (r == 0)
+        {
+            return 0;
+        }
+        else if (r > 0)
+        {
+            return (x << r) | (x >> (N - r))
+        }
+
+        return rotr(x, -r);
+    }
+
+    template <typename T>
+    inline T rotr(T x, int s) noexcept
+    {
+        constexpr auto N = std::numeric_limits<T>::digits;
+        auto r = s % N;
+
+        if (r == 0)
+        {
+            return 0;
+        }
+        else if (r > 0)
+        {
+            return (x >> r) | (x << (N - r))
+        }
+
+        return rotl(x, -r);
     }
 
 public:
