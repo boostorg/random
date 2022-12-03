@@ -39,8 +39,8 @@ protected:
     template <typename T>
     inline T rotl(T x, int s) noexcept
     {
-        constexpr auto N = std::numeric_limits<T>::digits;
-        auto r = s % N;
+        constexpr auto n = std::numeric_limits<T>::digits;
+        auto r = s % n;
 
         if (r == 0)
         {
@@ -48,7 +48,7 @@ protected:
         }
         else if (r > 0)
         {
-            return (x << r) | (x >> (N - r))
+            return (x << r) | (x >> (n - r));
         }
 
         return rotr(x, -r);
@@ -57,8 +57,8 @@ protected:
     template <typename T>
     inline T rotr(T x, int s) noexcept
     {
-        constexpr auto N = std::numeric_limits<T>::digits;
-        auto r = s % N;
+        constexpr auto n = std::numeric_limits<T>::digits;
+        auto r = s % n;
 
         if (r == 0)
         {
@@ -66,7 +66,7 @@ protected:
         }
         else if (r > 0)
         {
-            return (x >> r) | (x << (N - r))
+            return (x >> r) | (x << (n - r));
         }
 
         return rotl(x, -r);
@@ -78,20 +78,26 @@ public:
 
     static constexpr bool has_fixed_range {false};
 
-    void seed()
+    void seed(const std::uint64_t state = 0)
     {
-        splitmix64 gen;
-        for (auto i& : state_)
+        splitmix64 gen(state);
+        for (auto& i : state_)
         {
             i = gen();
         }
+    }
+
+    template <typename T, typename std::enable_if<std::is_convertible<T, std::uint64_t>::value, bool>::type = true>
+    void seed(T value = 0)
+    {
+        seed(static_cast<std::uint64_t>(value));
     }
 
     template <typename Sseq, 
               typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
     void seed(Sseq& seq)
     {
-        for (auto i& : state_)
+        for (auto& i : state_)
         {
             std::array<std::uint32_t, 2> seeds;
             seq.generate(seeds.begin(), seeds.end());
@@ -108,15 +114,15 @@ public:
             throw std::logic_error("Not enough values were provided to seed the engine");
         }
 
-        for (auto i& : state_)
+        for (auto& i : state_)
         {
             i = *first++;
         }
     }
 
-    xoshiro()
+    explicit xoshiro(std::uint64_t state = 0)
     {
-        seed();
+        seed(state);
     }
 
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, xoshiro>::value, bool>::type = true>
@@ -128,7 +134,7 @@ public:
     template <typename FIter>
     xoshiro(FIter first, FIter last)
     {
-        seed(first, last)
+        seed(first, last);
     }
 
     template <typename... Args, typename Integer = typename std::common_type<Args...>::type,
@@ -152,7 +158,7 @@ public:
         return next();
     }
 
-    inline void discard(unsinged long long val)
+    inline void discard(unsigned long long val)
     {
         for (unsigned long long i {}; i < val; ++i)
         {
@@ -200,18 +206,15 @@ public:
         for (std::size_t i {}; i < N; ++i)
         {
             std::string sstate;
-            for (int j {}; j <= std::numeric_limits<std::uint64_t>::digits10; ++j)
+            CharT val;
+            ist >> val >> std::ws;
+            while (val != ',')
             {
-                CharT val;
-                ist >> val >> std::ws;
                 sstate.push_back(val);
+                ist >> val >> std::ws;
             }
-            
-            e.state_[i] = std::strtoull(sstate.c_str(), nullptr, 10);
 
-            // Operator<< commas seperates the values
-            CharT discard_val;
-            ist >> discard_val >> std::ws;
+            e.state_[i] = std::strtoull(sstate.c_str(), nullptr, 10);
         }
 
         return ist;
