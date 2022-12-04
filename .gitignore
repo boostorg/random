@@ -6,6 +6,7 @@
 Makefile
 *.cmake
 CMakeFiles/**
+build/**
 
 # Editor Options
 .vscode

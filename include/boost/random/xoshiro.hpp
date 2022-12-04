@@ -1,6 +1,6 @@
 /* 
  * Copyright Sebastiano Vigna 2019.
- * Copyright David Blackman
+ * Copyright David Blackman 2019.
  * Copyright Matt Borland 2022.
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
@@ -64,16 +64,21 @@ public:
 	    return result;
     }
 
-    // Equivalent to 2^128 calls to next()
-    void jump() noexcept override
+    // This is the jump function for the generator. It is equivalent
+    // to 2^128 calls to next(); it can be used to generate 2^128
+    // non-overlapping subsequences for parallel computations.
+    inline void jump() noexcept override
     {
         static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
                                                                 0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
         jump_impl(jump_pos);
     }
 
-    // Equivalent to 2^192 calls to next()
-    void long_jump() noexcept override
+    // This is the long-jump function for the generator. It is equivalent to
+    // 2^192 calls to next(); it can be used to generate 2^64 starting points,
+    // from each of which jump() will generate 2^64 non-overlapping
+    // subsequences for parallel distributed computations.
+    inline void long_jump() noexcept override
     {
         static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
                                                                      0x77710069854EE241, 0x39109BB02ACBE635};

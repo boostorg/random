@@ -150,8 +150,8 @@ public:
 
     // The following functions are pure virtual as each generator has it's own method
     virtual inline result_type next() noexcept = 0;
-    virtual void jump() noexcept = 0;
-    virtual void long_jump() noexcept = 0;
+    virtual inline void jump() noexcept = 0;
+    virtual inline void long_jump() noexcept = 0;
 
     inline result_type operator()() noexcept
     {
