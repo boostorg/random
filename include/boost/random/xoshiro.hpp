@@ -20,36 +20,32 @@ namespace boost { namespace random {
 class xoshiro256_plusplus final : public detail::xoshiro<4>
 {
 private:
-    static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
-                                                            0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
+    void jump_impl(const std::array<std::uint64_t, 4>& vals) noexcept
+    {
+        std::array<std::uint64_t, 4> new_state {};
+
+        for (std::size_t i {}; i < 4U; ++i)
+        {
+            for (std::size_t j {}; j < 64U; ++j)
+            {
+                if (vals[i] & static_cast<std::uint64_t>(1) << j)
+                {
+                    for (std::size_t k {}; k < 4U; ++k)
+                    {
+                        new_state[k] ^= state_[k];
+                    }
+                }
+
+                next();
+            }
+        }
+
+        state_ = new_state;
+    }
+
 public:
-    explicit xoshiro256_plusplus(std::uint64_t state = 0)
-    {
-        seed(state);
-    }
-
-    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, xoshiro>::value, bool>::type = true>
-    explicit xoshiro256_plusplus(Sseq& seq)
-    {
-        seed(seq);
-    }
-
-    template <typename FIter>
-    xoshiro256_plusplus(FIter first, FIter last)
-    {
-        seed(first, last);
-    }
-
-    template <typename... Args, typename Integer = typename std::common_type<Args...>::type,
-              typename std::enable_if<std::is_convertible<Integer, std::uint64_t>::value, bool>::type = true>
-    xoshiro256_plusplus(Args&& ...args)
-    {
-        std::initializer_list<Integer> list {std::forward<Args>(args)...};
-        seed(list.begin(), list.end());
-    }
-
-    xoshiro256_plusplus(const xoshiro256_plusplus& other) = default;
-    xoshiro256_plusplus& operator=(const xoshiro256_plusplus& other) = default;
+    // Use all of the base classes constructors 
+    using detail::xoshiro<4>::xoshiro;
     
     inline result_type next() noexcept override
     {
@@ -68,14 +64,20 @@ public:
 	    return result;
     }
 
+    // Equivalent to 2^128 calls to next()
     void jump() noexcept override
     {
-
+        static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
+                                                                0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
+        jump_impl(jump_pos);
     }
 
+    // Equivalent to 2^192 calls to next()
     void long_jump() noexcept override
     {
-
+        static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
+                                                                     0x77710069854EE241, 0x39109BB02ACBE635};
+        jump_impl(long_jump_pos);
     }
 };
 
