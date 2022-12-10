@@ -58,6 +58,7 @@ run test_zero_seed.cpp /boost//unit_test_framework ;
 run test_splitmix64.cpp /boost//unit_test_framework ;
 run test_xoshiro256_plus.cpp /boost//unit_test_framework ;
 run test_xoshiro256_plusplus.cpp /boost//unit_test_framework ;
+run test_xoshiro256_starstar.cpp /boost//unit_test_framework ;
 
 run niederreiter_base2_validate.cpp /boost//unit_test_framework ;
 run sobol_validate.cpp /boost//unit_test_framework ;
