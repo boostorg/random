@@ -130,7 +130,7 @@ public:
         return result;
     }
 
-    inline double operator()() noexcept
+    inline double next_double() noexcept
     {
         return (next() >> 11) * 0x1.0p-53;
     }
