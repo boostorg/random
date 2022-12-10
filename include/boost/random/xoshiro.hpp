@@ -25,23 +25,23 @@ std::array<std::uint64_t, 4> jump_impl(Gen gen, const std::array<std::uint64_t, 
     std::array<std::uint64_t, 4> current_state {gen->state()};
     std::array<std::uint64_t, 4> new_state {};
 
-        for (std::size_t i {}; i < 4U; ++i)
+    for (std::size_t i {}; i < 4U; ++i)
+    {
+        for (std::size_t j {}; j < 64U; ++j)
         {
-            for (std::size_t j {}; j < 64U; ++j)
+            if (vals[i] & static_cast<std::uint64_t>(1) << j)
             {
-                if (vals[i] & static_cast<std::uint64_t>(1) << j)
+                for (std::size_t k {}; k < 4U; ++k)
                 {
-                    for (std::size_t k {}; k < 4U; ++k)
-                    {
-                        new_state[k] ^= current_state[k];
-                    }
+                    new_state[k] ^= current_state[k];
                 }
-
-                gen->next();
             }
-        }
 
-        return new_state;
+            gen->next();
+        }
+    }
+
+    return new_state;
 }
 
 }
