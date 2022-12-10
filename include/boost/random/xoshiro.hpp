@@ -44,7 +44,7 @@ std::array<std::uint64_t, 4> jump_impl(Gen gen, const std::array<std::uint64_t, 
     return new_state;
 }
 
-}
+} // Namespace detail
 
 /*
  * This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
@@ -66,15 +66,73 @@ public:
         const std::uint64_t t = state_[1] << 17;
 
         state_[2] ^= state_[0];
-	    state_[3] ^= state_[1];
-	    state_[1] ^= state_[2];
-	    state_[0] ^= state_[3];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
 
-	    state_[2] ^= t;
+        state_[2] ^= t;
 
-	    state_[3] = rotl(state_[3], 45);
+        state_[3] = rotl(state_[3], 45);
 
-	    return result;
+        return result;
+    }
+
+    // This is the jump function for the generator. It is equivalent
+    // to 2^128 calls to next(); it can be used to generate 2^128
+    // non-overlapping subsequences for parallel computations.
+    inline void jump() noexcept override
+    {
+        static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
+                                                                0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
+        state_ = detail::jump_impl(this, jump_pos);
+    }
+
+    // This is the long-jump function for the generator. It is equivalent to
+    // 2^192 calls to next(); it can be used to generate 2^64 starting points,
+    // from each of which jump() will generate 2^64 non-overlapping
+    // subsequences for parallel distributed computations.
+    inline void long_jump() noexcept override
+    {
+        static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
+                                                                     0x77710069854EE241, 0x39109BB02ACBE635};
+        state_ = jump_impl(this, long_jump_pos);
+    }
+};
+
+/* 
+ * This is xoshiro256+ 1.0, our best and fastest generator for floating-point
+ * numbers. We suggest to use its upper bits for floating-point
+ * generation, as it is slightly faster than xoshiro256++/xoshiro256**. It
+ * passes all tests we are aware of except for the lowest three bits,
+ * which might fail linearity tests (and just those), so if low linear
+ * complexity is not considered an issue (as it is usually the case) it
+ * can be used to generate 64-bit outputs, too.
+ */
+class xoshiro256_plus final : public detail::xoshiro<4>
+{
+public:
+    using detail::xoshiro<4>::xoshiro;
+
+    inline result_type next() noexcept override
+    {
+        const std::uint64_t result {state_[0] + state_[3]};
+        const std::uint64_t t {state_[1] << 17};
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = rotl(state_[3], 45);
+
+        return result;
+    }
+
+    inline double operator()() noexcept
+    {
+        return (next() >> 11) * 0x1.0p-53;
     }
 
     // This is the jump function for the generator. It is equivalent
