@@ -17,6 +17,35 @@
 
 namespace boost { namespace random {
 
+namespace detail {
+
+template <typename Gen>
+std::array<std::uint64_t, 4> jump_impl(Gen gen, const std::array<std::uint64_t, 4>& vals) noexcept
+{
+    std::array<std::uint64_t, 4> current_state {gen->state()};
+    std::array<std::uint64_t, 4> new_state {};
+
+        for (std::size_t i {}; i < 4U; ++i)
+        {
+            for (std::size_t j {}; j < 64U; ++j)
+            {
+                if (vals[i] & static_cast<std::uint64_t>(1) << j)
+                {
+                    for (std::size_t k {}; k < 4U; ++k)
+                    {
+                        new_state[k] ^= current_state[k];
+                    }
+                }
+
+                gen->next();
+            }
+        }
+
+        return new_state;
+}
+
+}
+
 /*
  * This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
  * It has excellent (sub-ns) speed, a state (256 bits) that is large
@@ -27,30 +56,6 @@ namespace boost { namespace random {
  */
 class xoshiro256_plusplus final : public detail::xoshiro<4>
 {
-private:
-    void jump_impl(const std::array<std::uint64_t, 4>& vals) noexcept
-    {
-        std::array<std::uint64_t, 4> new_state {};
-
-        for (std::size_t i {}; i < 4U; ++i)
-        {
-            for (std::size_t j {}; j < 64U; ++j)
-            {
-                if (vals[i] & static_cast<std::uint64_t>(1) << j)
-                {
-                    for (std::size_t k {}; k < 4U; ++k)
-                    {
-                        new_state[k] ^= state_[k];
-                    }
-                }
-
-                next();
-            }
-        }
-
-        state_ = new_state;
-    }
-
 public:
     // Use all of the base classes constructors 
     using detail::xoshiro<4>::xoshiro;
@@ -79,7 +84,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
                                                                 0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
-        jump_impl(jump_pos);
+        state_ = detail::jump_impl(this, jump_pos);
     }
 
     // This is the long-jump function for the generator. It is equivalent to
@@ -90,7 +95,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
                                                                      0x77710069854EE241, 0x39109BB02ACBE635};
-        jump_impl(long_jump_pos);
+        state_ = jump_impl(this, long_jump_pos);
     }
 };
 

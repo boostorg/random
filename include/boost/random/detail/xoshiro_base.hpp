@@ -238,6 +238,11 @@ public:
     {
         return (std::numeric_limits<std::uint64_t>::min)();
     }
+
+    inline std::array<std::uint64_t, N> state()
+    {
+        return state_;
+    }
 };
 
 }}} // Namespaces

@@ -1,4 +1,4 @@
-/* test_splitmix64.cpp
+/* test_xoshiro256_plusplus.cpp
  *
  * Copyright Steven Watanabe 2011
  * Copyright Matt Borland 2022
