@@ -20,7 +20,7 @@ namespace boost { namespace random {
 namespace detail {
 
 template <typename Gen>
-std::array<std::uint64_t, 4> jump_impl(Gen gen, const std::array<std::uint64_t, 4>& vals) noexcept
+std::array<std::uint64_t, 4> four_word_jump_impl(Gen gen, const std::array<std::uint64_t, 4>& vals) noexcept
 {
     std::array<std::uint64_t, 4> current_state {gen->state()};
     std::array<std::uint64_t, 4> new_state {};
@@ -84,7 +84,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
                                                                 0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
-        state_ = detail::jump_impl(this, jump_pos);
+        state_ = detail::four_word_jump_impl(this, jump_pos);
     }
 
     // This is the long-jump function for the generator. It is equivalent to
@@ -95,7 +95,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
                                                                      0x77710069854EE241, 0x39109BB02ACBE635};
-        state_ = jump_impl(this, long_jump_pos);
+        state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
 
@@ -142,7 +142,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
                                                                 0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
-        state_ = detail::jump_impl(this, jump_pos);
+        state_ = detail::four_word_jump_impl(this, jump_pos);
     }
 
     // This is the long-jump function for the generator. It is equivalent to
@@ -153,7 +153,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
                                                                      0x77710069854EE241, 0x39109BB02ACBE635};
-        state_ = jump_impl(this, long_jump_pos);
+        state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
 
@@ -194,7 +194,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> jump_pos {0x180EC6D33CFD0ABA, 0xD5A61266F0C9392C, 
                                                                 0xA9582618E03FC9AA, 0x39ABDC4529B1661C};
-        state_ = detail::jump_impl(this, jump_pos);
+        state_ = detail::four_word_jump_impl(this, jump_pos);
     }
 
     // This is the long-jump function for the generator. It is equivalent to
@@ -205,7 +205,7 @@ public:
     {
         static constexpr std::array<std::uint64_t, 4> long_jump_pos {0x76E15D3EFEFDCBBF, 0xC5004E441C522FB3, 
                                                                      0x77710069854EE241, 0x39109BB02ACBE635};
-        state_ = jump_impl(this, long_jump_pos);
+        state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
 
