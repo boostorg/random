@@ -62,8 +62,8 @@ public:
     
     inline result_type next() noexcept override
     {
-        const std::uint64_t result = rotl(state_[0] + state_[3], 23) + state_[0];
-        const std::uint64_t t = state_[1] << 17;
+        const std::uint64_t result {rotl(state_[0] + state_[3], 23) + state_[0]};
+        const std::uint64_t t {state_[1] << 17};
 
         state_[2] ^= state_[0];
         state_[3] ^= state_[1];
@@ -172,8 +172,8 @@ public:
     
     inline result_type next() noexcept override
     {
-        const std::uint64_t result = rotl(state_[1] * 5, 7) * 9;
-        const std::uint64_t t = state_[1] << 17;
+        const std::uint64_t result {rotl(state_[1] * 5, 7) * 9};
+        const std::uint64_t t {state_[1] << 17};
 
         state_[2] ^= state_[0];
         state_[3] ^= state_[1];
@@ -208,6 +208,9 @@ public:
         state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
+
+// Make the default option xoshiro256++
+using xoshiro = xoshiro256_plusplus;
 
 }} // Namespace boost::random
 
