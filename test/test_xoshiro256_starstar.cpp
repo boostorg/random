@@ -15,6 +15,7 @@
 #include <cmath>
 
 #define BOOST_RANDOM_URNG boost::random::xoshiro256_starstar
+#define BOOST_RANDOM_CPP11_URNG
 
 // principal operation validated with CLHEP, values by experiment
 #define BOOST_RANDOM_VALIDATION_VALUE UINT64_C(2196391076106727935)

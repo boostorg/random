@@ -106,20 +106,6 @@ public:
         }
     }
 
-    template <typename FIter>
-    void seed(FIter first, FIter last)
-    {
-        if (std::distance(first, last) < N)
-        {
-            throw std::logic_error("Not enough values were provided to seed the engine");
-        }
-
-        for (auto& i : state_)
-        {
-            i = *first++;
-        }
-    }
-
     explicit xoshiro(std::uint64_t state = 0)
     {
         seed(state);

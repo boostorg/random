@@ -93,7 +93,9 @@ BOOST_AUTO_TEST_CASE(test_arithmetic_seed)
     test_seed(static_cast<seed_type>(~0u));
 }
 
-#if 0
+// Obselete functionality that new RNGs do not implement
+// https://github.com/boostorg/random/pull/89#issuecomment-1330030157
+#ifndef BOOST_RANDOM_CPP11_URNG
 BOOST_AUTO_TEST_CASE(test_iterator_seed)
 {
     const std::vector<int> v((std::max)(std::size_t(9999u), sizeof(BOOST_RANDOM_URNG) / 4), 0x41);
@@ -265,7 +267,9 @@ BOOST_AUTO_TEST_CASE(validate_seed_seq)
     BOOST_CHECK_EQUAL(urng(), BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE);
 }
 
-#if 0
+// Obselete functionality that new RNGs do not implement
+// https://github.com/boostorg/random/pull/89#issuecomment-1330030157
+#ifndef BOOST_RANDOM_CPP11_URNG
 BOOST_AUTO_TEST_CASE(validate_iter)
 {
     const std::vector<int> v((std::max)(std::size_t(9999u), sizeof(BOOST_RANDOM_URNG) / 4), 0x41);
