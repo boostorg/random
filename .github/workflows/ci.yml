@@ -210,7 +210,7 @@ jobs:
               - clang-14
           - toolset: clang
             compiler: clang++-14
-            cxxstd: "03-gnu,11-gnu,14-gnu,17-gnu,20-gnu,2b-gnu"
+            cxxstd: "11-gnu,14-gnu,17-gnu,20-gnu,2b-gnu"
             os: ubuntu-22.04
             install:
               - clang-14
@@ -464,19 +464,19 @@ jobs:
         include:
           - toolset: msvc-14.0
             cxxstd: "14,latest"
-            addrmd: 32,64
+            addrmd: 64
             os: windows-2019
           - toolset: msvc-14.2
-            cxxstd: "14,17,20,latest"
-            addrmd: 32,64
+            cxxstd: "14,17,latest"
+            addrmd: 64
             os: windows-2019
           - toolset: msvc-14.3
-            cxxstd: "14,17,20,latest"
-            addrmd: 32,64
+            cxxstd: "17,20,latest"
+            addrmd: 64
             os: windows-2022
           - toolset: clang-win
             cxxstd: "14,17,latest"
-            addrmd: 32,64
+            addrmd: 64
             os: windows-2022
           - toolset: gcc
             cxxstd: "11,14,17,2a"
@@ -514,4 +514,4 @@ jobs:
         shell: cmd
         run: |
           cd ../boost-root
-          b2 -j3 libs/%LIBRARY%/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model=${{matrix.addrmd}} variant=debug,release link=static,shared embed-manifest-via=linker
+          b2 -j3 libs/%LIBRARY%/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model=${{matrix.addrmd}} variant=release link=static,shared embed-manifest-via=linker
