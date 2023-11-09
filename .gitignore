@@ -1,3 +1,13 @@
 /doc/html
 /doc/reference.xml
 /test/rng.saved
+
+# Cmake build options
+Makefile
+*.cmake
+CMakeFiles/**
+build/**
+
+# Editor Options
+.vscode
+.idea
