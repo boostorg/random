@@ -44,8 +44,10 @@ public:
     using result_type = std::uint64_t;
     using seed_type = std::uint64_t;
 
+    // Required for old Boost.Random concept
     static constexpr bool has_fixed_range {false};
-    
+
+    /** Seeds the generator with the default seed. */
     void seed(result_type value = 0)
     {
         if (value == 0)
@@ -58,6 +60,9 @@ public:
         }
     }
 
+    /**
+     * Seeds the generator with values produced by @c seq.generate().
+     */
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
     void seed(Sseq& seq)
     {
@@ -67,17 +72,22 @@ public:
         state_ = concatenate(seeds[0], seeds[1]);
     }
 
+    /** Seeds the generator with a user provided seed. */
     template <typename T, typename std::enable_if<std::is_convertible<T, std::uint64_t>::value, bool>::type = true>
     void seed(T value = 0)
     {
         seed(static_cast<std::uint64_t>(value));
     }
 
+    /** Seeds the generator with a user provided seed. */
     explicit splitmix64(std::uint64_t state = 0)
     {
         seed(state);
     }
 
+    /**
+     * Seeds the generator with values produced by @c seq.generate().
+     */
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, splitmix64>::value, bool>::type = true>
     explicit splitmix64(Sseq& seq)
     {
@@ -87,6 +97,7 @@ public:
     splitmix64(const splitmix64& other) = default;
     splitmix64& operator=(const splitmix64& other) = default;
 
+    /**  Returns the next value of the generator. */
     inline result_type next() noexcept
     {
         std::uint64_t z {state_ += UINT64_C(0x9E3779B97F4A7C15)};
@@ -96,29 +107,40 @@ public:
         return z ^ (z >> 31);
     }
 
+    /**  Returns the next value of the generator. */
     inline result_type operator()() noexcept
     {
         return next();
     }
 
-    inline void discard(unsigned long long val)
+    /** Advances the state of the generator by @c z. */
+    inline void discard(unsigned long long z)
     {
-        for (unsigned long long i {}; i < val; ++i)
+        for (unsigned long long i {}; i < z; ++i)
         {
             next();
         }
     }
 
+    /**
+     * Returns true if the two generators will produce identical
+     * sequences of values.
+     */
     inline friend bool operator==(const splitmix64& lhs, const splitmix64& rhs) noexcept
     {
         return lhs.state_ == rhs.state_;
     }
 
+    /**
+     * Returns true if the two generators will produce different
+     * sequences of values.
+     */
     inline friend bool operator!=(const splitmix64& lhs, const splitmix64& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
+    /**  Writes a @c splitmix64 to a @c std::ostream. */
     template <typename CharT, typename Traits>
     inline friend std::basic_ostream<CharT,Traits>& operator<<(std::basic_ostream<CharT,Traits>& ost, 
                                                                const splitmix64& e)
@@ -127,6 +149,7 @@ public:
         return ost;
     }
 
+    /**  Writes a @c splitmix64 to a @c std::istream. */
     template <typename CharT, typename Traits>
     inline friend std::basic_istream<CharT,Traits>& operator>>(std::basic_istream<CharT,Traits>& ist,
                                                                splitmix64& e)
@@ -146,6 +169,7 @@ public:
         return ist;
     }
 
+    /** Fills a range with random values */
     template <typename FIter>
     inline void generate(FIter first, FIter last)
     {
@@ -155,11 +179,19 @@ public:
         }
     }
 
+    /**
+     * Returns the largest value that the @c splitmix64
+     * can produce.
+     */
     static constexpr result_type (max)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::max)();
     }
 
+    /**
+     * Returns the smallest value that the @c splitmix64
+     * can produce.
+     */
     static constexpr result_type (min)() noexcept
     {
         return (std::numeric_limits<std::uint64_t>::min)();
