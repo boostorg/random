@@ -35,7 +35,7 @@ class splitmix64
 private:
     std::uint64_t state_;
 
-    inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2)
+    inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2) noexcept
     {
         return static_cast<std::uint64_t>(word1) << 32 | word2;
     }
@@ -48,7 +48,7 @@ public:
     static constexpr bool has_fixed_range {false};
 
     /** Seeds the generator with the default seed. */
-    void seed(result_type value = 0)
+    void seed(result_type value = 0) noexcept
     {
         if (value == 0)
         {
@@ -61,7 +61,7 @@ public:
     }
 
     /**
-     * Seeds the generator with values produced by @c seq.generate().
+     * Seeds the generator with 32-bit values produced by @c seq.generate().
      */
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
     void seed(Sseq& seq)
@@ -72,26 +72,26 @@ public:
         state_ = concatenate(seeds[0], seeds[1]);
     }
 
-    /** Seeds the generator with a user provided seed. */
-    template <typename T, typename std::enable_if<std::is_convertible<T, std::uint64_t>::value, bool>::type = true>
-    void seed(T value = 0)
-    {
-        seed(static_cast<std::uint64_t>(value));
-    }
-
-    /** Seeds the generator with a user provided seed. */
-    explicit splitmix64(std::uint64_t state = 0)
-    {
-        seed(state);
-    }
-
     /**
-     * Seeds the generator with values produced by @c seq.generate().
+     * Seeds the generator with 64-bit values produced by @c seq.generate().
      */
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, splitmix64>::value, bool>::type = true>
     explicit splitmix64(Sseq& seq)
     {
         seed(seq);
+    }
+
+    /** Seeds the generator with a user provided seed. */
+    template <typename T, typename std::enable_if<std::is_convertible<T, std::uint64_t>::value, bool>::type = true>
+    void seed(T value = 0) noexcept
+    {
+        seed(static_cast<std::uint64_t>(value));
+    }
+
+    /** Seeds the generator with a user provided seed. */
+    explicit splitmix64(std::uint64_t state = 0) noexcept
+    {
+        seed(state);
     }
 
     splitmix64(const splitmix64& other) = default;
@@ -114,9 +114,9 @@ public:
     }
 
     /** Advances the state of the generator by @c z. */
-    inline void discard(unsigned long long z)
+    inline void discard(std::uint64_t z) noexcept
     {
-        for (unsigned long long i {}; i < z; ++i)
+        for (std::uint64_t i {}; i < z; ++i)
         {
             next();
         }
@@ -171,7 +171,7 @@ public:
 
     /** Fills a range with random values */
     template <typename FIter>
-    inline void generate(FIter first, FIter last)
+    inline void generate(FIter first, FIter last) noexcept
     {
         while (first != last)
         {
