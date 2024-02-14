@@ -20,6 +20,7 @@ if(HAVE_BOOST_TEST)
             Boost::lexical_cast
             Boost::math
             Boost::multiprecision
+            Boost::numeric_conversion
             Boost::range
             Boost::static_assert
             Boost::system
