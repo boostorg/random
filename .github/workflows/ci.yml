@@ -33,7 +33,7 @@ jobs:
       matrix:
         include:
           - toolset: gcc-5
-            cxxstd: "11,14,1z"
+            cxxstd: "03,11,14,1z"
             address_model: 32,64
             os: ubuntu-latest
             container: ubuntu:16.04
