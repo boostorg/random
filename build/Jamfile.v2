@@ -9,6 +9,10 @@
 
 import ../../config/checks/config : requires ;
 
+project boost/random ;
+
+local SOURCES = random_device.cpp ;
+
 lib boost_random
 
   # Sources
