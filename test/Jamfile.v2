@@ -12,7 +12,12 @@ import config : requires ;
 # bring in rules for testing
 import testing ;
 
-project : requirements <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS ;
+project /boost/random/test : requirements
+
+    <library>/boost/random//boost_random
+
+    <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+;
 
 run test_const_mod.cpp /boost/test//unit_test_framework ;
 run test_generate_canonical.cpp /boost/test//unit_test_framework ;
