@@ -28,5 +28,6 @@ lib boost_random
 
   # usage-requirements
   : <link>shared:<define>BOOST_RANDOM_DYN_LINK=1
+    <define>BOOST_RANDOM_NO_LIB=1
 
 ;
