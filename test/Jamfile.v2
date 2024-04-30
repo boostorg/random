@@ -83,6 +83,7 @@ alias math_test :
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
     /boost/math//boost_math
+    /boost/numeric_conversion//boost_numeric_conversion
     ;
 
 run test_seed_seq.cpp /boost/assign//boost_assign /boost/test//unit_test_framework ;
