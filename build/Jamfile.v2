@@ -10,6 +10,9 @@
 import-search /boost/config/checks ;
 import config : requires ;
 
+project
+    : common-requirements <library>$(boost_dependencies) ;
+
 local SOURCES = random_device.cpp ;
 
 lib boost_random
