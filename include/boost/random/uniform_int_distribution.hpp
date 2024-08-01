@@ -275,7 +275,7 @@ public:
          *
          * Requires min <= max
          */
-        explicit param_type(
+        constexpr explicit param_type(
             IntType min_arg = 0,
             IntType max_arg = (std::numeric_limits<IntType>::max)())
           : _min(min_arg), _max(max_arg)
