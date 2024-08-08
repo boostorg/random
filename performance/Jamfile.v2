@@ -1,3 +1,5 @@
+project : requirements <library>/boost/random//boost_random ;
+
 mt19937ar-files = [ glob mt19937ar.c ] ;
 
 if $(mt19937ar-files)
