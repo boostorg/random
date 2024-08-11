@@ -82,7 +82,7 @@ alias math_test :
     /boost/assign//boost_assign
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
-    /boost/math//boost_math
+    /boost/math//boost_math_tr1
     /boost/numeric_conversion//boost_numeric_conversion
     ;
 

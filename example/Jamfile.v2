@@ -12,4 +12,4 @@ project : requirements <library>/boost/random//boost_random ;
 run die.cpp ;
 run weighted_die.cpp ;
 run password.cpp /boost/random//boost_random ;
-run intersections.cpp /boost/math//boost_math /boost/random//boost_random ;
+run intersections.cpp /boost/math//boost_math_tr1 /boost/random//boost_random ;
