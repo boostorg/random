@@ -284,6 +284,8 @@ public:
     public:
         reference(digit_t &value, int idx)
             : _value(value), _idx(idx) {}
+        reference(const reference& other)
+            : _value(other._value), _idx(other._idx) {}
         operator bool() const { return (_value & (digit_t(1) << _idx)) != 0; }
         reference& operator=(bool b)
         {
