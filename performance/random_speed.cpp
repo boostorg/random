@@ -117,7 +117,7 @@ public:
   typedef Ret result_type;
 
   GenericRandomGenerator() { };
-  void set(boost::shared_ptr<RandomGenBase<Ret> > p) { _p = p; }
+  void set(boost::shared_ptr<RandomGenBase<Ret> > p) { _p = std::move(p); }
   // takes over ownership
   void set(RandomGenBase<Ret> * p) { _p.reset(p); }
   Ret operator()() { return (*_p)(); }
