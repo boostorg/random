@@ -18,6 +18,7 @@
 #define BOOST_RANDOM_HYPEREXPONENTIAL_DISTRIBUTION_HPP
 
 
+#include <boost/assert.hpp>
 #include <boost/config.hpp>
 #include <boost/core/cmath.hpp>
 #include <boost/random/detail/operators.hpp>

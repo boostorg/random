@@ -15,6 +15,7 @@
 
 #include <istream>
 #include <iosfwd>
+#include <boost/assert.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/gamma_distribution.hpp>
 
