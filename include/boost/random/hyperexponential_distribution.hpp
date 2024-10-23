@@ -28,7 +28,6 @@
 #include <boost/range/end.hpp>
 #include <boost/range/size.hpp>
 #include <boost/type_traits/has_pre_increment.hpp>
-#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <iterator>

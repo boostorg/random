@@ -13,7 +13,6 @@
 #ifndef BOOST_RANDOM_BETA_DISTRIBUTION_HPP
 #define BOOST_RANDOM_BETA_DISTRIBUTION_HPP
 
-#include <cassert>
 #include <istream>
 #include <iosfwd>
 #include <boost/random/detail/operators.hpp>
