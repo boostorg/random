@@ -13,6 +13,7 @@
 #define BOOST_RANDOM_DETAIL_XOSHIRO_BASE
 
 #include <boost/random/splitmix64.hpp>
+#include <boost/throw_exception.hpp>
 #include <array>
 #include <utility>
 #include <stdexcept>
@@ -24,6 +25,7 @@
 #include <ios>
 #include <istream>
 #include <type_traits>
+#include <iterator>
 
 namespace boost {
 namespace random {
@@ -139,6 +141,24 @@ public:
         }
     }
 
+    /** Sets the state of the generator using values from an iterator range. */
+    template <typename FIter>
+    void seed(FIter first, FIter last)
+    {
+        static_assert(std::is_integral<typename std::iterator_traits<FIter>::value_type>::value, "Type must be a built-in integer type" );
+
+        std::size_t offset = 0;
+        while (first != last && offset < state_.size())
+        {
+            state_[offset++] = static_cast<std::uint64_t>(*first++);
+        }
+
+        if (offset != state_.size())
+        {
+            boost::throw_exception(std::invalid_argument("Not enough elements in call to seed."));
+        }
+    }
+     
     /**
      * Seeds the generator with 64-bit values produced by @c seq.generate().
      */
@@ -158,14 +178,6 @@ public:
     xoshiro_base(FIter first, FIter last)
     {
         seed(first, last);
-    }
-
-    template <typename... Args, typename Integer = typename std::common_type<Args...>::type,
-              typename std::enable_if<std::is_convertible<Integer, std::uint64_t>::value, bool>::type = true>
-    xoshiro_base(Args&& ...args)
-    {
-        std::initializer_list<Integer> list {std::forward<Args>(args)...};
-        seed(list.begin(), list.end());
     }
 
     xoshiro_base(const xoshiro_base& other) = default;
