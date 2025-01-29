@@ -141,7 +141,7 @@ public:
 
     inline double next_double() noexcept
     {
-        #if defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
         return (next() >> 11) * 0x1.0p-53;
         #else
         return (next() >> 11) * 1.11022302462515654e-16;
