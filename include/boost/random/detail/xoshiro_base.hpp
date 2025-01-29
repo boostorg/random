@@ -12,7 +12,6 @@
 #ifndef BOOST_RANDOM_DETAIL_XOSHIRO_BASE
 #define BOOST_RANDOM_DETAIL_XOSHIRO_BASE
 
-#include <boost/core/bit.hpp>
 #include <boost/random/splitmix64.hpp>
 #include <array>
 #include <utility>
