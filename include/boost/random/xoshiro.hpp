@@ -95,6 +95,39 @@ public:
     }
 };
 
+/**
+ * This is xoshiro256** 1.0, one of our all-purpose, rock-solid
+ * generators. It has excellent (sub-ns) speed, a state (256 bits) that is
+ * large enough for any parallel application, and it passes all tests we
+ * are aware of.
+ *
+ * For generating just floating-point numbers, xoshiro256+ is even faster.
+ */
+
+class xoshiro256_starstar final : public detail::xoshiro_base<4>
+{
+public:
+
+    using detail::xoshiro_base<4>::xoshiro_base;
+
+    inline result_type next() noexcept override
+    {
+        const std::uint64_t result = boost::core::rotl(state_[1] * 5, 7) * 9U;
+        const std::uint64_t t = state_[1] << 17;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 45);
+
+        return result;
+    }
+};
+
 } // namespace random
 } // namespace boost
 
