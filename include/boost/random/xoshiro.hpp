@@ -20,37 +20,6 @@
 namespace boost {
 namespace random {
 
-namespace detail {
-
-template <typename GenPtr>
-std::array<std::uint64_t, 4> four_word_jump_impl(GenPtr gen, const std::array<std::uint64_t, 4>& vals) noexcept
-{
-    std::array<std::uint64_t, 4> current_state = gen->state();
-    std::array<std::uint64_t, 4> new_state;
-
-    for (std::size_t i {}; i < 4U; ++i)
-    {
-        for (std::size_t j {}; j < 64U; ++j)
-        {
-            if (vals[i] & static_cast<std::uint64_t>(1) << j)
-            {
-                current_state = gen->state();
-                for (std::size_t k {}; k < 4U; ++k)
-                {
-                    new_state[k] ^= current_state[k];
-                }
-            }
-
-            gen->next();
-        }
-    }
-
-    return new_state;
-}
-
-} // namespace detail
-
-
 /**
  * This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
  * It has excellent (sub-ns) speed, a state (256 bits) that is large
@@ -80,29 +49,6 @@ public:
         state_[3] = boost::core::rotl(state_[3], 45);
 
         return result;
-    }
-
-    // This is the jump function for the generator. It is equivalent
-    // to 2^128 calls to next(); it can be used to generate 2^128
-    // non-overlapping subsequences for parallel computations.
-    inline void jump() noexcept override
-    {
-        constexpr std::array<std::uint64_t, 4> jump_pos = {{UINT64_C(0x180EC6D33CFD0ABA), UINT64_C(0xD5A61266F0C9392C),
-                                                            UINT64_C(0xA9582618E03FC9AA), UINT64_C(0x39ABDC4529B1661C)}};
-
-        state_ = detail::four_word_jump_impl(this, jump_pos);
-    }
-
-    // This is the long-jump function for the generator. It is equivalent to
-    // 2^192 calls to next(); it can be used to generate 2^64 starting points,
-    // from each of which jump() will generate 2^64 non-overlapping
-    // subsequences for parallel distributed computations.
-    inline void long_jump() noexcept override
-    {
-        constexpr std::array<std::uint64_t, 4> long_jump_pos = {{UINT64_C(0x76E15D3EFEFDCBBF), UINT64_C(0xC5004E441C522FB3),
-                                                                 UINT64_C(0x77710069854EE241), UINT64_C(0x39109BB02ACBE635)}};
-
-        state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
 
@@ -146,26 +92,6 @@ public:
         #else
         return (next() >> 11) * 1.11022302462515654e-16;
         #endif
-    }
-
-    inline void jump() noexcept override
-    {
-        constexpr std::array<std::uint64_t, 4> jump_pos = {{UINT64_C(0x180EC6D33CFD0ABA), UINT64_C(0xD5A61266F0C9392C),
-                                                            UINT64_C(0xA9582618E03FC9AA), UINT64_C(0x39ABDC4529B1661C)}};
-
-        state_ = detail::four_word_jump_impl(this, jump_pos);
-    }
-
-    // This is the long-jump function for the generator. It is equivalent to
-    // 2^192 calls to next(); it can be used to generate 2^64 starting points,
-    // from each of which jump() will generate 2^64 non-overlapping
-    // subsequences for parallel distributed computations.
-    inline void long_jump() noexcept override
-    {
-        constexpr std::array<std::uint64_t, 4> long_jump_pos = {{UINT64_C(0x76E15D3EFEFDCBBF), UINT64_C(0xC5004E441C522FB3),
-                                                                 UINT64_C(0x77710069854EE241), UINT64_C(0x39109BB02ACBE635)}};
-
-        state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };
 

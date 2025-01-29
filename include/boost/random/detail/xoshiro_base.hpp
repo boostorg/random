@@ -35,11 +35,76 @@ class xoshiro_base
 {
 protected:
 
+    using xoshiro_type = std::integral_constant<std::size_t, N>;
+
     std::array<std::uint64_t, N> state_;
 
     inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2) noexcept
     {
         return static_cast<std::uint64_t>(word1) << 32U | word2;
+    }
+
+    inline void jump_impl(const std::integral_constant<std::size_t, 4>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 4U> jump = {{ UINT64_C(0x180ec6d33cfd0aba), UINT64_C(0xd5a61266f0c9392c),
+                                                          UINT64_C(0xa9582618e03fc9aa), UINT64_C(0x39abdc4529b1661c) }};
+
+        std::uint64_t s0 = 0;
+        std::uint64_t s1 = 0;
+        std::uint64_t s2 = 0;
+        std::uint64_t s3 = 0;
+
+        for (std::uint64_t i = 0; i < jump.size(); i++)
+        {
+            for (std::size_t b = 0; b < 64U; b++)
+            {
+                if (jump[i] & UINT64_C(1) << b) {
+                    s0 ^= state_[0];
+                    s1 ^= state_[1];
+                    s2 ^= state_[2];
+                    s3 ^= state_[3];
+                }
+
+                next();
+            }
+        }
+
+        state_[0] = s0;
+        state_[1] = s1;
+        state_[2] = s2;
+        state_[3] = s3;
+    }
+
+    inline void long_jump_impl(const std::integral_constant<std::size_t, 4>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 4> long_jump = {{ UINT64_C(0x76e15d3efefdcbbf), UINT64_C(0xc5004e441c522fb3),
+                                                              UINT64_C(0x77710069854ee241), UINT64_C(0x39109bb02acbe635) }};
+
+        std::uint64_t s0 = 0;
+        std::uint64_t s1 = 0;
+        std::uint64_t s2 = 0;
+        std::uint64_t s3 = 0;
+
+        for (std::size_t i = 0; i < long_jump.size(); i++)
+        {
+            for (std::size_t b = 0; b < 64; b++)
+            {
+                if (long_jump[i] & UINT64_C(1) << b)
+                {
+                    s0 ^= state_[0];
+                    s1 ^= state_[1];
+                    s2 ^= state_[2];
+                    s3 ^= state_[3];
+                }
+
+                next();
+            }
+        }
+
+        state_[0] = s0;
+        state_[1] = s1;
+        state_[2] = s2;
+        state_[3] = s3;
     }
     
 public:
@@ -106,10 +171,24 @@ public:
     xoshiro_base(const xoshiro_base& other) = default;
     xoshiro_base& operator=(const xoshiro_base& other) = default;
 
-    // The following functions are pure virtual as each generator has its own method
     virtual inline result_type next() noexcept = 0;
-    virtual inline void jump() noexcept = 0;
-    virtual inline void long_jump() noexcept = 0;
+
+    /** This is the jump function for the generator. It is equivalent
+     *  to 2^128 calls to next(); it can be used to generate 2^128
+     *  non-overlapping subsequences for parallel computations. */
+    inline void jump() noexcept
+    {
+        jump_impl(xoshiro_type());
+    }
+
+    /** This is the long-jump function for the generator. It is equivalent to
+     *  2^192 calls to next(); it can be used to generate 2^64 starting points,
+     *  from each of which jump() will generate 2^64 non-overlapping
+     *  subsequences for parallel distributed computations. */
+    inline void long_jump() noexcept
+    {
+        long_jump_impl(xoshiro_type());
+    }
 
     /**  Returns the next value of the generator. */
     inline result_type operator()() noexcept
