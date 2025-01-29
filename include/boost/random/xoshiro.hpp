@@ -60,14 +60,6 @@ std::array<std::uint64_t, 4> four_word_jump_impl(GenPtr gen, const std::array<st
  */
 class xoshiro256_plusplus final : public detail::xoshiro_base<4>
 {
-private:
-
-    static constexpr std::array<std::uint64_t, 4> jump_pos = {{UINT64_C(0x180EC6D33CFD0ABA), UINT64_C(0xD5A61266F0C9392C),
-                                                               UINT64_C(0xA9582618E03FC9AA), UINT64_C(0x39ABDC4529B1661C)}};
-
-    static constexpr std::array<std::uint64_t, 4> long_jump_pos = {{UINT64_C(0x76E15D3EFEFDCBBF), UINT64_C(0xC5004E441C522FB3),
-                                                                    UINT64_C(0x77710069854EE241), UINT64_C(0x39109BB02ACBE635)}};
-
 public:
 
     using detail::xoshiro_base<4>::xoshiro_base;
@@ -94,6 +86,9 @@ public:
     // non-overlapping subsequences for parallel computations.
     inline void jump() noexcept override
     {
+        constexpr std::array<std::uint64_t, 4> jump_pos = {{UINT64_C(0x180EC6D33CFD0ABA), UINT64_C(0xD5A61266F0C9392C),
+                                                            UINT64_C(0xA9582618E03FC9AA), UINT64_C(0x39ABDC4529B1661C)}};
+
         state_ = detail::four_word_jump_impl(this, jump_pos);
     }
 
@@ -103,6 +98,9 @@ public:
     // subsequences for parallel distributed computations.
     inline void long_jump() noexcept override
     {
+        constexpr std::array<std::uint64_t, 4> long_jump_pos = {{UINT64_C(0x76E15D3EFEFDCBBF), UINT64_C(0xC5004E441C522FB3),
+                                                                 UINT64_C(0x77710069854EE241), UINT64_C(0x39109BB02ACBE635)}};
+
         state_ = detail::four_word_jump_impl(this, long_jump_pos);
     }
 };

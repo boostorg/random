@@ -37,7 +37,7 @@ protected:
 
     std::array<std::uint64_t, N> state_;
 
-    constexpr std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2) noexcept
+    inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2) noexcept
     {
         return static_cast<std::uint64_t>(word1) << 32U | word2;
     }
@@ -196,6 +196,11 @@ public:
     static constexpr result_type (min)() noexcept
     {
         return (std::numeric_limits<result_type>::min)();
+    }
+
+    inline std::array<std::uint64_t, N> state() const noexcept
+    {
+        return state_;
     }
 };
 
