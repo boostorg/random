@@ -25,8 +25,8 @@ namespace detail {
 template <typename GenPtr>
 std::array<std::uint64_t, 4> four_word_jump_impl(GenPtr gen, const std::array<std::uint64_t, 4>& vals) noexcept
 {
-    std::array<std::uint64_t, 4> current_state {gen->state()};
-    std::array<std::uint64_t, 4> new_state {};
+    std::array<std::uint64_t, 4> current_state = gen->state();
+    std::array<std::uint64_t, 4> new_state;
 
     for (std::size_t i {}; i < 4U; ++i)
     {
@@ -34,6 +34,7 @@ std::array<std::uint64_t, 4> four_word_jump_impl(GenPtr gen, const std::array<st
         {
             if (vals[i] & static_cast<std::uint64_t>(1) << j)
             {
+                current_state = gen->state();
                 for (std::size_t k {}; k < 4U; ++k)
                 {
                     new_state[k] ^= current_state[k];
@@ -66,8 +67,8 @@ public:
 
     inline result_type next() noexcept override
     {
-        const std::uint64_t result {boost::core::rotl(state_[0] + state_[3], 23) + state_[0]};
-        const std::uint64_t t {state_[1] << 17};
+        const std::uint64_t result = boost::core::rotl(state_[0] + state_[3], 23) + state_[0];
+        const std::uint64_t t = state_[1] << 17;
 
         state_[2] ^= state_[0];
         state_[3] ^= state_[1];
