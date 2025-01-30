@@ -32,9 +32,11 @@ class xoshiro256_plusplus final : public detail::xoshiro_base<xoshiro256_plusplu
 {
 private:
 
-    friend class detail::xoshiro_base<xoshiro256_plusplus, 4>;
+    using Base = detail::xoshiro_base<xoshiro256_plusplus, 4>;
 
 public:
+
+    using Base::Base;
 
     inline result_type next() noexcept
     {
@@ -68,9 +70,11 @@ class xoshiro256_plus final : public detail::xoshiro_base<xoshiro256_plus, 4>
 {
 private:
 
-    friend class detail::xoshiro_base<xoshiro256_plus, 4>;
+    using Base = detail::xoshiro_base<xoshiro256_plus, 4>;
 
 public:
+
+    using Base::Base;
 
     inline result_type next() noexcept
     {
@@ -112,9 +116,11 @@ class xoshiro256_starstar final : public detail::xoshiro_base<xoshiro256_starsta
 {
 private:
 
-    friend class detail::xoshiro_base<xoshiro256_starstar, 4>;
+    using Base = detail::xoshiro_base<xoshiro256_starstar, 4>;
 
 public:
+
+    using Base::Base;
 
     inline result_type next() noexcept
     {
