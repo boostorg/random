@@ -28,22 +28,15 @@ namespace random {
  *
  * For generating just floating-point numbers, xoshiro256+ is even faster.
  */
-class xoshiro256_plusplus final : public detail::xoshiro_base<4>
+class xoshiro256_plusplus final : public detail::xoshiro_base<xoshiro256_plusplus, 4>
 {
+private:
+
+    friend class detail::xoshiro_base<xoshiro256_plusplus, 4>;
+
 public:
 
-    using detail::xoshiro_base<4>::xoshiro_base;
-
-    // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
-    // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_plusplus() noexcept { seed(); }
-    ~xoshiro256_plusplus() = default;
-    xoshiro256_plusplus(const xoshiro256_plusplus& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_plusplus& operator=(const xoshiro256_plusplus& other) noexcept { this->state_ = other.state(); return *this; }
-    xoshiro256_plusplus(xoshiro256_plusplus&& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_plusplus& operator=(xoshiro256_plusplus&& other) noexcept { this->state_ = other.state(); return *this; }
-
-    inline result_type next() noexcept override
+    inline result_type next() noexcept
     {
         const std::uint64_t result = boost::core::rotl(state_[0] + state_[3], 23) + state_[0];
         const std::uint64_t t = state_[1] << 17;
@@ -71,22 +64,15 @@ public:
  * can be used to generate 64-bit outputs, too.
  */
 
-class xoshiro256_plus final : public detail::xoshiro_base<4>
+class xoshiro256_plus final : public detail::xoshiro_base<xoshiro256_plus, 4>
 {
+private:
+
+    friend class detail::xoshiro_base<xoshiro256_plus, 4>;
+
 public:
 
-    using detail::xoshiro_base<4>::xoshiro_base;
-
-    // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
-    // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_plus() noexcept { seed(); }
-    ~xoshiro256_plus() = default;
-    xoshiro256_plus(const xoshiro256_plus& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_plus& operator=(const xoshiro256_plus& other) noexcept { this->state_ = other.state(); return *this; }
-    xoshiro256_plus(xoshiro256_plus&& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_plus& operator=(xoshiro256_plus&& other) noexcept { this->state_ = other.state(); return *this; }
-
-    inline result_type next() noexcept override
+    inline result_type next() noexcept
     {
         const std::uint64_t result = state_[0] + state_[3];
         const std::uint64_t t = state_[1] << 17;
@@ -122,22 +108,15 @@ public:
  * For generating just floating-point numbers, xoshiro256+ is even faster.
  */
 
-class xoshiro256_starstar final : public detail::xoshiro_base<4>
+class xoshiro256_starstar final : public detail::xoshiro_base<xoshiro256_starstar, 4>
 {
+private:
+
+    friend class detail::xoshiro_base<xoshiro256_starstar, 4>;
+
 public:
 
-    using detail::xoshiro_base<4>::xoshiro_base;
-
-    // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
-    // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_starstar() noexcept { seed(); }
-    ~xoshiro256_starstar() = default;
-    xoshiro256_starstar(const xoshiro256_starstar& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_starstar& operator=(const xoshiro256_starstar& other) noexcept { this->state_ = other.state(); return *this; }
-    xoshiro256_starstar(xoshiro256_starstar&& other) noexcept { this->state_ = other.state(); }
-    xoshiro256_starstar& operator=(xoshiro256_starstar&& other) noexcept { this->state_ = other.state(); return *this; }
-
-    inline result_type next() noexcept override
+    inline result_type next() noexcept
     {
         const std::uint64_t result = boost::core::rotl(state_[1] * 5, 7) * 9U;
         const std::uint64_t t = state_[1] << 17;

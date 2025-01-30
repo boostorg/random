@@ -33,7 +33,7 @@ namespace random {
 namespace detail {
 
 // N is the number of words (e.g. for xoshiro 256 N=4)
-template <std::size_t N>
+template <typename Derived, std::size_t N>
 class xoshiro_base
 {
 protected:
@@ -198,7 +198,10 @@ public:
     xoshiro_base(xoshiro_base&& other) noexcept { state_ = other.state(); }
     xoshiro_base& operator=(xoshiro_base&& other) noexcept { state_ = other.state(); return *this; }
 
-    virtual inline result_type next() noexcept = 0;
+    inline result_type next() noexcept
+    {
+        return static_cast<Derived*>(this)->next();
+    }
 
     /** This is the jump function for the generator. It is equivalent
      *  to 2^128 calls to next(); it can be used to generate 2^128
@@ -280,7 +283,7 @@ public:
     template <typename FIter>
     inline void generate(FIter first, FIter last) noexcept
     {
-        using iter_type = std::iterator_traits<FIter>::value_type;
+        using iter_type = typename std::iterator_traits<FIter>::value_type;
 
         while (first != last)
         {
