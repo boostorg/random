@@ -18,7 +18,11 @@
 #define BOOST_RANDOM_CPP11_URNG
 
 // principal operation validated with CLHEP, values by experiment
-#define BOOST_RANDOM_VALIDATION_VALUE UINT64_C(16919189139436588484)
-#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE UINT64_C(6443589687460052458)
+#define BOOST_RANDOM_VALIDATION_VALUE 0.91719108108351499
+#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE 0.34930769688746899
+
+// Since we are using splitmix64 we need to allow 64 bit seeds
+// The test harness only allows for 32 bit seeds
+#define BOOST_RANDOM_PROVIDED_SEED_TYPE std::uint64_t
 
 #include "test_generator.ipp"

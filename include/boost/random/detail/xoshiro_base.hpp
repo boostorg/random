@@ -27,13 +27,14 @@
 #include <istream>
 #include <type_traits>
 #include <iterator>
+#include <iostream>
 
 namespace boost {
 namespace random {
 namespace detail {
 
 // N is the number of words (e.g. for xoshiro 256 N=4)
-template <typename Derived, std::size_t N>
+template <typename Derived, std::size_t N, typename OutputType = std::uint64_t>
 class xoshiro_base
 {
 protected:
@@ -112,7 +113,7 @@ protected:
     
 public:
 
-    using result_type = std::uint64_t;
+    using result_type = OutputType;
     using seed_type = std::uint64_t;
 
     static constexpr bool has_fixed_range {false};

@@ -269,7 +269,7 @@ void test_double()
         BOOST_TEST_EQ(final_state[i], s[i]);
     }
 
-    const auto boost_double = boost_rng.next_double();
+    const auto boost_double = boost_rng();
     const auto ref_double = to_double(next());
 
     BOOST_TEST(std::fabs(boost_double - ref_double) < std::numeric_limits<double>::epsilon());

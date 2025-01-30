@@ -66,17 +66,17 @@ public:
  * can be used to generate 64-bit outputs, too.
  */
 
-class xoshiro256_plus final : public detail::xoshiro_base<xoshiro256_plus, 4>
+class xoshiro256_plus final : public detail::xoshiro_base<xoshiro256_plus, 4, double>
 {
 private:
 
-    using Base = detail::xoshiro_base<xoshiro256_plus, 4>;
+    using Base = detail::xoshiro_base<xoshiro256_plus, 4, double>;
 
 public:
 
     using Base::Base;
 
-    inline result_type next() noexcept
+    inline std::uint64_t next_int() noexcept
     {
         const std::uint64_t result = state_[0] + state_[3];
         const std::uint64_t t = state_[1] << 17;
@@ -93,12 +93,12 @@ public:
         return result;
     }
 
-    inline double next_double() noexcept
+    inline double next() noexcept
     {
         #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
-        return (next() >> 11) * 0x1.0p-53;
+        return static_cast<double>((next_int() >> 11)) * 0x1.0p-53;
         #else
-        return (next() >> 11) * 1.11022302462515654e-16;
+        return static_cast<double>((next_int() >> 11)) * 1.11022302462515654e-16;
         #endif
     }
 };
