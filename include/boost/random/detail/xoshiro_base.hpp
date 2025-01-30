@@ -180,8 +180,12 @@ public:
         seed(first, last);
     }
 
-    xoshiro_base(const xoshiro_base& other) = default;
-    xoshiro_base& operator=(const xoshiro_base& other) = default;
+    // Hit all of our rule of 5 to ensure old platforms work correctly
+    ~xoshiro_base() = default;
+    xoshiro_base(const xoshiro_base& other) noexcept { state_ = other.state(); }
+    xoshiro_base& operator=(const xoshiro_base& other) noexcept { state_ = other.state(); return *this; }
+    xoshiro_base(xoshiro_base&& other) noexcept { state_ = other.state(); }
+    xoshiro_base& operator=(xoshiro_base&& other) noexcept { state_ = other.state(); return *this; }
 
     virtual inline result_type next() noexcept = 0;
 
