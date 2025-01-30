@@ -204,7 +204,8 @@ public:
     }
 };
 
-/* This is xoshiro512** 1.0, one of our all-purpose, rock-solid generators
+/**
+ * This is xoshiro512** 1.0, one of our all-purpose, rock-solid generators
  * with increased state size. It has excellent (about 1ns) speed, a state
  * (512 bits) that is large enough for any parallel application, and it
  * passes all tests we are aware of.
@@ -249,7 +250,8 @@ public:
     }
 };
 
-/* This is xoshiro512+ 1.0, our generator for floating-point numbers with
+/**
+ * This is xoshiro512+ 1.0, our generator for floating-point numbers with
  * increased state size. We suggest to use its upper bits for
  * floating-point generation, as it is slightly faster than xoshiro512**.
  * It passes all tests we are aware of except for the lowest three bits,
@@ -325,7 +327,8 @@ public:
     }
 };
 
-/* This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
+/**
+ * This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
  * generators. It has excellent speed, a state size (128 bits) that is
  * large enough for mild parallelism, and it passes all tests we are aware
  * of.
@@ -348,6 +351,49 @@ public:
     inline result_type next() noexcept
     {
         const std::uint32_t result = boost::core::rotl(state_[0] + state_[3], 7) + state_[0];
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+};
+
+/**
+ * This is xoshiro128** 1.1, one of our 32-bit all-purpose, rock-solid
+ * generators. It has excellent speed, a state size (128 bits) that is
+ * large enough for mild parallelism, and it passes all tests we are aware
+ * of.
+ *
+ * Note that version 1.0 had mistakenly state_[0] instead of state_[1] as state
+ * word passed to the scrambler.
+ *
+ * For generating just single-precision (i.e., 32-bit) floating-point
+ * numbers, xoshiro128+ is even faster.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+class xoshiro128mm final : public detail::xoshiro_base<xoshiro128mm, 4, std::uint32_t, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128mm, 4, std::uint32_t, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline result_type next() noexcept
+    {
+        const std::uint32_t result = boost::core::rotl(state_[1] * 5, 7) * 9;
 
         const std::uint32_t t = state_[1] << 9;
 
