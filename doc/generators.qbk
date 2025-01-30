@@ -84,9 +84,9 @@ numbers mean faster random number generation.
   [[__ranlux24] [~10[sup 171]] [`24*sizeof(uint32_t)`] [[ranlux24_speed]] [-]]
   [[__ranlux48] [~10[sup 171]] [`12*sizeof(uint64_t)`] [[ranlux48_speed]] [-]]
   [[__splitmix64] [2[sup 64]] [`sizeof(uint64_t)`] [[splitmix64_speed]] [See: https://prng.di.unimi.it]]
-  [[__xoshiro256_plusplus] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256_plusplus_speed]] [[See: https://prng.di.unimi.it]]
-  [[__xoshiro256_plus] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256_plus_speed]] [[Can generate doubles with next_double() member function]]
-  [[__xoshiro256_starstar] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256_starstar_speed]] [[See: https://prng.di.unimi.it]]
+  [[__xoshiro256pp] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256pp_speed]] [[xoshiro256++ from https://prng.di.unimi.it]]
+  [[__xoshiro256d] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256d_speed]] [[This generator returns doubles instead of uint64_t. It is modified xoshiro256+ from https://prng.di.unimi.it]]
+  [[__xoshiro256mm] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256mm_speed]] [[xoshiro256** from https://prng.di.unimi.it]]
 ]
 
 As observable from the table, there is generally a quality/performance/memory

@@ -382,9 +382,9 @@ int main(int argc, char*argv[])
   run(iter, "counting", counting());
 
   run(iter, "splitmix64", boost::random::splitmix64());
-  run(iter, "xoshiro256_plusplus", boost::random::xoshiro256_plusplus());
-  run(iter, "xoshiro256_plus", boost::random::xoshiro256_plus());
-  run(iter, "xoshiro256_starstar", boost::random::xoshiro256_starstar());
+  run(iter, "xoshiro256pp", boost::random::xoshiro256pp());
+  run(iter, "xoshiro256d", boost::random::xoshiro256d());
+  run(iter, "xoshiro256mm", boost::random::xoshiro256mm());
 
 #ifdef HAVE_MT19937INT_C
   // requires the original mt19937int.c

@@ -28,11 +28,11 @@ namespace random {
  *
  * For generating just floating-point numbers, xoshiro256+ is even faster.
  */
-class xoshiro256_plusplus final : public detail::xoshiro_base<xoshiro256_plusplus, 4>
+class xoshiro256pp final : public detail::xoshiro_base<xoshiro256pp, 4>
 {
 private:
 
-    using Base = detail::xoshiro_base<xoshiro256_plusplus, 4>;
+    using Base = detail::xoshiro_base<xoshiro256pp, 4>;
 
 public:
 
@@ -66,11 +66,11 @@ public:
  * can be used to generate 64-bit outputs, too.
  */
 
-class xoshiro256_plus final : public detail::xoshiro_base<xoshiro256_plus, 4, double>
+class xoshiro256d final : public detail::xoshiro_base<xoshiro256d, 4, double>
 {
 private:
 
-    using Base = detail::xoshiro_base<xoshiro256_plus, 4, double>;
+    using Base = detail::xoshiro_base<xoshiro256d, 4, double>;
 
 public:
 
@@ -112,11 +112,11 @@ public:
  * For generating just floating-point numbers, xoshiro256+ is even faster.
  */
 
-class xoshiro256_starstar final : public detail::xoshiro_base<xoshiro256_starstar, 4>
+class xoshiro256mm final : public detail::xoshiro_base<xoshiro256mm, 4>
 {
 private:
 
-    using Base = detail::xoshiro_base<xoshiro256_starstar, 4>;
+    using Base = detail::xoshiro_base<xoshiro256mm, 4>;
 
 public:
 

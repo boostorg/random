@@ -120,7 +120,7 @@ void long_jump(void) {
 void test_no_seed()
 {
     // Default initialized to contain splitmix64 values
-    boost::random::xoshiro256_plus boost_rng;
+    boost::random::xoshiro256d boost_rng;
     for (int i {}; i < 10000; ++i)
     {
         boost_rng();
@@ -148,7 +148,7 @@ void test_no_seed()
 void test_basic_seed()
 {
     // Default initialized to contain splitmix64 values
-    boost::random::xoshiro256_plus boost_rng(42ULL);
+    boost::random::xoshiro256d boost_rng(42ULL);
     for (int i {}; i < 10000; ++i)
     {
         boost_rng();
@@ -176,7 +176,7 @@ void test_basic_seed()
 void test_jump()
 {
     // Default initialized to contain splitmix64 values
-    boost::random::xoshiro256_plus boost_rng;
+    boost::random::xoshiro256d boost_rng;
     for (int i {}; i < 10000; ++i)
     {
         boost_rng();
@@ -207,7 +207,7 @@ void test_jump()
 void test_long_jump()
 {
     // Default initialized to contain splitmix64 values
-    boost::random::xoshiro256_plus boost_rng;
+    boost::random::xoshiro256d boost_rng;
     for (int i {}; i < 10000; ++i)
     {
         boost_rng();
@@ -245,7 +245,7 @@ static inline double to_double(uint64_t x) {
 void test_double()
 {
     // Default initialized to contain splitmix64 values
-    boost::random::xoshiro256_plus boost_rng;
+    boost::random::xoshiro256d boost_rng;
     for (int i {}; i < 10000; ++i)
     {
         boost_rng();

@@ -1,4 +1,4 @@
-/* test_xoshiro256_plus.cpp
+/* test_xoshiro256d.cpp
  *
  * Copyright Steven Watanabe 2011
  * Copyright Matt Borland 2022
@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <cmath>
 
-#define BOOST_RANDOM_URNG boost::random::xoshiro256_plusplus
+#define BOOST_RANDOM_URNG boost::random::xoshiro256pp
 #define BOOST_RANDOM_CPP11_URNG
 
 // principal operation validated with CLHEP, values by experiment

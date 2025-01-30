@@ -65,12 +65,12 @@ run test_lagged_fibonacci23209.cpp /boost/test//boost_unit_test_framework ;
 run test_lagged_fibonacci44497.cpp /boost/test//boost_unit_test_framework ;
 run test_zero_seed.cpp /boost/test//boost_unit_test_framework ;
 run test_splitmix64.cpp /boost/test//boost_unit_test_framework ;
-run test_xoshiro256_plusplus.cpp /boost/test//boost_unit_test_framework ;
-run test_comp_xoshiro256_plusplus.cpp ;
-run test_xoshiro256_plus.cpp /boost/test//boost_unit_test_framework ;
-run test_comp_xoshiro256_plus.cpp ;
-run test_xoshiro256_starstar.cpp /boost/test//boost_unit_test_framework ;
-run test_comp_xoshiro256_starstar.cpp ;
+run test_xoshiro256pp.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro256pp.cpp ;
+run test_xoshiro256d.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro256d.cpp ;
+run test_xoshiro256mm.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro256mm.cpp ;
 
 run niederreiter_base2_validate.cpp /boost/test//boost_unit_test_framework ;
 run sobol_validate.cpp /boost/test//boost_unit_test_framework ;
