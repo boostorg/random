@@ -35,3 +35,7 @@
 [template ranlux64_3_01_speed[] 4%]
 [template ranlux64_4_01_speed[] 2%]
 [template mt19937ar_c_speed[] 97%]
+[template splitmix64_speed[] 155%]
+[template xoshiro256pp_speed[] 90%]
+[template xoshiro256d_speed[] 101%]
+[template xoshiro256mm_speed[] 82%]
