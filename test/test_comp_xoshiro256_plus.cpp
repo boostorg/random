@@ -117,11 +117,6 @@ void long_jump(void) {
     s[3] = s3;
 }
 
-static inline double to_double(uint64_t x) {
-    const union { uint64_t i; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
-    return u.d - 1.0;
-}
-
 void test_no_seed()
 {
     // Default initialized to contain splitmix64 values
@@ -240,6 +235,13 @@ void test_long_jump()
     }
 }
 
+#if !defined(_MSVC_LANG) || _MSVC_LANG >= 202002L
+
+static inline double to_double(uint64_t x) {
+    const union { uint64_t i; double d; } u = { .i = UINT64_C(0x3FF) << 52 | x >> 12 };
+    return u.d - 1.0;
+}
+
 void test_double()
 {
     // Default initialized to contain splitmix64 values
@@ -273,13 +275,18 @@ void test_double()
     BOOST_TEST(std::fabs(boost_double - ref_double) < std::numeric_limits<double>::epsilon());
 }
 
+#endif
+
 int main()
 {
     test_no_seed();
     test_basic_seed();
     test_jump();
     test_long_jump();
+
+    #if !defined(_MSVC_LANG) || _MSVC_LANG >= 202002L
     test_double();
+    #endif
 
     return boost::report_errors();
 }
