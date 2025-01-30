@@ -38,9 +38,11 @@ class xoshiro_base
 {
 protected:
 
-    using xoshiro_type = std::integral_constant<std::size_t, N>;
-
     std::array<std::uint64_t, N> state_;
+
+private:
+
+    using xoshiro_type = std::integral_constant<std::size_t, N>;
 
     inline std::uint64_t concatenate(std::uint32_t word1, std::uint32_t word2) noexcept
     {
@@ -165,7 +167,55 @@ protected:
 
         state_ = t;
     }
-    
+
+    inline void jump_impl(const std::integral_constant<std::size_t, 2>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 2> jump = {{ UINT64_C(0x2bd7a6a6e99c2ddc), UINT64_C(0x0992ccaf6a6fca05) }};
+
+        uint64_t s0 = 0;
+        uint64_t s1 = 0;
+        for (std::size_t i = 0; i < jump.size(); i++)
+        {
+            for (std::size_t b = 0; b < 64U; b++)
+            {
+                if (jump[i] & UINT64_C(1) << b)
+                {
+                    s0 ^= state_[0];
+                    s1 ^= state_[1];
+                }
+
+                next();
+            }
+        }
+
+        state_[0] = s0;
+        state_[1] = s1;
+    }
+
+    inline void long_jump_impl(const std::integral_constant<std::size_t, 2>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 2> long_jump = {{ UINT64_C(0x360fd5f2cf8d5d99), UINT64_C(0x9c6e6877736c46e3) }};
+
+        uint64_t s0 = 0;
+        uint64_t s1 = 0;
+        for (std::size_t i = 0; i < long_jump.size(); i++)
+        {
+            for (std::size_t b = 0; b < 64U; b++)
+            {
+                if (long_jump[i] & UINT64_C(1) << b)
+                {
+                    s0 ^= state_[0];
+                    s1 ^= state_[1];
+                }
+
+                next();
+            }
+        }
+
+        state_[0] = s0;
+        state_[1] = s1;
+    }
+
 public:
 
     using result_type = OutputType;
@@ -184,7 +234,7 @@ public:
     }
 
     /** Seeds the generator with a user provided seed. */
-    void seed(const std::uint64_t value)
+    void seed(const seed_type value)
     {
         splitmix64 gen(value);
         for (auto& i : state_)
@@ -196,7 +246,7 @@ public:
     /**
      * Seeds the generator with 32-bit values produced by @c seq.generate().
      */
-    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
+    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, seed_type>::value, bool>::type = true>
     void seed(Sseq& seq)
     {
         for (auto& i : state_)
@@ -218,7 +268,7 @@ public:
         std::size_t offset = 0;
         while (first != last && offset < state_.size())
         {
-            state_[offset++] = static_cast<std::uint64_t>(*first++);
+            state_[offset++] = static_cast<seed_type>(*first++);
         }
 
         if (offset != state_.size())
