@@ -410,6 +410,77 @@ public:
     }
 };
 
+/**
+ * This is xoshiro128+ 1.0, our best and fastest 32-bit generator for 32-bit
+ * floating-point numbers. We suggest to use its upper bits for
+ * floating-point generation, as it is slightly faster than xoshiro128**.
+ * It passes all tests we are aware of except for
+ * linearity tests, as the lowest four bits have low linear complexity, so
+ * if low linear complexity is not considered an issue (as it is usually
+ * the case) it can be used to generate 32-bit outputs, too.
+ *
+ * We suggest to use a sign test to extract a random Boolean value, and
+ * right shifts to extract subsets of bits.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+
+class xoshiro128f final : public detail::xoshiro_base<xoshiro128f, 4, float, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128f, 4, float, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline std::uint32_t next_int() noexcept
+    {
+        const std::uint32_t result = state_[0] + state_[3];
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+
+    inline result_type next() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((next_int() >> 8)) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((next_int() >> 8)) * 5.9604645e-08f;
+        #endif
+    }
+
+    static constexpr result_type (min)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((std::numeric_limits<std::uint32_t>::min)() >> 8) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((std::numeric_limits<std::uint64_t>::min)() >> 8) * 5.9604645e-08f;
+        #endif
+    }
+
+    static constexpr result_type (max)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((std::numeric_limits<std::uint32_t>::max)() >> 8) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((std::numeric_limits<std::uint64_t>::max)() >> 8) * 5.9604645e-08f;
+        #endif
+    }
+};
+
 } // namespace random
 } // namespace boost
 
