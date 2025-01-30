@@ -71,6 +71,12 @@ run test_xoshiro256d.cpp /boost/test//boost_unit_test_framework ;
 run test_comp_xoshiro256d.cpp ;
 run test_xoshiro256mm.cpp /boost/test//boost_unit_test_framework ;
 run test_comp_xoshiro256mm.cpp ;
+run test_xoshiro512pp.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro512pp.cpp ;
+run test_xoshiro512mm.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro512mm.cpp ;
+run test_xoshiro512d.cpp /boost/test//boost_unit_test_framework ;
+run test_comp_xoshiro512d.cpp ;
 
 run niederreiter_base2_validate.cpp /boost/test//boost_unit_test_framework ;
 run sobol_validate.cpp /boost/test//boost_unit_test_framework ;

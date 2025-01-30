@@ -385,6 +385,9 @@ int main(int argc, char*argv[])
   run(iter, "xoshiro256pp", boost::random::xoshiro256pp());
   run(iter, "xoshiro256d", boost::random::xoshiro256d());
   run(iter, "xoshiro256mm", boost::random::xoshiro256mm());
+  run(iter, "xoshiro512pp", boost::random::xoshiro512pp());
+  run(iter, "xoshiro512d", boost::random::xoshiro512d());
+  run(iter, "xoshiro512mm", boost::random::xoshiro512mm());
 
 #ifdef HAVE_MT19937INT_C
   // requires the original mt19937int.c

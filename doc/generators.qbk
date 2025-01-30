@@ -87,6 +87,9 @@ numbers mean faster random number generation.
   [[__xoshiro256pp] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256pp_speed]] [[xoshiro256++ from https://prng.di.unimi.it]]
   [[__xoshiro256d] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256d_speed]] [[This generator returns doubles instead of uint64_t. It is modified xoshiro256+ from https://prng.di.unimi.it]]
   [[__xoshiro256mm] [2[sup 256] [`4*sizeof(uint64_t)`] [[xoshiro256mm_speed]] [[xoshiro256** from https://prng.di.unimi.it]]
+  [[__xoshiro512pp] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512pp_speed]] [[xoshiro512++ from https://prng.di.unimi.it]]
+  [[__xoshiro512d] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512d_speed]] [[This generator returns doubles instead of uint64_t. It is modified xoshiro512+ from https://prng.di.unimi.it]]
+  [[__xoshiro512mm] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512mm_speed]] [[xoshiro512** from https://prng.di.unimi.it]]
 ]
 
 As observable from the table, there is generally a quality/performance/memory
@@ -98,8 +101,8 @@ generators for a given application of Monte Carlo simulation will improve
 the confidence in the results.
 
 If the names of the generators don't ring any bell and you have no idea
-which generator to use, it is reasonable to employ __mt19937 for a start: It
-is fast and has acceptable quality.
+which generator to use, it is reasonable to employ __xoshiro256pp for a start: It
+is fast and of high quality.
 
 [note These random number generators are not intended for use in applications
 where non-deterministic random numbers are required. See __random_device
