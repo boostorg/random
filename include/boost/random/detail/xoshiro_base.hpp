@@ -79,6 +79,34 @@ protected:
         state_[3] = s3;
     }
 
+    inline void jump_impl(const std::integral_constant<std::size_t, 8>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 8U> jump = {{ UINT64_C(0x33ed89b6e7a353f9), UINT64_C(0x760083d7955323be),
+                                                          UINT64_C(0x2837f2fbb5f22fae), UINT64_C(0x4b8c5674d309511c),
+                                                          UINT64_C(0xb11ac47a7ba28c25), UINT64_C(0xf1be7667092bcc1c),
+                                                          UINT64_C(0x53851efdb6df0aaf), UINT64_C(0x1ebbc8b23eaf25db) }};
+
+        std::array<std::uint64_t, 8U> t = {{ 0, 0, 0, 0, 0, 0, 0, 0 }};
+
+        for (std::size_t i = 0; i < jump.size(); ++i)
+        {
+            for (std::size_t b = 0; b < 64U; ++b)
+            {
+                if (jump[i] & UINT64_C(1) << b)
+                {
+                    for (std::size_t w = 0; w < state_.size(); ++w)
+                    {
+                        t[w] ^= state_[w];
+                    }
+                }
+
+                next();
+            }
+        }
+
+        state_ = t;
+    }
+
     inline void long_jump_impl(const std::integral_constant<std::size_t, 4>&) noexcept
     {
         constexpr std::array<std::uint64_t, 4> long_jump = {{ UINT64_C(0x76e15d3efefdcbbf), UINT64_C(0xc5004e441c522fb3),
@@ -109,6 +137,34 @@ protected:
         state_[1] = s1;
         state_[2] = s2;
         state_[3] = s3;
+    }
+
+    inline void long_jump_impl(const std::integral_constant<std::size_t, 8>&) noexcept
+    {
+        constexpr std::array<std::uint64_t, 8U> long_jump = {{ UINT64_C(0x11467fef8f921d28), UINT64_C(0xa2a819f2e79c8ea8),
+                                                               UINT64_C(0xa8299fc284b3959a), UINT64_C(0xb4d347340ca63ee1),
+                                                               UINT64_C(0x1cb0940bedbff6ce), UINT64_C(0xd956c5c4fa1f8e17),
+                                                               UINT64_C(0x915e38fd4eda93bc), UINT64_C(0x5b3ccdfa5d7daca5) }};
+
+        std::array<std::uint64_t, 8U> t = {{ 0, 0, 0, 0, 0, 0, 0, 0 }};
+
+        for (std::size_t i = 0; i < long_jump.size(); ++i)
+        {
+            for (std::size_t b = 0; b < 64U; ++b)
+            {
+                if (long_jump[i] & UINT64_C(1) << b)
+                {
+                    for (std::size_t w = 0; w < state_.size(); ++w)
+                    {
+                        t[w] ^= state_[w];
+                    }
+                }
+
+                next();
+            }
+        }
+
+        state_ = t;
     }
     
 public:
