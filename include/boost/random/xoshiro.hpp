@@ -186,6 +186,51 @@ public:
     }
 };
 
+/* This is xoshiro512** 1.0, one of our all-purpose, rock-solid generators
+ * with increased state size. It has excellent (about 1ns) speed, a state
+ * (512 bits) that is large enough for any parallel application, and it
+ * passes all tests we are aware of.
+ *
+ * For generating just floating-point numbers, xoshiro512+ is even faster.
+ *
+ * The state must be seeded so that it is not everywhere zero. If you have
+ * a 64-bit seed, we suggest to seed a splitmix64 generator and use its
+ *  output to fill s.
+ */
+
+class xoshiro512mm final : public detail::xoshiro_base<xoshiro512mm, 8>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro512mm, 8>;
+
+public:
+
+    using Base::Base;
+
+    inline result_type next() noexcept
+    {
+        const std::uint64_t result = boost::core::rotl(state_[1] * 5, 7) * 9;
+
+        const std::uint64_t t = state_[1] << 11;
+
+        state_[2] ^= state_[0];
+        state_[5] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[7] ^= state_[3];
+        state_[3] ^= state_[4];
+        state_[4] ^= state_[5];
+        state_[0] ^= state_[6];
+        state_[6] ^= state_[7];
+
+        state_[6] ^= t;
+
+        state_[7] = boost::core::rotl(state_[7], 21);
+
+        return result;
+    }
+};
+
 } // namespace random
 } // namespace boost
 

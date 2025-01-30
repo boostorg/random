@@ -27,7 +27,6 @@
 #include <istream>
 #include <type_traits>
 #include <iterator>
-#include <iostream>
 
 namespace boost {
 namespace random {
