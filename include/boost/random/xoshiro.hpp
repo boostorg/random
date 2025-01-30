@@ -36,8 +36,12 @@ public:
 
     // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
     // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_plusplus(const xoshiro256_plusplus& other) noexcept { state_ = other.state(); }
-    xoshiro256_plusplus& operator=(const xoshiro256_plusplus& other) noexcept { state_ = other.state(); return *this; }
+    xoshiro256_plusplus() noexcept { seed(); }
+    ~xoshiro256_plusplus() = default;
+    xoshiro256_plusplus(const xoshiro256_plusplus& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_plusplus& operator=(const xoshiro256_plusplus& other) noexcept { this->state_ = other.state(); return *this; }
+    xoshiro256_plusplus(xoshiro256_plusplus&& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_plusplus& operator=(xoshiro256_plusplus&& other) noexcept { this->state_ = other.state(); return *this; }
 
     inline result_type next() noexcept override
     {
@@ -75,8 +79,12 @@ public:
 
     // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
     // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_plus(const xoshiro256_plus& other) noexcept { state_ = other.state(); }
-    xoshiro256_plus& operator=(const xoshiro256_plus& other) noexcept { state_ = other.state(); return *this; }
+    xoshiro256_plus() noexcept { seed(); }
+    ~xoshiro256_plus() = default;
+    xoshiro256_plus(const xoshiro256_plus& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_plus& operator=(const xoshiro256_plus& other) noexcept { this->state_ = other.state(); return *this; }
+    xoshiro256_plus(xoshiro256_plus&& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_plus& operator=(xoshiro256_plus&& other) noexcept { this->state_ = other.state(); return *this; }
 
     inline result_type next() noexcept override
     {
@@ -118,12 +126,16 @@ class xoshiro256_starstar final : public detail::xoshiro_base<4>
 {
 public:
 
+    using detail::xoshiro_base<4>::xoshiro_base;
+
     // Clang < 4, GCC < 7, and all MSVCs have a hard time with this,
     // so we make the copy constructor explicit even though we shouldn't have to
-    xoshiro256_starstar(const xoshiro256_starstar& other) noexcept { state_ = other.state(); }
-    xoshiro256_starstar& operator=(const xoshiro256_starstar& other) noexcept { state_ = other.state(); return *this; }
-
-    using detail::xoshiro_base<4>::xoshiro_base;
+    xoshiro256_starstar() noexcept { seed(); }
+    ~xoshiro256_starstar() = default;
+    xoshiro256_starstar(const xoshiro256_starstar& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_starstar& operator=(const xoshiro256_starstar& other) noexcept { this->state_ = other.state(); return *this; }
+    xoshiro256_starstar(xoshiro256_starstar&& other) noexcept { this->state_ = other.state(); }
+    xoshiro256_starstar& operator=(xoshiro256_starstar&& other) noexcept { this->state_ = other.state(); return *this; }
 
     inline result_type next() noexcept override
     {
