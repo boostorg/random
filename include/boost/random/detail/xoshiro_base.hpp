@@ -280,9 +280,11 @@ public:
     template <typename FIter>
     inline void generate(FIter first, FIter last) noexcept
     {
+        using iter_type = std::iterator_traits<FIter>::value_type;
+
         while (first != last)
         {
-            *first++ = next();
+            *first++ = static_cast<iter_type>(next());
         }
     }
 
