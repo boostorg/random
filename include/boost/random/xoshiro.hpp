@@ -93,12 +93,30 @@ public:
         return result;
     }
 
-    inline double next() noexcept
+    inline result_type next() noexcept
     {
         #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
         return static_cast<double>((next_int() >> 11)) * 0x1.0p-53;
         #else
         return static_cast<double>((next_int() >> 11)) * 1.11022302462515654e-16;
+        #endif
+    }
+
+    static constexpr result_type (min)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 0x1.0p-53;
+        #else
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 1.11022302462515654e-16;
+        #endif
+    }
+
+    static constexpr result_type (max)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 0x1.0p-53;
+        #else
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 1.11022302462515654e-16;
         #endif
     }
 };
