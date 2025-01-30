@@ -42,3 +42,6 @@
 [template xoshiro512pp_speed[] 133%]
 [template xoshiro512d_speed[] 144%]
 [template xoshiro512mm_speed[] 113%]
+[template xoshiro128pp_speed[] 133%]
+[template xoshiro128f_speed[] 145%]
+[template xoshiro128mm_speed[] 116%]

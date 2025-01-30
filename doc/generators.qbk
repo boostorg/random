@@ -90,6 +90,10 @@ numbers mean faster random number generation.
   [[__xoshiro512pp] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512pp_speed]] [[xoshiro512++ from https://prng.di.unimi.it]]
   [[__xoshiro512d] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512d_speed]] [[This generator returns doubles instead of uint64_t. It is modified xoshiro512+ from https://prng.di.unimi.it]]
   [[__xoshiro512mm] [2[sup 512] [`8*sizeof(uint64_t)`] [[xoshiro512mm_speed]] [[xoshiro512** from https://prng.di.unimi.it]]
+  [[__xoshiro128pp] [2[sup 128] [`4*sizeof(uint32_t)`] [[xoshiro128pp_speed]] [[xoshiro128++ from https://prng.di.unimi.it. Returns uint32_t]]
+  [[__xoshiro128d] [2[sup 128] [`4*sizeof(uint32_t)`] [[xoshiro128d_speed]] [[This generator returns float instead of uint32_t. It is modified xoshiro128+ from https://prng.di.unimi.it]]
+  [[__xoshiro128mm] [2[sup 128] [`4*sizeof(uint32_t)`] [[xoshiro128mm_speed]] [[xoshiro128** from https://prng.di.unimi.it. Returns uint32_t]]
+
 ]
 
 As observable from the table, there is generally a quality/performance/memory
@@ -103,6 +107,10 @@ the confidence in the results.
 If the names of the generators don't ring any bell and you have no idea
 which generator to use, it is reasonable to employ __xoshiro256pp for a start: It
 is fast and of high quality.
+
+If you need a 32-bit return instead of 64-bit prefer __xoshiro128pp.
+
+If you need either double or float as the return type prefer __xoshiro256d or __xoshiro128f respectively.
 
 [note These random number generators are not intended for use in applications
 where non-deterministic random numbers are required. See __random_device
