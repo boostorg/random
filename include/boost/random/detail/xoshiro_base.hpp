@@ -459,7 +459,7 @@ public:
         return (std::numeric_limits<result_type>::min)();
     }
 
-    inline std::array<std::uint64_t, N> state() const noexcept
+    inline std::array<BlockType, N> state() const noexcept
     {
         return state_;
     }

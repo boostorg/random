@@ -325,6 +325,45 @@ public:
     }
 };
 
+/* This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
+ * generators. It has excellent speed, a state size (128 bits) that is
+ * large enough for mild parallelism, and it passes all tests we are aware
+ * of.
+ *
+ * For generating just single-precision (i.e., 32-bit) floating-point
+ * numbers, xoshiro128+ is even faster.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+class xoshiro128pp final : public detail::xoshiro_base<xoshiro128pp, 4, std::uint32_t, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128pp, 4, std::uint32_t, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline result_type next() noexcept
+    {
+        const std::uint32_t result = boost::core::rotl(state_[0] + state_[3], 7) + state_[0];
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+};
+
 } // namespace random
 } // namespace boost
 
