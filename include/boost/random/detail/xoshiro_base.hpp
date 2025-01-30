@@ -128,7 +128,7 @@ public:
     }
 
     /** Seeds the generator with a user provided seed. */
-    BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(xoshiro_base, std::uint64_t, value)
+    void seed(const std::uint64_t value)
     {
         splitmix64 gen(value);
         for (auto& i : state_)
@@ -140,7 +140,8 @@ public:
     /**
      * Seeds the generator with 32-bit values produced by @c seq.generate().
      */
-    BOOST_RANDOM_DETAIL_SEED_SEQ_SEED(xoshiro_base, SeedSeq, seq)
+    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, std::uint64_t>::value, bool>::type = true>
+    void seed(Sseq& seq)
     {
         for (auto& i : state_)
         {
@@ -173,10 +174,13 @@ public:
     /**
      * Constructs a @c xoshiro and calls @c seed().
      */
-     xoshiro_base() { seed(); }
+    xoshiro_base() { seed(); }
 
     /** Seeds the generator with a user provided seed. */
-    BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(xoshiro_base, std::uint64_t, value) { seed(value); }
+    explicit xoshiro_base(const std::uint64_t value)
+    {
+        seed(value);
+    }
 
     template <typename FIter>
     xoshiro_base(FIter& first, FIter last) { seed(first, last); }
@@ -189,7 +193,11 @@ public:
      * the templated constructor.
      * @endxmlnote
      */
-    BOOST_RANDOM_DETAIL_SEED_SEQ_CONSTRUCTOR(xoshiro_base, SeedSeq, seq) { seed(seq); }
+    template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, xoshiro_base>::value, bool>::type = true>
+    explicit xoshiro_base(Sseq& seq)
+    {
+        seed(seq);
+    }
 
     // Hit all of our rule of 5 explicitly to ensure old platforms work correctly
     ~xoshiro_base() = default;
