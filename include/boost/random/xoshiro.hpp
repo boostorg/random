@@ -12,6 +12,7 @@
 #ifndef BOOST_RANDOM_XOSHIRO_HPP
 #define BOOST_RANDOM_XOSHIRO_HPP
 
+#include <boost/random/detail/config.hpp>
 #include <boost/random/detail/xoshiro_base.hpp>
 #include <boost/core/bit.hpp>
 #include <array>
@@ -95,7 +96,7 @@ public:
 
     inline result_type next() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((next_int() >> 11)) * 0x1.0p-53;
         #else
         return static_cast<double>((next_int() >> 11)) * 1.11022302462515654e-16;
@@ -104,7 +105,7 @@ public:
 
     static constexpr result_type (min)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 0x1.0p-53;
         #else
         return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 1.11022302462515654e-16;
@@ -113,7 +114,7 @@ public:
 
     static constexpr result_type (max)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 0x1.0p-53;
         #else
         return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 1.11022302462515654e-16;
@@ -301,7 +302,7 @@ public:
 
     inline result_type next() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((next_int() >> 11)) * 0x1.0p-53;
         #else
         return static_cast<double>((next_int() >> 11)) * 1.11022302462515654e-16;
@@ -310,7 +311,7 @@ public:
 
     static constexpr result_type (min)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 0x1.0p-53;
         #else
         return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 1.11022302462515654e-16;
@@ -319,7 +320,7 @@ public:
 
     static constexpr result_type (max)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<double>((std::numeric_limits<std::uint64_t>::max)() >> 11) * 0x1.0p-53;
         #else
         return static_cast<double>((std::numeric_limits<std::uint64_t>::max)() >> 11) * 1.11022302462515654e-16;
@@ -455,7 +456,7 @@ public:
 
     inline result_type next() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<float>((next_int() >> 8)) * 0x1.0p-24f;
         #else
         return static_cast<float>((next_int() >> 8)) * 5.9604645e-08f;
@@ -464,7 +465,7 @@ public:
 
     static constexpr result_type (min)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<float>((std::numeric_limits<std::uint32_t>::min)() >> 8) * 0x1.0p-24f;
         #else
         return static_cast<float>((std::numeric_limits<std::uint64_t>::min)() >> 8) * 5.9604645e-08f;
@@ -473,7 +474,7 @@ public:
 
     static constexpr result_type (max)() noexcept
     {
-        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        #ifdef BOOST_RANDOM_HAS_HEX_FLOAT
         return static_cast<float>((std::numeric_limits<std::uint32_t>::max)() >> 8) * 0x1.0p-24f;
         #else
         return static_cast<float>((std::numeric_limits<std::uint64_t>::max)() >> 8) * 5.9604645e-08f;
