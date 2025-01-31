@@ -69,6 +69,8 @@ doxygen_files =
     weibull_distribution
     xor_combine
     traits
+    splitmix64
+    xoshiro
 ;
 
 path-constant here : . ;

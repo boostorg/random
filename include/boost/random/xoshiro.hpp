@@ -105,9 +105,9 @@ public:
     static constexpr result_type (min)() noexcept
     {
         #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 0x1.0p-53;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 0x1.0p-53;
         #else
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 1.11022302462515654e-16;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 1.11022302462515654e-16;
         #endif
     }
 
@@ -204,7 +204,8 @@ public:
     }
 };
 
-/* This is xoshiro512** 1.0, one of our all-purpose, rock-solid generators
+/**
+ * This is xoshiro512** 1.0, one of our all-purpose, rock-solid generators
  * with increased state size. It has excellent (about 1ns) speed, a state
  * (512 bits) that is large enough for any parallel application, and it
  * passes all tests we are aware of.
@@ -249,7 +250,8 @@ public:
     }
 };
 
-/* This is xoshiro512+ 1.0, our generator for floating-point numbers with
+/**
+ * This is xoshiro512+ 1.0, our generator for floating-point numbers with
  * increased state size. We suggest to use its upper bits for
  * floating-point generation, as it is slightly faster than xoshiro512**.
  * It passes all tests we are aware of except for the lowest three bits,
@@ -309,18 +311,172 @@ public:
     static constexpr result_type (min)() noexcept
     {
         #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 0x1.0p-53;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 0x1.0p-53;
         #else
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)()) * 1.11022302462515654e-16;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::min)() >> 11) * 1.11022302462515654e-16;
         #endif
     }
 
     static constexpr result_type (max)() noexcept
     {
         #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 0x1.0p-53;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)() >> 11) * 0x1.0p-53;
         #else
-        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)()) * 1.11022302462515654e-16;
+        return static_cast<double>((std::numeric_limits<std::uint64_t>::max)() >> 11) * 1.11022302462515654e-16;
+        #endif
+    }
+};
+
+/**
+ * This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
+ * generators. It has excellent speed, a state size (128 bits) that is
+ * large enough for mild parallelism, and it passes all tests we are aware
+ * of.
+ *
+ * For generating just single-precision (i.e., 32-bit) floating-point
+ * numbers, xoshiro128+ is even faster.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+class xoshiro128pp final : public detail::xoshiro_base<xoshiro128pp, 4, std::uint32_t, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128pp, 4, std::uint32_t, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline result_type next() noexcept
+    {
+        const std::uint32_t result = boost::core::rotl(state_[0] + state_[3], 7) + state_[0];
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+};
+
+/**
+ * This is xoshiro128** 1.1, one of our 32-bit all-purpose, rock-solid
+ * generators. It has excellent speed, a state size (128 bits) that is
+ * large enough for mild parallelism, and it passes all tests we are aware
+ * of.
+ *
+ * Note that version 1.0 had mistakenly state_[0] instead of state_[1] as state
+ * word passed to the scrambler.
+ *
+ * For generating just single-precision (i.e., 32-bit) floating-point
+ * numbers, xoshiro128+ is even faster.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+class xoshiro128mm final : public detail::xoshiro_base<xoshiro128mm, 4, std::uint32_t, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128mm, 4, std::uint32_t, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline result_type next() noexcept
+    {
+        const std::uint32_t result = boost::core::rotl(state_[1] * 5, 7) * 9;
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+};
+
+/**
+ * This is xoshiro128+ 1.0, our best and fastest 32-bit generator for 32-bit
+ * floating-point numbers. We suggest to use its upper bits for
+ * floating-point generation, as it is slightly faster than xoshiro128**.
+ * It passes all tests we are aware of except for
+ * linearity tests, as the lowest four bits have low linear complexity, so
+ * if low linear complexity is not considered an issue (as it is usually
+ * the case) it can be used to generate 32-bit outputs, too.
+ *
+ * We suggest to use a sign test to extract a random Boolean value, and
+ * right shifts to extract subsets of bits.
+ *
+ * The state must be seeded so that it is not everywhere zero.
+ */
+
+class xoshiro128f final : public detail::xoshiro_base<xoshiro128f, 4, float, std::uint32_t>
+{
+private:
+
+    using Base = detail::xoshiro_base<xoshiro128f, 4, float, std::uint32_t>;
+
+public:
+
+    using Base::Base;
+
+    inline std::uint32_t next_int() noexcept
+    {
+        const std::uint32_t result = state_[0] + state_[3];
+
+        const std::uint32_t t = state_[1] << 9;
+
+        state_[2] ^= state_[0];
+        state_[3] ^= state_[1];
+        state_[1] ^= state_[2];
+        state_[0] ^= state_[3];
+
+        state_[2] ^= t;
+
+        state_[3] = boost::core::rotl(state_[3], 11);
+
+        return result;
+    }
+
+    inline result_type next() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((next_int() >> 8)) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((next_int() >> 8)) * 5.9604645e-08f;
+        #endif
+    }
+
+    static constexpr result_type (min)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((std::numeric_limits<std::uint32_t>::min)() >> 8) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((std::numeric_limits<std::uint64_t>::min)() >> 8) * 5.9604645e-08f;
+        #endif
+    }
+
+    static constexpr result_type (max)() noexcept
+    {
+        #if (__cplusplus >= 201703L || _MSVC_LANG >= 201703L) && defined(__cpp_hex_float) && __cpp_hex_float >= 201603L
+        return static_cast<float>((std::numeric_limits<std::uint32_t>::max)() >> 8) * 0x1.0p-24f;
+        #else
+        return static_cast<float>((std::numeric_limits<std::uint64_t>::max)() >> 8) * 5.9604645e-08f;
         #endif
     }
 };
