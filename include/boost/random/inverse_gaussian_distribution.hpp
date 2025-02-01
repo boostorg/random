@@ -132,12 +132,12 @@ public:
 		using std::sqrt;
 #endif
 		RealType y = _alpha * chi_squared_distribution<RealType>(RealType(1.0))(urng);
-		RealType cand_fac = result_type(1) + y - sqrt(result_type(2) * y + y * y);
+		RealType cand = _alpha + _alpha * (y - sqrt(y * (result_type(4) * _beta + y))) / (result_type(2) * _beta);
 		RealType u = uniform_01<RealType>()(urng);
-		if (u <= 1 / (1 + cand_fac)) {
-			return _alpha * cand_fac;
+		if (u < _alpha / (_alpha + cand)) {
+			return cand;
 		}
-    return _alpha * cand_fac;
+    return _alpha * _alpha / cand;
   }
 
 	/**
