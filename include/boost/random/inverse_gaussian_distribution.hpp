@@ -213,6 +213,9 @@ private:
 };
 
 } // namespace random
+
+using random::inverse_gaussian_distribution;
+
 } // namespace boost
 
 #endif // BOOST_RANDOM_INVERSE_GAUSSIAN_DISTRIBUTION_HPP
