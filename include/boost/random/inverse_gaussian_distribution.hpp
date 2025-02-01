@@ -59,7 +59,7 @@ public:
      *
      * Requires: alpha > 0 && beta > 0
 		 */
-		explcit param_type(RealType alpha_arg = RealType(1.0),
+		explicit param_type(RealType alpha_arg = RealType(1.0),
 											 RealType beta_arg = RealType(1.0))
 			: _alpha(alpha_arg), _beta(beta_arg)
 		{
