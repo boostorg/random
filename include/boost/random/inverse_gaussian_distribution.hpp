@@ -16,6 +16,7 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <istream>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/limits.hpp>
 #include <boost/random/detail/config.hpp>
@@ -115,11 +116,14 @@ public:
 	{
 		BOOST_ASSERT(alpha_arg > 0);
 		BOOST_ASSERT(beta_arg > 0);
+		init();
 	}
 	/** Constructs an @c inverse_gaussian_distribution from its parameters. */
 	explicit inverse_gaussian_distribution(const param_type& parm)
 		: _alpha(parm.alpha()), _beta(parm.beta())
-	{}
+	{
+		init();
+	}
 
 	/**
    * Returns a random variate distributed according to the
@@ -131,8 +135,8 @@ public:
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sqrt;
 #endif
-		RealType y = _alpha * chi_squared_distribution<RealType>(RealType(1.0))(urng);
-		RealType cand = _alpha + _alpha * (y - sqrt(y * (result_type(4) * _beta + y))) / (result_type(2) * _beta);
+		RealType w = _alpha * chi_squared_distribution<RealType>(result_type(1))(urng);
+		RealType cand = _alpha + _c * (w - sqrt(w * (result_type(4) * _beta + w)));
 		RealType u = uniform_01<RealType>()(urng);
 		if (u < _alpha / (_alpha + cand)) {
 			return cand;
@@ -169,6 +173,7 @@ public:
   {
     _alpha = parm.alpha();
     _beta = parm.beta();
+		init();
   }
 
 	/**
@@ -210,6 +215,16 @@ public:
 private:
 	result_type _alpha;
 	result_type _beta;
+	// some data precomputed from the parameters
+	result_type _c;
+
+	void init()
+  {
+#ifndef BOOST_NO_STDC_NAMESPACE
+    using std::exp;
+#endif
+		_c = _alpha / (result_type(2) * _beta);
+  }
 };
 
 } // namespace random
