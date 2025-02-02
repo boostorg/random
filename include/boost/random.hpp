@@ -89,6 +89,7 @@
 #include <boost/random/uniform_smallint.hpp>
 #include <boost/random/weibull_distribution.hpp>
 #include <boost/random/inverse_gaussian_distribution.hpp>
+#include <boost/random/generalized_inverse_gaussian_distribution.hpp>
 
 #include <boost/random/generate_canonical.hpp>
 
