@@ -159,6 +159,7 @@ public:
 		using std::sqrt;
 		using std::log;
 		using std::min;
+		using std::exp;
 #endif
 		RealType abs_p = abs(_p);
 		RealType omega = sqrt(_a * _b); // two-parameter representation (p, omega)
@@ -277,23 +278,25 @@ public:
   BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(generalized_inverse_gaussian_distribution)
 
 private:
-#ifndef BOOST_NO_STDC_NAMESPACE
-	using std::cosh;
-	using std::sinh;
-	using std::exp;
-#endif
-
   RealType _p;
   RealType _a;
 	RealType _b;
 
 	static result_type psi(const RealType& x, const RealType& p_arg, RealType alpha_arg)
 	{
+#ifndef BOOST_NO_STDC_NAMESPACE
+		using std::sinh;
+		using std::exp;
+#endif
 		return -alpha_arg * (cosh(x) - result_type(1)) - p_arg * (exp(x) - x - result_type(1));
 	}
 
 	static result_type psi_deriv(const RealType& x, const RealType& p_arg, RealType alpha_arg)
 	{
+#ifndef BOOST_NO_STDC_NAMESPACE
+		using std::sinh;
+		using std::exp;
+#endif
 		return -alpha_arg * sinh(x) - p_arg * (exp(x) - result_type(1));
 	}
 
@@ -302,6 +305,9 @@ private:
 												 const RealType& s_deriv, const RealType& t_deriv,
 												 const RealType& eta, const RealType& zeta, const RealType& theta, const RealType& xi)
 	{
+#ifndef BOOST_NO_STDC_NAMESPACE
+		using std::exp;
+#endif
 		if (x >= -s_deriv && x <= t_deriv) {
 			return result_type(1);
 		} else if (x > t_deriv) {
