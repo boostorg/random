@@ -16,6 +16,7 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <istream>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/limits.hpp>
 #include <boost/random/detail/config.hpp>
@@ -156,9 +157,6 @@ public:
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::abs;
 		using std::sqrt;
-		using std::cosh;
-		using std::sinh;
-		using std::exp;
 		using std::log;
 		using std::min;
 #endif
@@ -166,20 +164,20 @@ public:
 		RealType omega = sqrt(_a * _b); // two-parameter representation (p, omega)
 		RealType alpha = sqrt(omega * omega + abs_p * abs_p) - abs_p;
 		RealType t, s, t_deriv, s_deriv, eta, zeta, theta, xi, u, v, w, p, q, r, cand;
-		RealType log_concave = psi(result_type(1), abs_p, alpha);
-		if (-log_concave >= result_type(.5) && -log_concave <= result_type(2)) {
+		RealType log_concave = -psi(result_type(1), abs_p, alpha);
+		if (log_concave >= result_type(.5) && log_concave <= result_type(2)) {
 			t = result_type(1);
-		} else if (-log_concave > result_type(2)) {
-			t = sqrt(2 / (alpha + abs_p));
-		} else if (-log_concave < result_type(.5)) {
+		} else if (log_concave > result_type(2)) {
+			t = sqrt(result_type(2) / (alpha + abs_p));
+		} else if (log_concave < result_type(.5)) {
 			t = log(result_type(4) / (alpha + result_type(2) * abs_p));
 		}
-		log_concave = psi(result_type(-1), abs_p, alpha);
-		if (-log_concave >= result_type(.5) && -log_concave <= result_type(2)) {
+		log_concave = -psi(result_type(-1), abs_p, alpha);
+		if (log_concave >= result_type(.5) && log_concave <= result_type(2)) {
 			s = result_type(1);
-		} else if (-log_concave > result_type(2)) {
-			s = sqrt(4 / (alpha * cosh(1) + abs_p));
-		} else if (-log_concave < result_type(.5)) {
+		} else if (log_concave > result_type(2)) {
+			s = sqrt(result_type(4) / (alpha * cosh(1) + abs_p));
+		} else if (log_concave < result_type(.5)) {
 			s = min(result_type(1) / abs_p, log(result_type(1) + result_type(1) / alpha + sqrt(result_type(1) / (alpha * alpha) + result_type(2) / alpha)));
 		}
 		eta = -psi(t, abs_p, alpha);
