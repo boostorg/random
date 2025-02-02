@@ -277,14 +277,15 @@ public:
   BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(generalized_inverse_gaussian_distribution)
 
 private:
-  RealType _p;
-  RealType _a;
-	RealType _b;
 #ifndef BOOST_NO_STDC_NAMESPACE
 	using std::cosh;
 	using std::sinh;
 	using std::exp;
 #endif
+
+  RealType _p;
+  RealType _a;
+	RealType _b;
 
 	static result_type psi(const RealType& x, const RealType& p_arg, RealType alpha_arg)
 	{
