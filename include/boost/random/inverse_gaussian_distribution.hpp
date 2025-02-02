@@ -220,9 +220,6 @@ private:
 
 	void init()
   {
-#ifndef BOOST_NO_STDC_NAMESPACE
-    using std::exp;
-#endif
 		_c = _alpha / (result_type(2) * _beta);
   }
 };
