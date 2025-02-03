@@ -48,7 +48,7 @@ class inverse_gaussian_distribution
 {
 public:
 	typedef RealType result_type;
-  typedef RealType input_type;
+    typedef RealType input_type;
 
 	class param_type {
 	public:
@@ -56,9 +56,9 @@ public:
 
 		/**
 		 * Constructs a @c param_type object from the "alpha" and "beta"
-     * parameters.
-     *
-     * Requires: alpha > 0 && beta > 0
+         * parameters.
+         *
+         * Requires: alpha > 0 && beta > 0
 		 */
 		explicit param_type(RealType alpha_arg = RealType(1.0),
 											 RealType beta_arg = RealType(1.0))
@@ -68,40 +68,40 @@ public:
 			BOOST_ASSERT(beta_arg > 0);
 		}
 
-		/** Returns the "alpha" parameter of the distribution. */
-    RealType alpha() const { return _alpha; }
-    /** Returns the "beta" parameter of the distribution. */
-    RealType beta() const { return _beta; }
+    	/** Returns the "alpha" parameter of the distribution. */
+        RealType alpha() const { return _alpha; }
+        /** Returns the "beta" parameter of the distribution. */
+        RealType beta() const { return _beta; }
 
-		/** Writes a @c param_type to a @c std::ostream. */
-    BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
-    { os << parm._alpha << ' ' << parm._beta; return os; }
+    	/** Writes a @c param_type to a @c std::ostream. */
+        BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
+        { os << parm._alpha << ' ' << parm._beta; return os; }
 
-    /** Reads a @c param_type from a @c std::istream. */
-    BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
-    { is >> parm._alpha >> std::ws >> parm._beta; return is; }
+        /** Reads a @c param_type from a @c std::istream. */
+        BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
+        { is >> parm._alpha >> std::ws >> parm._beta; return is; }
 
-		/** Returns true if the two sets of parameters are the same. */
-    BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)
-    { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
+    	/** Returns true if the two sets of parameters are the same. */
+        BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)
+        { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
 
-    /** Returns true if the two sets fo parameters are different. */
-    BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
+        /** Returns true if the two sets fo parameters are different. */
+        BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
 
-	private:
-		RealType _alpha;
-		RealType _beta;
+    	private:
+    		RealType _alpha;
+    		RealType _beta;
 	};
 
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
-  BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
+    BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
 #endif
 
 	/**
-   * Constructs an @c inverse_gaussian_distribution from its "alpha" and "beta" parameters.
-   *
-   * Requires: alpha > 0, beta > 0
-   */
+     * Constructs an @c inverse_gaussian_distribution from its "alpha" and "beta" parameters.
+     *
+     * Requires: alpha > 0, beta > 0
+     */
 	explicit inverse_gaussian_distribution(RealType alpha_arg = RealType(1.0),
 											 									 RealType beta_arg = RealType(1.0))
 		: _alpha(alpha_arg), _beta(beta_arg)
@@ -110,6 +110,7 @@ public:
 		BOOST_ASSERT(beta_arg > 0);
 		init();
 	}
+
 	/** Constructs an @c inverse_gaussian_distribution from its parameters. */
 	explicit inverse_gaussian_distribution(const param_type& parm)
 		: _alpha(parm.alpha()), _beta(parm.beta())
@@ -118,12 +119,12 @@ public:
 	}
 
 	/**
-   * Returns a random variate distributed according to the
-   * inverse gaussian distribution.
-   */
-  template<class URNG>
-  RealType operator()(URNG& urng) const
-  {
+     * Returns a random variate distributed according to the
+     * inverse gaussian distribution.
+     */
+    template<class URNG>
+    RealType operator()(URNG& urng) const
+    {
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sqrt;
 #endif
@@ -134,75 +135,75 @@ public:
 			return cand;
 		}
     return _alpha * _alpha / cand;
-  }
+    }
 
-	/**
-   * Returns a random variate distributed accordint to the beta
-   * distribution with parameters specified by @c param.
-   */
-  template<class URNG>
-  RealType operator()(URNG& urng, const param_type& parm) const
-  {
-    return inverse_gaussian_distribution(parm)(urng);
-  }
+    /**
+     * Returns a random variate distributed accordint to the beta
+     * distribution with parameters specified by @c param.
+     */
+    template<class URNG>
+    RealType operator()(URNG& urng, const param_type& parm) const
+    {
+        return inverse_gaussian_distribution(parm)(urng);
+    }
 
 	/** Returns the "alpha" parameter of the distribution. */
-  RealType alpha() const { return _alpha; }
-  /** Returns the "beta" parameter of the distribution. */
-  RealType beta() const { return _beta; }
+    RealType alpha() const { return _alpha; }
+    /** Returns the "beta" parameter of the distribution. */
+    RealType beta() const { return _beta; }
 
 	/** Returns the smallest value that the distribution can produce. */
-  RealType min BOOST_PREVENT_MACRO_SUBSTITUTION () const
-  { return RealType(0.0); }
-  /** Returns the largest value that the distribution can produce. */
-  RealType max BOOST_PREVENT_MACRO_SUBSTITUTION () const
-  { return (std::numeric_limits<RealType>::infinity)(); }
+    RealType min BOOST_PREVENT_MACRO_SUBSTITUTION () const
+    { return RealType(0.0); }
+    /** Returns the largest value that the distribution can produce. */
+    RealType max BOOST_PREVENT_MACRO_SUBSTITUTION () const
+    { return (std::numeric_limits<RealType>::infinity)(); }
 
 	/** Returns the parameters of the distribution. */
-  param_type param() const { return param_type(_alpha, _beta); }
-  /** Sets the parameters of the distribution. */
-  void param(const param_type& parm)
-  {
-    _alpha = parm.alpha();
-    _beta = parm.beta();
+    param_type param() const { return param_type(_alpha, _beta); }
+    /** Sets the parameters of the distribution. */
+    void param(const param_type& parm)
+    {
+        _alpha = parm.alpha();
+        _beta = parm.beta();
 		init();
-  }
+    }
 
 	/**
-   * Effects: Subsequent uses of the distribution do not depend
-   * on values produced by any engine prior to invoking reset.
-   */
-  void reset() { }
+     * Effects: Subsequent uses of the distribution do not depend
+     * on values produced by any engine prior to invoking reset.
+     */
+    void reset() { }
 
 	/** Writes an @c inverse_gaussian_distribution to a @c std::ostream. */
-  BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, inverse_gaussian_distribution, wd)
-  {
-    os << wd.param();
-    return os;
-  }
-
-  /** Reads an @c inverse_gaussian_distribution from a @c std::istream. */
-  BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, inverse_gaussian_distribution, wd)
-  {
-    param_type parm;
-    if(is >> parm) {
-        wd.param(parm);
+    BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, inverse_gaussian_distribution, wd)
+    {
+        os << wd.param();
+        return os;
     }
-    return is;
-  }
+
+    /** Reads an @c inverse_gaussian_distribution from a @c std::istream. */
+    BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, inverse_gaussian_distribution, wd)
+    {
+        param_type parm;
+        if(is >> parm) {
+            wd.param(parm);
+        }
+        return is;
+    }
 
 	/**
-   * Returns true if the two instances of @c inverse_gaussian_distribution will
-   * return identical sequences of values given equal generators.
-   */
-  BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(inverse_gaussian_distribution, lhs, rhs)
-  { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
+     * Returns true if the two instances of @c inverse_gaussian_distribution will
+     * return identical sequences of values given equal generators.
+     */
+    BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(inverse_gaussian_distribution, lhs, rhs)
+    { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
 
-  /**
-   * Returns true if the two instances of @c inverse_gaussian_distribution will
-   * return different sequences of values given equal generators.
-   */
-  BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(inverse_gaussian_distribution)
+    /**
+     * Returns true if the two instances of @c inverse_gaussian_distribution will
+     * return different sequences of values given equal generators.
+     */
+    BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(inverse_gaussian_distribution)
 
 private:
 	result_type _alpha;
@@ -211,9 +212,9 @@ private:
 	result_type _c;
 
 	void init()
-  {
+    {
 		_c = _alpha / (result_type(2) * _beta);
-  }
+    }
 };
 
 } // namespace random
