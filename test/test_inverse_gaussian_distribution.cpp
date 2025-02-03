@@ -1,12 +1,12 @@
 /**
  * test_inverse_gaussian_distribution.cpp
- * 
+ *
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
- * 
+ *
  * $Id$
- * 
+ *
  */
 
 #include <boost/random/inverse_gaussian_distribution.hpp>
@@ -24,6 +24,8 @@
 #define BOOST_RANDOM_DIST0_MAX (std::numeric_limits<double>::infinity)()
 #define BOOST_RANDOM_DIST1_MIN 0
 #define BOOST_RANDOM_DIST1_MAX (std::numeric_limits<double>::infinity)()
+#define BOOST_RANDOM_DIST2_MIN 0
+#define BOOST_RANDOM_DIST2_MAX (std::numeric_limits<double>::infinity)()
 
 #define BOOST_RANDOM_TEST1_PARAMS
 #define BOOST_RANDOM_TEST1_MIN 0.0
