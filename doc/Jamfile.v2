@@ -71,6 +71,7 @@ doxygen_files =
     traits
     splitmix64
     xoshiro
+    inverse_gaussian_distribution
 ;
 
 path-constant here : . ;
