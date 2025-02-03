@@ -1,12 +1,12 @@
 /* boost random/inverse_gaussian_distribution.hpp header file
- * 
+ *
  * Copyright Young Geun Kim 2025
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
- * 
+ *
  * See http://www.boost.org for most recent version including documentation.
- * 
+ *
  * $Id$
  */
 
@@ -30,12 +30,12 @@ namespace random {
 /**
  * The inverse gaussian distribution is a real-valued distribution with
  * two parameters alpha (mean) and beta (shape). It produced values > 0.
- * 
+ *
  * It has
  * \f$\displaystyle p(x) = \sqrt{\beta / (2 \pi x^3)} \exp(-\frac{\beta (x - \alpha)^2}{2 \alpha^2 x})$.
- * 
+ *
  * The algorithm used is from
- * 
+ *
  * @blockquote
  * "Generating Random Variates Using Transformations with Multiple Roots",
  * Michael, J. R., Schucany, W. R. and Haas, R. W.,
@@ -81,21 +81,13 @@ public:
     BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
     { is >> parm._alpha >> std::ws >> parm._beta; return is; }
 
-		/** Writes a @c param_type to a @c std::ostream. */
-    BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
-    { os << parm._alpha << ' ' << parm._beta; return os; }
-
-    /** Reads a @c param_type from a @c std::istream. */
-    BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
-    { is >> parm._alpha >> std::ws >> parm._beta; return is; }
-
 		/** Returns true if the two sets of parameters are the same. */
     BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)
     { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
 
     /** Returns true if the two sets fo parameters are different. */
     BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
-	
+
 	private:
 		RealType _alpha;
 		RealType _beta;
@@ -205,7 +197,7 @@ public:
    */
   BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(inverse_gaussian_distribution, lhs, rhs)
   { return lhs._alpha == rhs._alpha && lhs._beta == rhs._beta; }
-  
+
   /**
    * Returns true if the two instances of @c inverse_gaussian_distribution will
    * return different sequences of values given equal generators.
