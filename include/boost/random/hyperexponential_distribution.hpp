@@ -23,6 +23,7 @@
 #include <boost/core/cmath.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/vector_io.hpp>
+#include <boost/random/detail/size.hpp>
 #include <boost/random/discrete_distribution.hpp>
 #include <boost/random/exponential_distribution.hpp>
 #include <boost/type_traits/has_pre_increment.hpp>
@@ -352,7 +353,7 @@ class hyperexponential_distribution
          */
         public: template <typename RateRangeT>
                 param_type(RateRangeT const& rate_range)
-        : probs_(std::size(rate_range), 1), // Will be normalized below
+        : probs_(boost::random::detail::size(rate_range), 1), // Will be normalized below
           rates_(std::begin(rate_range), std::end(rate_range))
         {
             hyperexp_detail::normalize(probs_);
@@ -664,7 +665,7 @@ class hyperexponential_distribution
      */
     public: template <typename RateRangeT>
             hyperexponential_distribution(RateRangeT const& rate_range)
-    : dd_(std::vector<RealT>(std::size(rate_range), 1)),
+    : dd_(std::vector<RealT>(boost::random::detail::size(rate_range), 1)),
       rates_(std::begin(rate_range), std::end(rate_range))
     {
         BOOST_ASSERT( hyperexp_detail::check_params(dd_.probabilities(), rates_) );
