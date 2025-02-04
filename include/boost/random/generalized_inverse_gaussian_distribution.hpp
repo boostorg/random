@@ -95,20 +95,6 @@ public:
 			return is;
 		}
 
-		/** Writes a @c param_type to a @c std::ostream. */
-		BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, param_type, parm)
-		{
-			os << parm._p << ' ' << parm._a << ' ' << parm._b;
-			return os;
-		}
-
-		/** Reads a @c param_type from a @c std::istream. */
-		BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, param_type, parm)
-		{
-			is >> parm._p >> std::ws >> parm._a >> std::ws >> parm._b;
-			return is;
-		}
-
 		/** Returns true if the two sets of parameters are the same. */
 		BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)
 		{ return lhs._p == rhs._p && lhs._a == rhs._a && lhs._b == rhs._b; }
