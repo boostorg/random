@@ -284,7 +284,7 @@ private:
 		_alpha = sqrt(_omega * _omega + _abs_p * _abs_p) - _abs_p;
     }
 
-	result_type psi(const RealType& x)
+	result_type psi(const RealType& x) const
 	{
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sinh;
@@ -293,7 +293,7 @@ private:
 		return -_alpha * (cosh(x) - result_type(1)) - _abs_p * (exp(x) - x - result_type(1));
 	}
 
-	result_type psi_deriv(const RealType& x)
+	result_type psi_deriv(const RealType& x) const
 	{
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sinh;
