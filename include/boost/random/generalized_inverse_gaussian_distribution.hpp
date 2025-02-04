@@ -99,7 +99,7 @@ public:
 		BOOST_RANDOM_DETAIL_EQUALITY_OPERATOR(param_type, lhs, rhs)
 		{ return lhs._p == rhs._p && lhs._a == rhs._a && lhs._b == rhs._b; }
 
-		/** Returns true if the two sets fo parameters are different. */
+		/** Returns true if the two sets of parameters are different. */
 		BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
 
 	private:
