@@ -108,6 +108,7 @@
 [def __non_central_chi_squared_distribution [classref boost::random::non_central_chi_squared_distribution non_central_chi_squared_distribution]]
 [def __piecewise_constant_distribution [classref boost::random::piecewise_constant_distribution piecewise_constant_distribution]]
 [def __piecewise_linear_distribution [classref boost::random::piecewise_linear_distribution piecewise_linear_distribution]]
+[def __inverse_gaussian_distribution [classref boost::random::inverse_gaussian_distribution inverse_gaussian_distribution]]
 
 [include performance_data.qbk]
 

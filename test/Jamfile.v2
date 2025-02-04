@@ -164,6 +164,7 @@ run test_non_central_chi_squared.cpp math_test ;
 run test_non_central_chi_squared_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_hyperexponential.cpp math_test ;
 run test_hyperexponential_distribution.cpp math_test /boost/test//boost_unit_test_framework ;
+run test_inverse_gaussian_distribution.cpp /boost/test//boost_unit_test_framework ;
 
 # run nondet_random_speed.cpp ;
 # run random_device.cpp ;
