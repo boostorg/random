@@ -23,6 +23,24 @@
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/uniform_01.hpp>
 
+#if __cplusplus < 201103L
+
+namespace std {
+
+inline double sinh(double x)
+{
+	return (exp(x) - exp(-x)) / 2;
+}
+
+inline double cosh(double x)
+{
+	return (exp(x) + exp(-x)) / 2;
+}
+
+} // namespace std
+
+#endif
+
 namespace boost {
 namespace random {
 
