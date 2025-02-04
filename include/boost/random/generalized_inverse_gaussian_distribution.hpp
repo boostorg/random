@@ -23,24 +23,6 @@
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/uniform_01.hpp>
 
-#if __cplusplus < 201103L
-
-namespace std {
-
-inline double sinh(double x)
-{
-	return (exp(x) - exp(-x)) / 2;
-}
-
-inline double cosh(double x)
-{
-	return (exp(x) + exp(-x)) / 2;
-}
-
-} // namespace std
-
-#endif
-
 namespace boost {
 namespace random {
 
@@ -50,6 +32,7 @@ namespace random {
  * 
  * It has
  * \f$\displaystyle p(x) = \frac{(a / b)^{p / 2}}{2 K_{p}(\sqrt{a b})} x^{p - 1} e^{-(a x + b / 2) / 2}\f$.
+ * where \f$\displaystyle K_{p}\f$ is a modified Bessel function of the second kind.
  * 
  * The algorithm used is from
  * 
@@ -131,9 +114,12 @@ public:
 #endif
 
 	/**
-	 * Constructs an @c generalized_inverse_gaussian_distribution from its "alpha" and "beta" parameters.
+	 * Constructs an @c generalized_inverse_gaussian_distribution from its "p", "a", and "b" parameters.
 	 *
-	 * Requires: alpha > 0, beta > 0
+	 * Requires:
+	 * a > 0 && b >= 0 if p > 0,
+	 * a > 0 && b > 0 if p == 0,
+	 * a >= 0 && b > 0 if p < 0
 	 */
 	explicit generalized_inverse_gaussian_distribution(RealType p_arg = RealType(1.0),
                        								   RealType a_arg = RealType(1.0),
