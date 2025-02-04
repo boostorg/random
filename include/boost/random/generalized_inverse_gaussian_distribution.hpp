@@ -277,13 +277,14 @@ private:
     {
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::abs;
+		using std::sqrt;
 #endif
         _abs_p = abs(_p);
 		_omega = sqrt(_a * _b); // two-parameter representation (p, omega)
 		_alpha = sqrt(_omega * _omega + _abs_p * _abs_p) - _abs_p;
     }
 
-	static result_type psi(const RealType& x)
+	result_type psi(const RealType& x)
 	{
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sinh;
@@ -292,7 +293,7 @@ private:
 		return -_alpha * (cosh(x) - result_type(1)) - _abs_p * (exp(x) - x - result_type(1));
 	}
 
-	static result_type psi_deriv(const RealType& x)
+	result_type psi_deriv(const RealType& x)
 	{
 #ifndef BOOST_NO_STDC_NAMESPACE
 		using std::sinh;
