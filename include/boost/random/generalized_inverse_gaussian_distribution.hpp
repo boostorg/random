@@ -65,7 +65,7 @@ public:
 		explicit param_type(RealType p_arg = RealType(1.0),
 		                   	RealType a_arg = RealType(1.0),
 							RealType b_arg = RealType(1.0))
-		  : _p(p_arg), _a(a_arg), _b(b_arg)
+		: _p(p_arg), _a(a_arg), _b(b_arg)
 		{
 			BOOST_ASSERT(
 				(p_arg > RealType(0) && a_arg > RealType(0) && b_arg >= RealType(0)) ||
@@ -101,7 +101,7 @@ public:
 
 		/** Returns true if the two sets fo parameters are different. */
 		BOOST_RANDOM_DETAIL_INEQUALITY_OPERATOR(param_type)
-  
+
 	private:
 		RealType _p;
 		RealType _a;
@@ -112,11 +112,11 @@ public:
 	BOOST_STATIC_ASSERT(!std::numeric_limits<RealType>::is_integer);
 #endif
 
-  /**
-   * Constructs an @c generalized_inverse_gaussian_distribution from its "alpha" and "beta" parameters.
-   *
-   * Requires: alpha > 0, beta > 0
-   */
+	/**
+	 * Constructs an @c generalized_inverse_gaussian_distribution from its "alpha" and "beta" parameters.
+	 *
+	 * Requires: alpha > 0, beta > 0
+	 */
 	explicit generalized_inverse_gaussian_distribution(RealType p_arg = RealType(1.0),
                        								   RealType a_arg = RealType(1.0),
 													   RealType b_arg = RealType(1.0))
@@ -131,7 +131,7 @@ public:
 	}
 	/** Constructs an @c generalized_inverse_gaussian_distribution from its parameters. */
 	explicit generalized_inverse_gaussian_distribution(const param_type& parm)
-	  : _p(parm.p()), _a(parm.a()), _b(parm.b())
+	: _p(parm.p()), _a(parm.a()), _b(parm.b())
 	{
 		init();
 	}
@@ -245,7 +245,7 @@ public:
 	{
 		param_type parm;
 		if(is >> parm) {
-		  wd.param(parm);
+			wd.param(parm);
 		}
 		return is;
 	}
