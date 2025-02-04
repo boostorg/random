@@ -31,11 +31,10 @@
 #define BOOST_RANDOM_DIST3_MIN 0
 #define BOOST_RANDOM_DIST3_MAX (std::numeric_limits<double>::infinity)()
 
-#define BOOST_RANDOM_TEST1_PARAMS
+#define BOOST_RANDOM_TEST1_PARAMS (2.0, 1.0, 1.0)
 #define BOOST_RANDOM_TEST1_MIN 0.0
 
 #define BOOST_RANDOM_TEST2_PARAMS (0.5, 0.5, 0.5)
 #define BOOST_RANDOM_TEST2_MIN 0.0
 
 #include "test_distribution.ipp"
-
