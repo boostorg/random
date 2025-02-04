@@ -28,6 +28,8 @@
 #define BOOST_RANDOM_DIST1_MAX (std::numeric_limits<double>::infinity)()
 #define BOOST_RANDOM_DIST2_MIN 0
 #define BOOST_RANDOM_DIST2_MAX (std::numeric_limits<double>::infinity)()
+#define BOOST_RANDOM_DIST3_MIN 0
+#define BOOST_RANDOM_DIST3_MAX (std::numeric_limits<double>::infinity)()
 
 #define BOOST_RANDOM_TEST1_PARAMS
 #define BOOST_RANDOM_TEST1_MIN 0.0
