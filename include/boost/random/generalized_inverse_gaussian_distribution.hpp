@@ -148,6 +148,7 @@ public:
 		using std::log;
 		using std::min;
 		using std::exp;
+		using std::cosh;
 #endif
 		RealType t, s, t_deriv, s_deriv, eta, zeta, theta, xi, u, v, w, p, q, r, cand;
 		RealType log_concave = -psi(result_type(1));
@@ -287,7 +288,7 @@ private:
 	result_type psi(const RealType& x) const
 	{
 #ifndef BOOST_NO_STDC_NAMESPACE
-		using std::sinh;
+		using std::cosh;
 		using std::exp;
 #endif
 		return -_alpha * (cosh(x) - result_type(1)) - _abs_p * (exp(x) - x - result_type(1));

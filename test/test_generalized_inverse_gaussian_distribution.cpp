@@ -22,13 +22,13 @@
 #define BOOST_RANDOM_ARG2_VALUE 1.0
 #define BOOST_RANDOM_ARG3_VALUE 1.0
 
-#define BOOST_RANDOM_DIST0_MIN 0
+#define BOOST_RANDOM_DIST0_MIN 0.0
 #define BOOST_RANDOM_DIST0_MAX (std::numeric_limits<double>::infinity)()
-#define BOOST_RANDOM_DIST1_MIN 0
+#define BOOST_RANDOM_DIST1_MIN 0.0
 #define BOOST_RANDOM_DIST1_MAX (std::numeric_limits<double>::infinity)()
-#define BOOST_RANDOM_DIST2_MIN 0
+#define BOOST_RANDOM_DIST2_MIN 0.0
 #define BOOST_RANDOM_DIST2_MAX (std::numeric_limits<double>::infinity)()
-#define BOOST_RANDOM_DIST3_MIN 0
+#define BOOST_RANDOM_DIST3_MIN 0.0
 #define BOOST_RANDOM_DIST3_MAX (std::numeric_limits<double>::infinity)()
 
 #define BOOST_RANDOM_TEST1_PARAMS (2.0, 1.0, 1.0)
