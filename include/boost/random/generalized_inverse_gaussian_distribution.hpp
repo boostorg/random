@@ -154,7 +154,8 @@ public:
 		using std::exp;
 		using std::cosh;
 #endif
-		RealType t, s, t_deriv, s_deriv, eta, zeta, theta, xi, u, v, w, p, q, r, cand;
+		RealType t = result_type(1);
+		RealType s = result_type(1);
 		RealType log_concave = -psi(result_type(1));
 		if (log_concave >= result_type(.5) && log_concave <= result_type(2)) {
 			t = result_type(1);
@@ -171,15 +172,19 @@ public:
 		} else if (log_concave < result_type(.5)) {
 			s = min(result_type(1) / _abs_p, log(result_type(1) + result_type(1) / _alpha + sqrt(result_type(1) / (_alpha * _alpha) + result_type(2) / _alpha)));
 		}
-		eta = -psi(t);
-		zeta = -psi_deriv(t);
-		theta = -psi(-s);
-		xi = psi_deriv(-s);
-		p = result_type(1) / xi;
-		r = result_type(1) / zeta;
-		t_deriv = t - r * eta;
-		s_deriv = s - p * theta;
-		q = t_deriv + s_deriv;
+		RealType eta = -psi(t);
+		RealType zeta = -psi_deriv(t);
+		RealType theta = -psi(-s);
+		RealType xi = psi_deriv(-s);
+		RealType p = result_type(1) / xi;
+		RealType r = result_type(1) / zeta;
+		RealType t_deriv = t - r * eta;
+		RealType s_deriv = s - p * theta;
+		RealType q = t_deriv + s_deriv;
+		RealType u = result_type(0);
+		RealType v = result_type(0);
+		RealType w = result_type(0);
+		RealType cand = result_type(0);
 		do
 		{
 			u = uniform_01<RealType>()(urng);
