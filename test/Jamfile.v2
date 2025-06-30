@@ -86,6 +86,8 @@ run test_comp_xoshiro128mm.cpp ;
 run test_xoshiro128f.cpp /boost/test//boost_unit_test_framework ;
 run test_comp_xoshiro128f.cpp ;
 
+run github_issue_133.cpp ;
+
 run niederreiter_base2_validate.cpp /boost/test//boost_unit_test_framework ;
 run sobol_validate.cpp /boost/test//boost_unit_test_framework ;
 run faure_validate.cpp /boost/test//boost_unit_test_framework ;
