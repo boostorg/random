@@ -101,13 +101,16 @@ public:
     template<class URNG>
     RealType operator()(URNG& urng) const
     {
+        static const auto alpha_dist = gamma_distribution<RealType>(_alpha, RealType(1.0));
+        static const auto beta_dist = gamma_distribution<RealType>(_beta, RealType(1.0));
+
         RealType a = 0;
         RealType b = 0;
 
         do
         {
-            a = gamma_distribution<RealType>(_alpha, RealType(1.0))(urng);
-            b = gamma_distribution<RealType>(_beta, RealType(1.0))(urng);
+            a = alpha_dist(urng);
+            b = beta_dist(urng);
         } while (a + b == RealType(0));
 
         return a / (a + b);
