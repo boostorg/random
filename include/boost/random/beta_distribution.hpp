@@ -101,8 +101,8 @@ public:
     template<class URNG>
     RealType operator()(URNG& urng) const
     {
-        static const auto alpha_dist = gamma_distribution<RealType>(_alpha, RealType(1.0));
-        static const auto beta_dist = gamma_distribution<RealType>(_beta, RealType(1.0));
+        const auto alpha_dist = gamma_distribution<RealType>(_alpha, RealType(1.0));
+        const auto beta_dist = gamma_distribution<RealType>(_beta, RealType(1.0));
 
         RealType a = 0;
         RealType b = 0;
