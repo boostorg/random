@@ -192,6 +192,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(distributions, distribution_type, uniform_distribu
 typedef boost::mpl::list <
    boost::random::discrete_distribution < boost::multiprecision::cpp_int, double>,
    boost::random::discrete_distribution <unsigned int, boost::multiprecision::cpp_bin_float_100>
+
+   boost::random::dynamic_discrete_distribution <unsigned int, boost::multiprecision::cpp_bin_float_100,16>
+   boost::random::dynamic_discrete_distribution < boost::multiprecision::cpp_int, double,16>,
+
+
 > other_distributions;
 
 

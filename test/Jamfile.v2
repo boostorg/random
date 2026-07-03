@@ -118,6 +118,7 @@ run test_poisson.cpp math_test ;
 run test_poisson_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_discrete.cpp math_test ;
 run test_discrete_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_dynamic_discrete_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_gamma.cpp math_test ;
 run test_gamma_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_weibull.cpp math_test ;
