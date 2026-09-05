@@ -150,11 +150,12 @@ void do_test_streaming(const BOOST_RANDOM_URNG& urng)
 {
     BOOST_RANDOM_URNG urng2;
     std::basic_ostringstream<CharT> output;
-    output << urng;
+    BOOST_TEST_REQUIRE(static_cast<bool>(output << urng));
     BOOST_CHECK_NE(urng, urng2);
     // restore old state
     std::basic_istringstream<CharT> input(output.str());
-    input >> urng2;
+    BOOST_TEST(static_cast<bool>(input >> urng2));
+    BOOST_TEST(input.eof());
     BOOST_CHECK_EQUAL(urng, urng2);
 }
 
