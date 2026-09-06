@@ -20,7 +20,7 @@
 #include <cmath>
 
 #include <boost/config.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/variate_generator.hpp>
 
@@ -491,6 +491,7 @@ inline double cdf(const kolmogorov_smirnov_probability& dist, double val)
 
 inline double quantile(const kolmogorov_smirnov_probability& dist, double val)
 {
+    using namespace boost::placeholders;
     return invert_monotone_inc(boost::bind(&cdf, dist, _1), val, 0.0, 1000.0);
 }
 
