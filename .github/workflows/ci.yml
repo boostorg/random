@@ -40,6 +40,7 @@ jobs:
     name: Run Boost.CI
     uses: boostorg/boost-ci/.github/workflows/reusable.yml@master
     with:
+      branch_coverage: false
       enable_sanitizers: false
       exclude_compiler: gcc-4.7,icpx-2025
       exclude_os: windows-11-arm
