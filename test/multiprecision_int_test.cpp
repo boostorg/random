@@ -208,6 +208,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(discrete_distributions, distribution_type, other_d
    for(unsigned i = 0; i < 200; ++i)
    {
       result_type r = d(gen);
+      boost::ignore_unused(r);
    }
 
    std::stringstream ss;
@@ -223,6 +224,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(discrete_distributions, distribution_type, other_d
    for(unsigned i = 0; i < 200; ++i)
    {
       result_type r = d(big_random);
+      boost::ignore_unused(r);
    }
 }
 

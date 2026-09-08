@@ -19,6 +19,9 @@ constexpr boost::random_device::result_type const_max = (boost::random_device::m
 #endif
 
 int test_main(int, char**) {
+    boost::ignore_unused(const_min);
+    boost::ignore_unused(const_max);
+
     boost::random_device rng;
     double entropy = rng.entropy();
     BOOST_CHECK_GE(entropy, 0);
