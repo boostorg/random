@@ -88,13 +88,43 @@ typedef boost::mpl::list <
    boost::random::weibull_distribution<big_float>
 > distributions;
 
+template<class T>
+void check_result(const T& result, const T& min_val, const T& max_val)
+{
+
+   BOOST_CHECK(boost::math::isfinite(result));
+   BOOST_TEST(result >= min_val);
+   BOOST_TEST(result <= max_val);
+}
+
+template<class T>
+void check_result(const std::vector<T>& result, const std::vector<T>& min_val, const std::vector<T>& max_val)
+{
+   for(size_t i = 0; i < result.size(); i++)
+   {
+      BOOST_CHECK(boost::math::isfinite(result[i]));
+   }
+   BOOST_TEST(result >= min_val);
+   BOOST_TEST(result <= max_val);
+}
+
+template<class TDist, class TGen>
+void do_check_distribution(TDist& d, TGen& gen)
+{
+   typedef typename TDist::result_type result_type;
+   const result_type min_val = (d.min)();
+   const result_type max_val = (d.max)();
+   for(unsigned i = 0; i < 200; ++i)
+   {
+      result_type r = d(gen);
+      check_result(r, min_val, max_val);
+   }
+}
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(distributions_test, dist_type, distributions)
 {
    typedef typename dist_type::result_type result_type;
    dist_type d;
-   result_type a = (d.min)();
-   result_type b = (d.max)();
    typename dist_type::param_type p = d.param();
    boost::ignore_unused(p);
    d.reset();
@@ -106,46 +136,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(distributions_test, dist_type, distributions)
    BOOST_CHECK(d == d2);
 
    boost::random::mt19937 int_gen;
+   do_check_distribution(d, int_gen);
 
-   for(unsigned i = 0; i < 200; ++i)
-   {
-      result_type r = d(int_gen);
-      BOOST_CHECK((boost::math::isfinite)(r));
-      BOOST_CHECK(r >= a);
-      BOOST_CHECK(r <= b);
-   }
-
-#ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
    large_int_generator big_int_gen;
-
-   for(unsigned i = 0; i < 200; ++i)
-   {
-      result_type r = d(big_int_gen);
-      BOOST_CHECK((boost::math::isfinite)(r));
-      BOOST_CHECK(r >= a);
-      BOOST_CHECK(r <= b);
-   }
+   do_check_distribution(d, big_int_gen);
 
    boost::random::discard_block_engine< ranlux_big_base_01, 389, 24 > big_float_gen;
-
-   for(unsigned i = 0; i < 200; ++i)
-   {
-      result_type r = d(big_float_gen);
-      BOOST_CHECK((boost::math::isfinite)(r));
-      BOOST_CHECK(r >= a);
-      BOOST_CHECK(r <= b);
-   }
-#endif
+   do_check_distribution(d, big_float_gen);
 
    boost::random::ranlux64_4_01 float_gen;
-
-   for(unsigned i = 0; i < 200; ++i)
-   {
-      result_type r = d(float_gen);
-      BOOST_CHECK((boost::math::isfinite)(r));
-      BOOST_CHECK(r >= a);
-      BOOST_CHECK(r <= b);
-   }
+   do_check_distribution(d, float_gen);
 }
 
 
