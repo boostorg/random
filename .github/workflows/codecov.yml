@@ -179,14 +179,11 @@ jobs:
         run: ci/github/codecov.sh "setup"
 
       - name: Run tests
-        if: '!matrix.coverity'
         run: ci/build.sh
 
-      - name: Upload coverage
+      - name: Collect coverage
         if: matrix.coverage
-        run: ci/codecov.sh "upload"
-        env:
-          BOOST_CI_CODECOV_IO_UPLOAD: skip
+        run: ci/codecov.sh "collect"
 
       - name: Upload coverage
         if: matrix.coverage
