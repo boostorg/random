@@ -45,6 +45,9 @@ jobs:
       enable_sanitizers: false
       exclude_compiler: gcc-4.7,icpx-2025
       exclude_os: windows-11-arm
+      exclude_jobs: |
+        # Don't collect coverage on Windows, Ubuntu only
+        os: windows, coverage: yes
       timeout: 180
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
