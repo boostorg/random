@@ -258,8 +258,10 @@ jobs:
     container:
       image: ${{matrix.container}}
       volumes:
-        - /node20217:/node20217:rw,rshared
-        - ${{ startsWith(matrix.container, 'ubuntu:1') && '/node20217:/__e/node20:ro,rshared' || ' ' }}
+        - /node20_217:/node20_217:rw,rshared
+        - /node24_217:/node24_217:rw,rshared
+        - ${{ startsWith(matrix.container, 'ubuntu:1') && '/node20_217:/__e/node20:ro,rshared' || ' ' }}
+        - ${{ startsWith(matrix.container, 'ubuntu:1') && '/node24_217:/__e/node24:ro,rshared' || ' ' }}
 
     steps:
       - name: Setup environment
@@ -284,12 +286,21 @@ jobs:
                   apt-get -o Acquire::Retries=$NET_RETRY_COUNT install -y sudo software-properties-common tzdata wget curl apt-transport-https ca-certificates make build-essential g++ $PYTHON_PACKAGE python3 perl git cmake
               fi
               if [[ "${{matrix.container}}" == "ubuntu:1"* ]]; then
-                # Node 20 doesn't work with Ubuntu 16/18  glibc: https://github.com/actions/checkout/issues/1590
-                curl -sL https://archives.boost.io/misc/node/node-v20.9.0-linux-x64-glibc-217.tar.xz | tar -xJ --strip-components 1 -C /node20217
+                echo "::group::Update node"
+                # Install a node version that works with the glibc 2.17 of Ubuntu 16/18: https://github.com/actions/checkout/issues/1590
+                curl -sL https://archives.boost.io/misc/node/node-v20.9.0-linux-x64-glibc-217.tar.xz | tar -xJ --strip-components 1 -C /node20_217
+                # Node 24 triggers a bug in GLIBC 2.17 inside libnss_files.so.2 (around _nss_files_gethostbyname3_r) leading to a SIGSEGV
+                # Observed in actions/cache
+                # Use Node 20 instead as long as that works
+                mkdir -p /node24_217
+                cp -r /node20_217/* /node24_217/
+                echo -n "Node 20: " && /node20_217/bin/node --version
+                echo -n "Node 24: " && /node24_217/bin/node --version
+                echo "::endgroup::"
               fi
           fi
           git config --global pack.threads 0
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install packages
         if: matrix.install
@@ -481,7 +492,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup Boost
         shell: cmd
@@ -523,7 +534,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Install packages
         if: matrix.install

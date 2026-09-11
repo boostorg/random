@@ -78,13 +78,13 @@ jobs:
           fi
           git config --global pack.threads 0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
           # For coverage builds fetch the whole history, else only 1 commit using a 'fake ternary'
           fetch-depth: ${{ matrix.coverage && '0' || '1' }}
 
       - name: Cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         if: env.B2_USE_CCACHE
         with:
           path: ~/.ccache
@@ -92,7 +92,7 @@ jobs:
           restore-keys: ${{matrix.os}}-${{matrix.container}}-${{matrix.compiler}}-
 
       - name: Fetch Boost.CI
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           repository: boostorg/boost-ci
           ref: master
@@ -190,10 +190,11 @@ jobs:
 
       - name: Upload coverage
         if: matrix.coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v7
         with:
+          fail_ci_if_error: true
           disable_search: true
-          file: coverage.info
+          files: coverage.info
           name: Github Actions
           token: ${{secrets.CODECOV_TOKEN}}
           verbose: true
