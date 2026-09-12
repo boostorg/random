@@ -121,14 +121,12 @@ public: // SEEDING FUNCTIONS
     template<class CharT, class Traits>
     friend std::basic_ostream<CharT,Traits>&
     operator<< (std::basic_ostream<CharT,Traits>& ost, const mixmax_engine& me){
-        ost << Ndim << " " << me.S.counter << " " << me.S.sumtot << " ";
-        for (int j=0; (j< (Ndim) ); j++) {
-        ost <<  (std::uint64_t)me.S.V[j] << " ";
+        ost << Ndim << " " << me.S.counter << " " << me.S.sumtot;
+        for (const std::uint64_t v: me.S.V) {
+            ost << " " << v;
         }
-        ost << "\n";
-        ost.flush();
         return ost;
-        }
+    }
 
     /** read the state of the RNG from a stream */
     template<class CharT, class Traits>
@@ -141,16 +139,16 @@ public: // SEEDING FUNCTIONS
         BOOST_ASSERT(counter==Ndim);
         in >> counter >> std::ws;
         in >> savedsum >> std::ws;
-        for(int j=0;j<Ndim;j++) {
-        in >> std::ws >> vec[j] ;
-        sum=me.MOD_MERSENNE(sum+vec[j]);
-    }
-    if (sum == savedsum && counter>0 && counter<Ndim){
-        me.S.V=vec; me.S.counter = counter; me.S.sumtot=savedsum;
-    }else{
-        in.setstate(std::ios::failbit);
-    }
-    return in;
+        for(std::uint64_t& v : vec) {
+            in >> std::ws >> v ;
+            sum=me.MOD_MERSENNE(sum+v);
+        }
+        if (sum == savedsum && counter>0 && counter<Ndim){
+            me.S.V=vec; me.S.counter = counter; me.S.sumtot=savedsum;
+        }else{
+            in.setstate(std::ios::failbit);
+        }
+        return in;
     }
 
 friend bool operator==(const mixmax_engine & x,

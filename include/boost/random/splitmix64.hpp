@@ -11,7 +11,6 @@
 #define BOOST_RANDOM_SPLITMIX64_HPP
 
 #include <cstdint>
-#include <cstdlib>
 #include <limits>
 #include <array>
 #include <string>
@@ -142,8 +141,7 @@ public:
     inline friend std::basic_ostream<CharT,Traits>& operator<<(std::basic_ostream<CharT,Traits>& ost, 
                                                                const splitmix64& e)
     {
-        ost << e.state_;
-        return ost;
+        return ost << e.state_;
     }
 
     /**  Writes a @c splitmix64 to a @c std::istream. */
@@ -151,19 +149,7 @@ public:
     inline friend std::basic_istream<CharT,Traits>& operator>>(std::basic_istream<CharT,Traits>& ist,
                                                                splitmix64& e)
     {
-        std::string sstate;
-        CharT val;
-        while (ist >> val)
-        {
-            if (std::isdigit(val))
-            {
-                sstate.push_back(val);
-            }
-        }
-        
-        e.state_ = std::strtoull(sstate.c_str(), nullptr, 10);
-
-        return ist;
+        return ist >> e.state_;
     }
 
     /** Fills a range with random values */
