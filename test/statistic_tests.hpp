@@ -12,15 +12,15 @@
 #ifndef STATISTIC_TESTS_HPP
 #define STATISTIC_TESTS_HPP
 
-#include <stdexcept>
-#include <iterator>
-#include <vector>
-#include <limits>
 #include <algorithm>
 #include <cmath>
+#include <functional>
+#include <iterator>
+#include <limits>
+#include <stdexcept>
+#include <vector>
 
 #include <boost/config.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/variate_generator.hpp>
 
@@ -491,8 +491,8 @@ inline double cdf(const kolmogorov_smirnov_probability& dist, double val)
 
 inline double quantile(const kolmogorov_smirnov_probability& dist, double val)
 {
-    using namespace boost::placeholders;
-    return invert_monotone_inc(boost::bind(&cdf, dist, _1), val, 0.0, 1000.0);
+    using namespace std::placeholders;
+    return invert_monotone_inc(std::bind(&cdf, dist, _1), val, 0.0, 1000.0);
 }
 
 /*
@@ -645,8 +645,8 @@ double run_experiment(const Experiment & experiment, Generator & gen, int n)
   generic_counter<std::vector<int> > v(experiment.classes());
   experiment.run(gen, v, n);
   return chi_square_value(v.begin(), v.end(),
-                          boost::bind(&Experiment::probability, 
-                                       experiment, boost::placeholders::_1));
+                          std::bind(&Experiment::probability, 
+                                    experiment, std::placeholders::_1));
 }
 
 // chi_square test
@@ -656,8 +656,8 @@ double run_experiment(const Experiment & experiment, const Generator & gen, int 
   generic_counter<std::vector<int> > v(experiment.classes());
   experiment.run(gen, v, n);
   return chi_square_value(v.begin(), v.end(),
-                          boost::bind(&Experiment::probability, 
-                                       experiment, boost::placeholders::_1));
+                          std::bind(&Experiment::probability, 
+                                    experiment, std::placeholders::_1));
 }
 
 // number generator with experiment results (for nesting)

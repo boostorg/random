@@ -103,7 +103,6 @@ explicit test_lagged_fibonacci1279 test_lagged_fibonacci2281
     test_lagged_fibonacci44497 ;
 
 alias math_test :
-    /boost/bind//boost_bind
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
     /boost/math//boost_math_tr1

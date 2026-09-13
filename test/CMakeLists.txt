@@ -32,7 +32,7 @@ if(HAVE_BOOST_TEST)
         elseif(part STREQUAL "/boost/test//boost_unit_test_framework")
             list(APPEND extra_libs Boost::unit_test_framework)
         elseif(part STREQUAL "math_test")
-            list(APPEND extra_libs Boost::bind Boost::exception Boost::lexical_cast Boost::math Boost::numeric_conversion Boost::range)
+            list(APPEND extra_libs Boost::exception Boost::lexical_cast Boost::math Boost::numeric_conversion Boost::range)
         else()
             boost_message(SEND_ERROR "Unknown dependency '${part}'")
         endif()
@@ -55,4 +55,4 @@ boost_test(TYPE compile SOURCES multiprecision_float_test.cpp
            LINK_LIBRARIES Boost::random Boost::unit_test_framework Boost::multiprecision
            COMPILE_FEATURES cxx_std_14)
 boost_test(TYPE compile SOURCES statistic_tests.cpp
-           LINK_LIBRARIES Boost::random Boost::bind Boost::math)
+           LINK_LIBRARIES Boost::random Boost::math)
