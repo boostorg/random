@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include <boost/random/uniform_real.hpp>
-#include <boost/test/floating_point_comparison.hpp>
+#include <boost/test/tools/floating_point_comparison.hpp>
 
 #include <sstream>
 

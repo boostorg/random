@@ -1,7 +1,8 @@
 # Copyright 2003 Jens Maurer
 # Copyright 2009-2011 Steven Watanabe
-# Distributed under the Boost Software License, Version 1.0. (See accompany-
-# ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+# Copyright 2026 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # Boost Random Library test Jamfile
 
@@ -24,7 +25,7 @@ project /boost/random/test : requirements
 run test_const_mod.cpp /boost/test//boost_unit_test_framework ;
 run test_generate_canonical.cpp /boost/test//boost_unit_test_framework ;
 run test_random_number_generator.cpp /boost/test//boost_unit_test_framework ;
-run ../example/random_demo.cpp ;
+run ../example/random_demo.cpp /boost/iterator//boost_iterator ;
 run test_random_device.cpp /boost/test//boost_unit_test_framework ;
 
 run test_minstd_rand0.cpp /boost/test//boost_unit_test_framework ;
@@ -103,6 +104,7 @@ explicit test_lagged_fibonacci1279 test_lagged_fibonacci2281
 
 alias math_test :
     /boost/assign//boost_assign
+    /boost/bind//boost_bind
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
     /boost/math//boost_math_tr1
