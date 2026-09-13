@@ -70,8 +70,6 @@ BOOST_AUTO_TEST_CASE(test_random_shuffle)
     std::random_shuffle(referenceVec.begin(), referenceVec.end(), referenceRand);
     std::random_shuffle(testVec.begin(), testVec.end(), testRand);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        testVec.begin(), testVec.end(),
-        referenceVec.begin(), referenceVec.end());
+    BOOST_TEST(testVec == referenceVec, boost::test_tools::per_element());
 #endif
 }

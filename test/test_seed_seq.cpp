@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected[0], &expected[0] + 10);
-    BOOST_CHECK_EQUAL(seq.size(), 0u);
+    BOOST_TEST(seq.size() == 0u);
     seq.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_r.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_r.size(), 3u);
+    BOOST_TEST(seq_r.size() == 3u);
     seq_r.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_it.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_it.size(), 3u);
+    BOOST_TEST(seq_it.size() == 3u);
     seq_it.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_il.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_il.size(), 3u);
+    BOOST_TEST(seq_il.size() == 3u);
     seq_il.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);

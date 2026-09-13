@@ -33,13 +33,11 @@ struct gen {
     }
 };
 
-#define CHECK_PROBABILITIES(actual, expected)                        \
-    do {                                                             \
-        std::vector<double> _actual = (actual);                      \
-        std::vector<double> _expected = make_vector<double>expected; \
-        BOOST_CHECK_EQUAL_COLLECTIONS(                               \
-            _actual.begin(), _actual.end(),                          \
-            _expected.begin(), _expected.end());                     \
+#define CHECK_PROBABILITIES(actual, expected)                               \
+    do {                                                                    \
+        std::vector<double> actual_ = (actual);                             \
+        std::vector<double> expected_ = make_vector<double>expected;        \
+        BOOST_TEST(actual_ == expected_, boost::test_tools::per_element()); \
     } while(false)
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
@@ -62,17 +60,17 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
     CHECK_PROBABILITIES(dist_fun.probabilities(), (.125, .25, .125, .5));
 
     boost::random::discrete_distribution<> copy(dist);
-    BOOST_CHECK_EQUAL(dist, copy);
+    BOOST_TEST(dist == copy);
     boost::random::discrete_distribution<> copy_r(dist_r);
-    BOOST_CHECK_EQUAL(dist_r, copy_r);
+    BOOST_TEST(dist_r == copy_r);
 
     boost::random::discrete_distribution<> notpow2(3, 99, 111, gen());
     BOOST_REQUIRE_EQUAL(notpow2.probabilities().size(), 3u);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.probabilities()[0], 0.25, 0.00000000001);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.probabilities()[1], 0.50, 0.00000000001);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.probabilities()[2], 0.25, 0.00000000001);
+    BOOST_TEST(notpow2.probabilities()[0] == 0.25, boost::test_tools::tolerance(0.00000000001));
+    BOOST_TEST(notpow2.probabilities()[1] == 0.50, boost::test_tools::tolerance(0.00000000001));
+    BOOST_TEST(notpow2.probabilities()[2] == 0.25, boost::test_tools::tolerance(0.00000000001));
     boost::random::discrete_distribution<> copy_notpow2(notpow2);
-    BOOST_CHECK_EQUAL(notpow2, copy_notpow2);
+    BOOST_TEST(notpow2 == copy_notpow2);
 }
 
 BOOST_AUTO_TEST_CASE(test_param) {
@@ -81,13 +79,13 @@ BOOST_AUTO_TEST_CASE(test_param) {
     boost::random::discrete_distribution<>::param_type param = dist.param();
     CHECK_PROBABILITIES(param.probabilities(), (.125, .25, .125, .5));
     boost::random::discrete_distribution<> copy1(param);
-    BOOST_CHECK_EQUAL(dist, copy1);
+    BOOST_TEST(dist == copy1);
     boost::random::discrete_distribution<> copy2;
     copy2.param(param);
-    BOOST_CHECK_EQUAL(dist, copy2);
+    BOOST_TEST(dist == copy2);
 
     boost::random::discrete_distribution<>::param_type param_copy = param;
-    BOOST_CHECK_EQUAL(param, param_copy);
+    BOOST_TEST(param == param_copy);
     BOOST_CHECK(param == param_copy);
     BOOST_CHECK(!(param != param_copy));
     boost::random::discrete_distribution<>::param_type param_default;
@@ -116,11 +114,11 @@ BOOST_AUTO_TEST_CASE(test_param) {
 BOOST_AUTO_TEST_CASE(test_min_max) {
     std::vector<double> probs{ 1.0, 2.0, 1.0 };
     boost::random::discrete_distribution<> dist;
-    BOOST_CHECK_EQUAL((dist.min)(), 0);
-    BOOST_CHECK_EQUAL((dist.max)(), 0);
+    BOOST_TEST((dist.min)() == 0);
+    BOOST_TEST((dist.max)() == 0);
     boost::random::discrete_distribution<> dist_r(probs);
-    BOOST_CHECK_EQUAL((dist_r.min)(), 0);
-    BOOST_CHECK_EQUAL((dist_r.max)(), 2);
+    BOOST_TEST((dist_r.min)() == 0);
+    BOOST_TEST((dist_r.max)() == 2);
 }
 
 BOOST_AUTO_TEST_CASE(test_comparison) {
@@ -144,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_streaming) {
     stream << dist;
     boost::random::discrete_distribution<> restored_dist;
     stream >> restored_dist;
-    BOOST_CHECK_EQUAL(dist, restored_dist);
+    BOOST_TEST(dist == restored_dist);
 }
 
 BOOST_AUTO_TEST_CASE(test_generation) {
@@ -154,12 +152,12 @@ BOOST_AUTO_TEST_CASE(test_generation) {
     boost::random::discrete_distribution<> dist_r(probs);
     for(int i = 0; i < 10; ++i) {
         int value = dist(gen);
-        BOOST_CHECK_EQUAL(value, 0);
+        BOOST_TEST(value == 0);
         int value_r = dist_r(gen);
-        BOOST_CHECK_EQUAL(value_r, 1);
+        BOOST_TEST(value_r == 1);
         int value_param = dist_r(gen, dist.param());
-        BOOST_CHECK_EQUAL(value_param, 0);
+        BOOST_TEST(value_param == 0);
         int value_r_param = dist(gen, dist_r.param());
-        BOOST_CHECK_EQUAL(value_r_param, 1);
+        BOOST_TEST(value_r_param == 1);
     }
 }

@@ -161,10 +161,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(distributions, distribution_type, uniform_distribu
    distribution_type d(a, b);
    boost::random::mt19937 gen;
 
-   BOOST_CHECK_EQUAL(d.a(), a);
-   BOOST_CHECK_EQUAL(d.b(), b);
-   BOOST_CHECK_EQUAL((d.min)(), a);
-   BOOST_CHECK_EQUAL((d.max)(), b);
+   BOOST_TEST(d.a() == a);
+   BOOST_TEST(d.b() == b);
+   BOOST_TEST((d.min)() == a);
+   BOOST_TEST((d.max)() == b);
 
    for(unsigned i = 0; i < 200; ++i)
    {

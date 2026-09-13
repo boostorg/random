@@ -33,13 +33,11 @@ struct gen {
     }
 };
 
-#define CHECK_SEQUENCE(actual, expected)                               \
-    do {                                                               \
-        std::vector<double> _actual = (actual);                        \
-        std::vector<double> _expected = make_vector<double>expected;   \
-        BOOST_CHECK_EQUAL_COLLECTIONS(                                 \
-            _actual.begin(), _actual.end(),                            \
-            _expected.begin(), _expected.end());                       \
+#define CHECK_SEQUENCE(actual, expected)                                    \
+    do {                                                                    \
+        const std::vector<double>& actual_ = (actual);                      \
+        std::vector<double> expected_ = make_vector<double>expected;        \
+        BOOST_TEST(actual_ == expected_, boost::test_tools::per_element()); \
     } while(false)
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
@@ -96,17 +94,17 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
     CHECK_SEQUENCE(dist_fun2.densities(), (0.0625));
 
     boost::random::piecewise_constant_distribution<> copy(dist);
-    BOOST_CHECK_EQUAL(dist, copy);
+    BOOST_TEST(dist == copy);
     boost::random::piecewise_constant_distribution<> copy_r(dist_r);
-    BOOST_CHECK_EQUAL(dist_r, copy_r);
+    BOOST_TEST(dist_r == copy_r);
 
     boost::random::piecewise_constant_distribution<> notpow2(3, 99, 111, gen());
     BOOST_REQUIRE_EQUAL(notpow2.densities().size(), 3u);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.densities()[0], 0.0625, 0.00000000001);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.densities()[1], 0.125, 0.00000000001);
-    BOOST_CHECK_CLOSE_FRACTION(notpow2.densities()[2], 0.0625, 0.00000000001);
+    BOOST_TEST(notpow2.densities()[0] == 0.0625, boost::test_tools::tolerance(0.00000000001));
+    BOOST_TEST(notpow2.densities()[1] == 0.125, boost::test_tools::tolerance(0.00000000001));
+    BOOST_TEST(notpow2.densities()[2] == 0.0625, boost::test_tools::tolerance(0.00000000001));
     boost::random::piecewise_constant_distribution<> copy_notpow2(notpow2);
-    BOOST_CHECK_EQUAL(notpow2, copy_notpow2);
+    BOOST_TEST(notpow2 == copy_notpow2);
 }
 
 BOOST_AUTO_TEST_CASE(test_param) {
@@ -120,14 +118,14 @@ BOOST_AUTO_TEST_CASE(test_param) {
     CHECK_SEQUENCE(param.intervals(), (0, 1, 2, 3, 5));
     CHECK_SEQUENCE(param.densities(), (.125, .25, .125, .25));
     boost::random::piecewise_constant_distribution<> copy1(param);
-    BOOST_CHECK_EQUAL(dist, copy1);
+    BOOST_TEST(dist == copy1);
     boost::random::piecewise_constant_distribution<> copy2;
     copy2.param(param);
-    BOOST_CHECK_EQUAL(dist, copy2);
+    BOOST_TEST(dist == copy2);
 
     boost::random::piecewise_constant_distribution<>::param_type
         param_copy = param;
-    BOOST_CHECK_EQUAL(param, param_copy);
+    BOOST_TEST(param == param_copy);
     BOOST_CHECK(param == param_copy);
     BOOST_CHECK(!(param != param_copy));
     boost::random::piecewise_constant_distribution<>::param_type param_default;
@@ -187,11 +185,11 @@ BOOST_AUTO_TEST_CASE(test_min_max) {
     std::vector<double> intervals{ 0, 1, 2, 3, 5 };
     std::vector<double> weights{ 1, 2, 1, 4 };
     boost::random::piecewise_constant_distribution<> dist;
-    BOOST_CHECK_EQUAL((dist.min)(), 0.0);
-    BOOST_CHECK_EQUAL((dist.max)(), 1.0);
+    BOOST_TEST((dist.min)() == 0.0);
+    BOOST_TEST((dist.max)() == 1.0);
     boost::random::piecewise_constant_distribution<> dist_r(intervals, weights);
-    BOOST_CHECK_EQUAL((dist_r.min)(), 0.0);
-    BOOST_CHECK_EQUAL((dist_r.max)(), 5.0);
+    BOOST_TEST((dist_r.min)() == 0.0);
+    BOOST_TEST((dist_r.max)() == 5.0);
 }
 
 BOOST_AUTO_TEST_CASE(test_comparison) {
@@ -217,7 +215,7 @@ BOOST_AUTO_TEST_CASE(test_streaming) {
     stream << dist;
     boost::random::piecewise_constant_distribution<> restored_dist;
     stream >> restored_dist;
-    BOOST_CHECK_EQUAL(dist, restored_dist);
+    BOOST_TEST(dist == restored_dist);
 }
 
 BOOST_AUTO_TEST_CASE(test_generation) {
@@ -228,16 +226,16 @@ BOOST_AUTO_TEST_CASE(test_generation) {
     boost::random::piecewise_constant_distribution<> dist_r(intervals, weights);
     for(int i = 0; i < 10; ++i) {
         double value = dist(gen);
-        BOOST_CHECK_GE(value, 0.0);
-        BOOST_CHECK_LT(value, 1.0);
+        BOOST_TEST(value >= 0.0);
+        BOOST_TEST(value < 1.0);
         double value_r = dist_r(gen);
-        BOOST_CHECK_GE(value_r, 1.0);
-        BOOST_CHECK_LT(value_r, 2.0);
+        BOOST_TEST(value_r >= 1.0);
+        BOOST_TEST(value_r < 2.0);
         double value_param = dist_r(gen, dist.param());
-        BOOST_CHECK_GE(value_param, 0.0);
-        BOOST_CHECK_LT(value_param, 1.0);
+        BOOST_TEST(value_param >= 0.0);
+        BOOST_TEST(value_param < 1.0);
         double value_r_param = dist(gen, dist_r.param());
-        BOOST_CHECK_GE(value_r_param, 1.0);
-        BOOST_CHECK_LT(value_r_param, 2.0);
+        BOOST_TEST(value_r_param >= 1.0);
+        BOOST_TEST(value_r_param < 2.0);
     }
 }

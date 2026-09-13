@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_valid_output) {
             for(std::size_t j = 0; j < result.size(); ++j) {
                 sum_sq += result[j] * result[j];
             }
-            BOOST_CHECK_CLOSE_FRACTION(sum_sq, 1.0, 1e-5);
+            BOOST_TEST(sum_sq == 1.0, boost::test_tools::tolerance(1e-5));
         }
     }
 }

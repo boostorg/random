@@ -31,15 +31,15 @@ void check_uniform_int(Generator & gen, int iter)
     std::vector<int> bucket(range);
     for(int j = 0; j < iter; j++) {
         int result = gen();
-        BOOST_CHECK_GE(result, (gen.min)());
-        BOOST_CHECK_LE(result, (gen.max)());
+        BOOST_TEST(result >= (gen.min)());
+        BOOST_TEST(result <= (gen.max)());
         if(result >= (gen.min)() && result <= (gen.max)()) {
             bucket[result-(gen.min)()]++;
         }
     }
     int sum = std::accumulate(bucket.begin(), bucket.end(), 0);
     std::vector<double> expected(range, 1.0 / range);
-    BOOST_CHECK_LT(chi_squared_test(bucket, expected, sum), 0.99);
+    BOOST_TEST(chi_squared_test(bucket, expected, sum) < 0.99);
 }
 
 BOOST_AUTO_TEST_CASE(test_uniform_int)

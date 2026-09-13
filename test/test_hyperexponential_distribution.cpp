@@ -26,7 +26,7 @@
     do {                                                                       \
         const std::vector<double>& x = (actual);                               \
         const std::vector<double>& y = expected;                               \
-        BOOST_CHECK_EQUAL( x.size(), y.size() );                               \
+        BOOST_TEST( x.size() == y.size() );                               \
         const std::size_t n = x.size();                                        \
         for (std::size_t i = 0; i < n; ++i)                                    \
         {                                                                      \
@@ -56,20 +56,20 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
     // Test default ctor
     boost::random::hyperexponential_distribution<> dist;
-    BOOST_CHECK_EQUAL(dist.num_phases(), 1u);
+    BOOST_TEST(dist.num_phases() == 1u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist.probabilities(), std::vector<double>{1.0}, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist.rates(), std::vector<double>{1.0}, tol);
 
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
     // Test ctor from initializer_list with probabilities and rates
     boost::random::hyperexponential_distribution<> dist_il_p_r = {{1, 2, 3, 4 }, {1, 2, 3, 4}};
-    BOOST_CHECK_EQUAL(dist_il_p_r.num_phases(), 4u);
+    BOOST_TEST(dist_il_p_r.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_il_p_r.probabilities(), make_vector(.1, .2, .3, .4), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_il_p_r.rates(), make_vector(1., 2., 3., 4.), tol);
 
     // Test ctor from initializer_list with rates
     boost::random::hyperexponential_distribution<> dist_il_r = {{1, 2, 3, 4}};
-    BOOST_CHECK_EQUAL(dist_il_r.num_phases(), 4u);
+    BOOST_TEST(dist_il_r.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_il_r.probabilities(), make_vector(.25, .25, .25, .25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_il_r.rates(), make_vector(1., 2., 3., 4.), tol);
 #endif
@@ -79,19 +79,19 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 
     // Test ctor from range
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
-    BOOST_CHECK_EQUAL(dist_r.num_phases(), 4u);
+    BOOST_TEST(dist_r.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r.rates(), rates, tol);
 
     // Test ctor from iterators
     boost::random::hyperexponential_distribution<> dist_it(probs.begin(), probs.end(), rates.begin(), rates.end());
-    BOOST_CHECK_EQUAL(dist_it.num_phases(), 4u);
+    BOOST_TEST(dist_it.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_it.probabilities(), probs, tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_it.rates(), rates, tol);
 
     // Test ctor from rate iterators
     boost::random::hyperexponential_distribution<> dist_r_it(rates.begin(), rates.end());
-    BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4u);
+    BOOST_TEST(dist_r_it.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_it.probabilities(), make_vector(.25, .25, .25, .25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_it.rates(), rates, tol);
 
@@ -99,22 +99,22 @@ BOOST_AUTO_TEST_CASE( test_constructors )
 	{
         const double rates2[] = {1.0,2.0,3.0,4.0};
         boost::random::hyperexponential_distribution<> dist_r_it(rates2, rates2+4);
-        BOOST_CHECK_EQUAL(dist_r_it.num_phases(), 4u);
+        BOOST_TEST(dist_r_it.num_phases() == 4u);
         BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_it.probabilities(), make_vector(.25, .25, .25, .25), tol);
         BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_it.rates(), std::vector<double>(rates2, rates2+4), tol);
     }
 
     // Test ctor from rate range
     boost::random::hyperexponential_distribution<> dist_r_r(rates);
-    BOOST_CHECK_EQUAL(dist_r_r.num_phases(), 4u);
+    BOOST_TEST(dist_r_r.num_phases() == 4u);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_r.probabilities(), make_vector(.25, .25, .25, .25), tol);
     BOOST_RANDOM_HYPEREXP_CHECK_CLOSE_COLLECTIONS(dist_r_r.rates(), rates, tol);
 
     // Test copy ctor
     boost::random::hyperexponential_distribution<> cp(dist);
-    BOOST_CHECK_EQUAL(cp, dist);
+    BOOST_TEST(cp == dist);
     boost::random::hyperexponential_distribution<> cp_r(dist_r);
-    BOOST_CHECK_EQUAL(cp_r, dist_r);
+    BOOST_TEST(cp_r == dist_r);
 }
 
 BOOST_AUTO_TEST_CASE( test_param )
@@ -132,16 +132,16 @@ BOOST_AUTO_TEST_CASE( test_param )
 
     // Test ctor from param
     boost::random::hyperexponential_distribution<> cp1(param);
-    BOOST_CHECK_EQUAL(cp1, dist);
+    BOOST_TEST(cp1 == dist);
 
     // Test param setter
     boost::random::hyperexponential_distribution<> cp2;
     cp2.param(param);
-    BOOST_CHECK_EQUAL(cp2, dist);
+    BOOST_TEST(cp2 == dist);
 
     // Test param constructors & operators
     boost::random::hyperexponential_distribution<>::param_type param_copy = param;
-    BOOST_CHECK_EQUAL(param, param_copy);
+    BOOST_TEST(param == param_copy);
     BOOST_CHECK(param == param_copy);
     BOOST_CHECK(!(param != param_copy));
     boost::random::hyperexponential_distribution<>::param_type param_default;
@@ -171,12 +171,12 @@ BOOST_AUTO_TEST_CASE( test_min_max )
     const std::vector<double> rates{ 1.0, 2.0, 3.0, 4.0 };
 
     boost::random::hyperexponential_distribution<> dist;
-    BOOST_CHECK_EQUAL((dist.min)(), 0);
-    BOOST_CHECK_EQUAL((dist.max)(), (std::numeric_limits<double>::infinity)());
+    BOOST_TEST((dist.min)() == 0);
+    BOOST_TEST((dist.max)() == (std::numeric_limits<double>::infinity)());
 
     boost::random::hyperexponential_distribution<> dist_r(probs, rates);
-    BOOST_CHECK_EQUAL((dist_r.min)(), 0);
-    BOOST_CHECK_EQUAL((dist_r.max)(), (std::numeric_limits<double>::infinity)());
+    BOOST_TEST((dist_r.min)() == 0);
+    BOOST_TEST((dist_r.max)() == (std::numeric_limits<double>::infinity)());
 }
 
 BOOST_AUTO_TEST_CASE(test_comparison)
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss << parm;
         boost::random::hyperexponential_distribution<>::param_type restored_parm;
         ss >> restored_parm;
-        BOOST_CHECK_EQUAL(parm, restored_parm);
+        BOOST_TEST(parm == restored_parm);
     }
 
     // - Test with an empty probability vector and ios_base exceptions disabled
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<>::param_type param;
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param(std::vector<double>(rates.size(), 1), rates);
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // - Test with an empty rate vector and ios_base exceptions disabled
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<>::param_type param;
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param(probs, std::vector<double>(probs.size(), 1));
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // - Test with an empty probability and rate vectors and ios_base exceptions disabled
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<>::param_type param;
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param;
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // - Test with an empty probability vector and ios_base exceptions enabled
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param(std::vector<double>(rates.size(), 1), rates);
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // - Test with an empty rate vector and ios_base exceptions enabled
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param(probs, std::vector<double>(probs.size(), 1));
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // - Test with an empty probability and rate vectors and ios_base exceptions enabled
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> param;
         boost::random::hyperexponential_distribution<>::param_type check_param;
-        BOOST_CHECK_EQUAL(param, check_param);
+        BOOST_TEST(param == check_param);
     }
 
     // The the reading of hyperexponential_distribution
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss << dist;
         boost::random::hyperexponential_distribution<> restored_dist;
         ss >> restored_dist;
-        BOOST_CHECK_EQUAL(dist, restored_dist);
+        BOOST_TEST(dist == restored_dist);
     }
 
     // - Test with an empty probability vector and ios_base exceptions disabled
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<> dist;
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist(std::vector<double>(rates.size(), 1), rates);
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 
     // - Test with an empty rate vector and ios_base exceptions disabled
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<> dist;
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist(probs, std::vector<double>(probs.size(), 1));
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 
     // - Test with an empty probability and rate vectors and ios_base exceptions disabled
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         boost::random::hyperexponential_distribution<> dist;
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist;
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 
     // - Test with an empty probability vector and ios_base exceptions enabled
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist(std::vector<double>(rates.size(), 1), rates);
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 
     // - Test with an empty rate vector and ios_base exceptions enabled
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist(probs, std::vector<double>(probs.size(), 1));
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 
     // - Test with an empty probability and rate vectors and ios_base exceptions enabled
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE( test_streaming )
         ss.exceptions(std::ios_base::failbit);
         ss >> dist;
         boost::random::hyperexponential_distribution<> check_dist;
-        BOOST_CHECK_EQUAL(dist, check_dist);
+        BOOST_TEST(dist == check_dist);
     }
 }
 
@@ -423,16 +423,16 @@ BOOST_AUTO_TEST_CASE(test_generation)
     {
         const result_type value = dist(gen);
         use(value);
-        BOOST_CHECK_GE(value, static_cast<result_type>(0));
+        BOOST_TEST(value >= static_cast<result_type>(0));
         const result_type value_r = dist_r(gen);
         use(value_r);
-        BOOST_CHECK_GE(value_r, static_cast<result_type>(0));
+        BOOST_TEST(value_r >= static_cast<result_type>(0));
         const result_type value_param = dist_r(gen, dist.param());
         use(value_param);
-        BOOST_CHECK_GE(value_param, static_cast<result_type>(0));
+        BOOST_TEST(value_param >= static_cast<result_type>(0));
         const result_type value_r_param = dist(gen, dist_r.param());
         use(value_r_param);
-        BOOST_CHECK_GE(value_r_param, static_cast<result_type>(0));
+        BOOST_TEST(value_r_param >= static_cast<result_type>(0));
     }
 }
 
@@ -452,15 +452,15 @@ BOOST_AUTO_TEST_CASE( test_generation_float )
     {
         const result_type value = dist(gen);
         use(value);
-        BOOST_CHECK_GE(value, static_cast<result_type>(0));
+        BOOST_TEST(value >= static_cast<result_type>(0));
         const result_type value_r = dist_r(gen);
         use(value_r);
-        BOOST_CHECK_GE(value_r, static_cast<result_type>(0));
+        BOOST_TEST(value_r >= static_cast<result_type>(0));
         const result_type value_param = dist_r(gen, dist.param());
         use(value_param);
-        BOOST_CHECK_GE(value_param, static_cast<result_type>(0));
+        BOOST_TEST(value_param >= static_cast<result_type>(0));
         const result_type value_r_param = dist(gen, dist_r.param());
         use(value_r_param);
-        BOOST_CHECK_GE(value_r_param, static_cast<result_type>(0));
+        BOOST_TEST(value_r_param >= static_cast<result_type>(0));
     }
 }
