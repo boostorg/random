@@ -300,6 +300,8 @@ public:
             return *this;
         }
 
+	// Allow only copy assignment
+        reference(const reference&) = delete;
         reference &operator=(const reference &other)
         {
             return *this = static_cast<bool>(other);
