@@ -9,14 +9,11 @@
  */
 
 #include <boost/random/seed_seq.hpp>
-#include <boost/assign/list_of.hpp>
 #include <boost/config.hpp>
 #include <vector>
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-
-using boost::assign::list_of;
 
 BOOST_AUTO_TEST_CASE(test_seed_seq) {
     std::uint32_t expected_param[4] = { 2, 3, 4, 0xdeadbeaf };
@@ -62,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
         494552679u
     };
 
-    std::vector<int> data = list_of(2)(3)(4);
+    std::vector<int> data{ 2, 3, 4 };
     
     std::fill_n(&store32[0], 10, 0);
     std::fill_n(&store64[0], 10, 0);
@@ -120,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq_short_output) {
         3175758659u
     };
     
-    std::vector<int> data = list_of(2)(3)(4)(5);
+    std::vector<int> data{ 2, 3, 4, 5 };
 
     boost::random::seed_seq seq(data);
 

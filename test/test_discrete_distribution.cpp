@@ -11,7 +11,6 @@
 
 #include <boost/random/discrete_distribution.hpp>
 #include <boost/random/linear_congruential.hpp>
-#include <boost/assign/list_of.hpp>
 #include <sstream>
 #include <vector>
 #include "concepts.hpp"
@@ -34,35 +33,33 @@ struct gen {
     }
 };
 
-#define CHECK_PROBABILITIES(actual, expected)       \
-    do {                                            \
-        std::vector<double> _actual = (actual);     \
-        std::vector<double> _expected = (expected); \
-        BOOST_CHECK_EQUAL_COLLECTIONS(              \
-            _actual.begin(), _actual.end(),         \
-            _expected.begin(), _expected.end());    \
+#define CHECK_PROBABILITIES(actual, expected)                        \
+    do {                                                             \
+        std::vector<double> _actual = (actual);                      \
+        std::vector<double> _expected = make_vector<double>expected; \
+        BOOST_CHECK_EQUAL_COLLECTIONS(                               \
+            _actual.begin(), _actual.end(),                          \
+            _expected.begin(), _expected.end());                     \
     } while(false)
-
-using boost::assign::list_of;
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
     boost::random::discrete_distribution<> dist;
-    CHECK_PROBABILITIES(dist.probabilities(), list_of(1.0));
+    CHECK_PROBABILITIES(dist.probabilities(), (1.0));
 
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
     boost::random::discrete_distribution<> dist_il = { 1, 2, 1, 4 };
-    CHECK_PROBABILITIES(dist_il.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(dist_il.probabilities(), (.125, .25, .125, .5));
 #endif
-    std::vector<double> probs = boost::assign::list_of(1.0)(2.0)(1.0)(4.0);
+    std::vector<double> probs{ 1.0, 2.0, 1.0, 4.0 };
 
     boost::random::discrete_distribution<> dist_r(probs);
-    CHECK_PROBABILITIES(dist_r.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(dist_r.probabilities(), (.125, .25, .125, .5));
     
     boost::random::discrete_distribution<> dist_it(probs.begin(), probs.end());
-    CHECK_PROBABILITIES(dist_it.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(dist_it.probabilities(), (.125, .25, .125, .5));
     
     boost::random::discrete_distribution<> dist_fun(4, 99, 115, gen());
-    CHECK_PROBABILITIES(dist_fun.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(dist_fun.probabilities(), (.125, .25, .125, .5));
 
     boost::random::discrete_distribution<> copy(dist);
     BOOST_CHECK_EQUAL(dist, copy);
@@ -79,10 +76,10 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 }
 
 BOOST_AUTO_TEST_CASE(test_param) {
-    std::vector<double> probs = boost::assign::list_of(1.0)(2.0)(1.0)(4.0);
+    std::vector<double> probs{ 1.0, 2.0, 1.0, 4.0 };
     boost::random::discrete_distribution<> dist(probs);
     boost::random::discrete_distribution<>::param_type param = dist.param();
-    CHECK_PROBABILITIES(param.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(param.probabilities(), (.125, .25, .125, .5));
     boost::random::discrete_distribution<> copy1(param);
     BOOST_CHECK_EQUAL(dist, copy1);
     boost::random::discrete_distribution<> copy2;
@@ -94,30 +91,30 @@ BOOST_AUTO_TEST_CASE(test_param) {
     BOOST_CHECK(param == param_copy);
     BOOST_CHECK(!(param != param_copy));
     boost::random::discrete_distribution<>::param_type param_default;
-    CHECK_PROBABILITIES(param_default.probabilities(), list_of(1.0));
+    CHECK_PROBABILITIES(param_default.probabilities(), (1.0));
     BOOST_CHECK(param != param_default);
     BOOST_CHECK(!(param == param_default));
     
 #ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
     boost::random::discrete_distribution<>::param_type
         parm_il = { 1, 2, 1, 4 };
-    CHECK_PROBABILITIES(parm_il.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(parm_il.probabilities(), (.125, .25, .125, .5));
 #endif
 
     boost::random::discrete_distribution<>::param_type parm_r(probs);
-    CHECK_PROBABILITIES(parm_r.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(parm_r.probabilities(), (.125, .25, .125, .5));
     
     boost::random::discrete_distribution<>::param_type
         parm_it(probs.begin(), probs.end());
-    CHECK_PROBABILITIES(parm_it.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(parm_it.probabilities(), (.125, .25, .125, .5));
     
     boost::random::discrete_distribution<>::param_type
         parm_fun(4, 99, 115, gen());
-    CHECK_PROBABILITIES(parm_fun.probabilities(), list_of(.125)(.25)(.125)(.5));
+    CHECK_PROBABILITIES(parm_fun.probabilities(), (.125, .25, .125, .5));
 }
 
 BOOST_AUTO_TEST_CASE(test_min_max) {
-    std::vector<double> probs = boost::assign::list_of(1.0)(2.0)(1.0);
+    std::vector<double> probs{ 1.0, 2.0, 1.0 };
     boost::random::discrete_distribution<> dist;
     BOOST_CHECK_EQUAL((dist.min)(), 0);
     BOOST_CHECK_EQUAL((dist.max)(), 0);
@@ -127,7 +124,7 @@ BOOST_AUTO_TEST_CASE(test_min_max) {
 }
 
 BOOST_AUTO_TEST_CASE(test_comparison) {
-    std::vector<double> probs = boost::assign::list_of(1.0)(2.0)(1.0)(4.0);
+    std::vector<double> probs{ 1.0, 2.0, 1.0, 4.0 };
     boost::random::discrete_distribution<> dist;
     boost::random::discrete_distribution<> dist_copy(dist);
     boost::random::discrete_distribution<> dist_r(probs);
@@ -141,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_comparison) {
 }
 
 BOOST_AUTO_TEST_CASE(test_streaming) {
-    std::vector<double> probs = boost::assign::list_of(1.0)(2.0)(1.0)(4.0);
+    std::vector<double> probs{ 1.0, 2.0, 1.0, 4.0 };
     boost::random::discrete_distribution<> dist(probs);
     std::stringstream stream;
     stream << dist;
@@ -151,7 +148,7 @@ BOOST_AUTO_TEST_CASE(test_streaming) {
 }
 
 BOOST_AUTO_TEST_CASE(test_generation) {
-    std::vector<double> probs = boost::assign::list_of(0.0)(1.0);
+    std::vector<double> probs{ 0.0, 1.0 };
     boost::minstd_rand0 gen;
     boost::random::discrete_distribution<> dist;
     boost::random::discrete_distribution<> dist_r(probs);

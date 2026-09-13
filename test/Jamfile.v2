@@ -103,22 +103,22 @@ explicit test_lagged_fibonacci1279 test_lagged_fibonacci2281
     test_lagged_fibonacci44497 ;
 
 alias math_test :
-    /boost/assign//boost_assign
     /boost/bind//boost_bind
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
     /boost/math//boost_math_tr1
     /boost/numeric_conversion//boost_numeric_conversion
+    /boost/range//boost_range
     ;
 
-run test_seed_seq.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_seed_seq.cpp /boost/test//boost_unit_test_framework ;
 
 run test_binomial.cpp math_test ;
 run test_binomial_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_poisson.cpp math_test ;
 run test_poisson_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_discrete.cpp math_test ;
-run test_discrete_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_discrete_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_gamma.cpp math_test ;
 run test_gamma_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_weibull.cpp math_test ;
@@ -136,9 +136,9 @@ run test_student_t_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_normal.cpp math_test ;
 run test_normal_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_piecewise_constant.cpp math_test ;
-run test_piecewise_constant_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_piecewise_constant_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_piecewise_linear.cpp math_test ;
-run test_piecewise_linear_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_piecewise_linear_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_exponential.cpp math_test ;
 run test_exponential_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_bernoulli.cpp math_test ;
