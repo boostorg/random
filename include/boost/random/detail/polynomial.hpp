@@ -284,8 +284,8 @@ public:
     public:
         reference(digit_t &value, int idx)
             : _value(value), _idx(idx) {}
-	// Allow only copy assignment
-        reference(const reference&) = delete;
+        reference(const reference& other) = default;
+        reference(reference&& other) = default;
         reference &operator=(const reference &other)
         {
             return *this = static_cast<bool>(other);
