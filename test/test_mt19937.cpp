@@ -12,7 +12,7 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <algorithm>
 #include <vector>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #define BOOST_RANDOM_URNG boost::random::mt19937
 
@@ -33,14 +33,14 @@
 struct seed_seq_0 {
     template<class It>
     void generate(It begin, It end) const {
-        std::fill(begin, end, boost::uint32_t(0));
+        std::fill(begin, end, std::uint32_t(0));
     }
 };
 
 struct seed_seq_1 {
     template<class It>
     void generate(It begin, It end) const {
-        std::fill(begin, end, boost::uint32_t(0));
+        std::fill(begin, end, std::uint32_t(0));
         *(end - 1) = 1;
     }
 };
@@ -48,10 +48,10 @@ struct seed_seq_1 {
 BOOST_AUTO_TEST_CASE(test_special_seed) {
     {
     seed_seq_1 seed;
-    std::vector<boost::uint32_t> vec(624);
+    std::vector<std::uint32_t> vec(624);
     seed.generate(vec.begin(), vec.end());
     
-    std::vector<boost::uint32_t>::iterator it = vec.begin();
+    std::vector<std::uint32_t>::iterator it = vec.begin();
     boost::mt19937 gen1(it, vec.end());
     BOOST_CHECK_EQUAL(gen1(), 0u);
     BOOST_CHECK_EQUAL(gen1(), 0u);
@@ -64,10 +64,10 @@ BOOST_AUTO_TEST_CASE(test_special_seed) {
     }
     {
     seed_seq_0 seed;
-    std::vector<boost::uint32_t> vec(624);
+    std::vector<std::uint32_t> vec(624);
     seed.generate(vec.begin(), vec.end());
     
-    std::vector<boost::uint32_t>::iterator it = vec.begin();
+    std::vector<std::uint32_t>::iterator it = vec.begin();
     boost::mt19937 gen1(it, vec.end());
     BOOST_CHECK_EQUAL(gen1(), 1141379330u);
     BOOST_CHECK_EQUAL(gen1(), 0u);

@@ -9,12 +9,12 @@
  * $Id$
  */
 
+#include <cstdint>
 #include <numeric>
+#include <limits>
 #include <sstream>
 #include <vector>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/lagged_fibonacci.hpp>
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_uniform_int)
     level_three uint1_4(uint05, int_gen(1, 4));
     check_uniform_int(uint1_4, 100000);
 
-    typedef BOOST_RANDOM_UNIFORM_INT<boost::uint8_t> int8_gen;
+    typedef BOOST_RANDOM_UNIFORM_INT<std::uint8_t> int8_gen;
     typedef boost::random::variate_generator<boost::random::mt19937&, int8_gen> gen8_t;
 
     gen8_t gen8_03(gen, int8_gen(0, 3));
@@ -107,7 +107,7 @@ class ruetti_gen
 {
 public:
     ruetti_gen() : state((max)() - 1) {}
-    typedef boost::uint64_t result_type;
+    typedef std::uint64_t result_type;
     result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0; }
     result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const { return std::numeric_limits<result_type>::max BOOST_PREVENT_MACRO_SUBSTITUTION (); }
     result_type operator()() { return state--; }

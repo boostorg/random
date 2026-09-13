@@ -14,7 +14,7 @@
 #ifndef BOOST_RANDOM_DETAIL_GENERATOR_BITS_HPP
 #define BOOST_RANDOM_DETAIL_GENERATOR_BITS_HPP
 
-#include <boost/limits.hpp>
+#include <limits>
 
 namespace boost {
 namespace random {

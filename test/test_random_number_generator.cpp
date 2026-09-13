@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(test_random_shuffle)
 {
 #ifndef BOOST_NO_CXX98_RANDOM_SHUFFLE
     boost::mt19937 engine(1234);
-    boost::random::random_number_generator<boost::mt19937> generator(engine);
+    boost::random::random_number_generator<boost::mt19937, std::ptrdiff_t> generator(engine);
 
     std::vector<int> testVec;
 

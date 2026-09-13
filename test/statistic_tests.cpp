@@ -17,8 +17,8 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <limits>
 
-#include <boost/cstdint.hpp>
 #include <boost/random.hpp>
 
 #include <boost/math/special_functions/gamma.hpp>

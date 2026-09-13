@@ -12,8 +12,6 @@
 #include <boost/random/uniform_on_sphere.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include <limits>
-
 #define BOOST_RANDOM_DISTRIBUTION boost::random::uniform_on_sphere<>
 #define BOOST_RANDOM_ARG1 dim
 #define BOOST_RANDOM_ARG1_DEFAULT 2

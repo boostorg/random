@@ -6,6 +6,7 @@
 #ifndef TEST_QRNG_FUNCTIONS_HPP_INCLUDED
 #define TEST_QRNG_FUNCTIONS_HPP_INCLUDED
 
+#include <cstdint>
 #include <boost/random/uniform_real.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
@@ -16,7 +17,7 @@ namespace test {
 // Invokes operator() precisely n times. This is to check that
 // Engine::discard(n) actually has the same effect.
 template<typename Engine>
-inline void trivial_discard(Engine& eng, boost::uintmax_t n)
+inline void trivial_discard(Engine& eng, std::uintmax_t n)
 {
   for( ; n != 0; --n ) eng();
 }
@@ -166,7 +167,7 @@ void test_max_discard(std::size_t dim)
 {
   typedef typename Generator::type engine_type;
 
-  static const boost::uintmax_t maxdiscard = dim * engine_type::max();
+  static const std::uintmax_t maxdiscard = dim * engine_type::max();
 
   // Max discard limit
   {
@@ -265,13 +266,13 @@ inline void test_##QRNG##_max_discard() \
   static const std::size_t dim = 2;\
    \
    /* test full 8 bits */ \
-  test::test_max_discard<gen_engine<boost::uint8_t, 8u> >(dim); \
+  test::test_max_discard<gen_engine<std::uint8_t, 8u> >(dim); \
   \
   /* test 7 bits */ \
-  test::test_max_discard<gen_engine<boost::uint8_t, 7u> >(dim); \
+  test::test_max_discard<gen_engine<std::uint8_t, 7u> >(dim); \
   \
   /* test 6 bits for a good measure */ \
-  test::test_max_discard<gen_engine<boost::uint8_t, 6u> >(dim); \
+  test::test_max_discard<gen_engine<std::uint8_t, 6u> >(dim); \
 } \
 /**/
 

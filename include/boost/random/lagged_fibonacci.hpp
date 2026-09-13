@@ -17,14 +17,13 @@
 #ifndef BOOST_RANDOM_LAGGED_FIBONACCI_HPP
 #define BOOST_RANDOM_LAGGED_FIBONACCI_HPP
 
+#include <cstdint>
 #include <istream>
 #include <iosfwd>
 #include <algorithm>     // std::max
 #include <iterator>
 #include <boost/config/no_tr1/cmath.hpp>         // std::pow
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/uniform_01.hpp>
@@ -91,7 +90,7 @@ public:
     BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(lagged_fibonacci_engine,
         UIntType, value)
     {
-        minstd_rand0 intgen(static_cast<boost::uint32_t>(value));
+        minstd_rand0 intgen(static_cast<std::uint32_t>(value));
         detail::generator_seed_seq<minstd_rand0> gen(intgen);
         seed(gen);
     }
@@ -131,9 +130,9 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }
@@ -266,7 +265,7 @@ public:
     BOOST_STATIC_CONSTANT(unsigned int, long_lag = p);
     BOOST_STATIC_CONSTANT(unsigned int, short_lag = q);
 
-    BOOST_STATIC_CONSTANT(boost::uint32_t, default_seed = 331u);
+    BOOST_STATIC_CONSTANT(std::uint32_t, default_seed = 331u);
 
     /** Constructs a @c lagged_fibonacci_01 generator and calls @c seed(). */
     lagged_fibonacci_01_engine() { seed(); }
@@ -291,7 +290,7 @@ public:
      * seeds will be equivalent to some seed within this range. See
      * \linear_congruential_engine for details.
      */
-    BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(lagged_fibonacci_01_engine, boost::uint32_t, value)
+    BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(lagged_fibonacci_01_engine, std::uint32_t, value)
     {
         minstd_rand0 intgen(value);
         detail::generator_seed_seq<minstd_rand0> gen(intgen);
@@ -339,9 +338,9 @@ public:
     { return detail::generate_from_real(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }
@@ -412,7 +411,7 @@ const unsigned int lagged_fibonacci_01_engine<RealType, w, p, q>::short_lag;
 template<class RealType, int w, unsigned int p, unsigned int q>
 const int lagged_fibonacci_01_engine<RealType,w,p,q>::word_size;
 template<class RealType, int w, unsigned int p, unsigned int q>
-const boost::uint32_t lagged_fibonacci_01_engine<RealType,w,p,q>::default_seed;
+const std::uint32_t lagged_fibonacci_01_engine<RealType,w,p,q>::default_seed;
 #endif
 
 /// \cond show_private
@@ -447,7 +446,7 @@ class lagged_fibonacci_01 : public lagged_fibonacci_01_engine<RealType, w, p, q>
     typedef lagged_fibonacci_01_engine<RealType, w, p, q> base_type;
 public:
     lagged_fibonacci_01() {}
-    BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(lagged_fibonacci_01, boost::uint32_t, val)
+    BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(lagged_fibonacci_01, std::uint32_t, val)
     { this->seed(val); }
     BOOST_RANDOM_DETAIL_SEED_SEQ_CONSTRUCTOR(lagged_fibonacci_01, SeedSeq, seq)
     { this->seed(seq); }

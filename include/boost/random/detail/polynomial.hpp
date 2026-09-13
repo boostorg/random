@@ -13,12 +13,12 @@
 #ifndef BOOST_RANDOM_DETAIL_POLYNOMIAL_HPP
 #define BOOST_RANDOM_DETAIL_POLYNOMIAL_HPP
 
+#include <cstdint>
 #include <cstddef>
 #include <limits>
 #include <vector>
 #include <algorithm>
 #include <boost/assert.hpp>
-#include <boost/cstdint.hpp>
 
 namespace boost {
 namespace random {
@@ -246,7 +246,7 @@ public:
     // base should have the same number of bits as mod
     // base, and mod should both be able to hold a power
     // of 2 >= mod_bits.  out needs to be twice as large.
-    static void mod_pow_x(boost::uintmax_t exponent, const digit_t * mod, std::size_t mod_bits, digit_t * out)
+    static void mod_pow_x(std::uintmax_t exponent, const digit_t * mod, std::size_t mod_bits, digit_t * out)
     {
         const std::size_t bits = std::numeric_limits<digit_t>::digits;
         const std::size_t n = (mod_bits + bits - 1) / bits;
@@ -256,8 +256,8 @@ public:
             std::fill_n(out + 1, n - 1, digit_t(0));
             return;
         }
-        boost::uintmax_t i = std::numeric_limits<boost::uintmax_t>::digits - 1;
-        while(((boost::uintmax_t(1) << i) & exponent) == 0) {
+        std::uintmax_t i = std::numeric_limits<std::uintmax_t>::digits - 1;
+        while(((std::uintmax_t(1) << i) & exponent) == 0) {
             --i;
         }
         out[0] = 2;
@@ -266,7 +266,7 @@ public:
         while(i--) {
             sqr(out, n);
             m(out, 2 * mod_bits - 1);
-            if((boost::uintmax_t(1) << i) & exponent) {
+            if((std::uintmax_t(1) << i) & exponent) {
                 shift_left(out, n, 1);
                 if(out[highbit / bits] & (digit_t(1) << highbit%bits))
                     add(n, out, mod, out);
@@ -337,7 +337,7 @@ public:
         _size = n;
     }
     friend polynomial operator*(const polynomial &lhs, const polynomial &rhs);
-    friend polynomial mod_pow_x(boost::uintmax_t exponent, polynomial mod);
+    friend polynomial mod_pow_x(std::uintmax_t exponent, polynomial mod);
 private:
     std::vector<polynomial_ops::digit_t> _storage;
     std::size_t _size;
@@ -365,7 +365,7 @@ inline polynomial operator*(const polynomial &lhs, const polynomial &rhs)
     return result;
 }
 
-inline polynomial mod_pow_x(boost::uintmax_t exponent, polynomial mod)
+inline polynomial mod_pow_x(std::uintmax_t exponent, polynomial mod)
 {
     polynomial result;
     mod.normalize();

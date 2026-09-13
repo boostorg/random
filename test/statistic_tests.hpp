@@ -15,7 +15,7 @@
 #include <stdexcept>
 #include <iterator>
 #include <vector>
-#include <boost/limits.hpp>
+#include <limits>
 #include <algorithm>
 #include <cmath>
 

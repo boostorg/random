@@ -19,7 +19,6 @@
 
 #include <boost/assert.hpp>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
 namespace boost {

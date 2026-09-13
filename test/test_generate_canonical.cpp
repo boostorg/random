@@ -14,7 +14,7 @@
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/lagged_fibonacci.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/mpl/vector.hpp>
 
 #define BOOST_TEST_MAIN
@@ -88,10 +88,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_long_double, Engine, engines)
 
 struct max_engine
 {
-    typedef boost::uint32_t result_type;
+    typedef std::uint32_t result_type;
     static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
     static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
-    { return ~boost::uint32_t(0); }
+    { return ~std::uint32_t(0); }
     result_type operator()() { return (max)(); }
 };
 

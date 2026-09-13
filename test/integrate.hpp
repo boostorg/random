@@ -14,7 +14,7 @@
 #ifndef INTEGRATE_HPP
 #define INTEGRATE_HPP
 
-#include <boost/limits.hpp>
+#include <limits>
 
 template<class UnaryFunction>
 inline typename UnaryFunction::result_type 

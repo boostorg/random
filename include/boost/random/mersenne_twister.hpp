@@ -18,11 +18,11 @@
 #ifndef BOOST_RANDOM_MERSENNE_TWISTER_HPP
 #define BOOST_RANDOM_MERSENNE_TWISTER_HPP
 
+#include <cstdint>
 #include <iosfwd>
 #include <istream>
 #include <stdexcept>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/ptr_helper.hpp>
@@ -200,7 +200,7 @@ public:
      * }
      * @endcode
      */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
 #ifndef BOOST_RANDOM_MERSENNE_TWISTER_DISCARD_THRESHOLD
 #define BOOST_RANDOM_MERSENNE_TWISTER_DISCARD_THRESHOLD 10000000
@@ -208,7 +208,7 @@ public:
         if(z > BOOST_RANDOM_MERSENNE_TWISTER_DISCARD_THRESHOLD) {
             discard_many(z);
         } else {
-            for(boost::uintmax_t j = 0; j < z; ++j) {
+            for(std::uintmax_t j = 0; j < z; ++j) {
                 (*this)();
             }
         }
@@ -387,7 +387,7 @@ private:
      * Sequences and Their Applications (SETA '08).
      * DOI=10.1007/978-3-540-85912-3_26
      */
-    void discard_many(boost::uintmax_t z)
+    void discard_many(std::uintmax_t z)
     {
         // Compute the minimal polynomial, phi(t)
         // This depends only on the transition function,

@@ -19,7 +19,7 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <iosfwd>
 #include <istream>
-#include <boost/limits.hpp>
+#include <limits>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/uniform_01.hpp>

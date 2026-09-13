@@ -13,9 +13,9 @@
 #ifndef BOOST_RANDOM_DETAIL_LARGE_ARITHMETIC_HPP
 #define BOOST_RANDOM_DETAIL_LARGE_ARITHMETIC_HPP
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
+#include <limits>
 #include <boost/integer.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/detail/integer_log2.hpp>
 
 #include <boost/random/detail/disable_warnings.hpp>
@@ -25,18 +25,18 @@ namespace random {
 namespace detail {
 
 struct div_t {
-    boost::uintmax_t quotient;
-    boost::uintmax_t remainder;
+    std::uintmax_t quotient;
+    std::uintmax_t remainder;
 };
 
-inline div_t muldivmod(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t m)
+inline div_t muldivmod(std::uintmax_t a, std::uintmax_t b, std::uintmax_t m)
 {
     const int bits =
-        ::std::numeric_limits< ::boost::uintmax_t>::digits / 2;
-    const ::boost::uintmax_t mask = (::boost::uintmax_t(1) << bits) - 1;
+        std::numeric_limits< std::uintmax_t>::digits / 2;
+    const std::uintmax_t mask = (std::uintmax_t(1) << bits) - 1;
     typedef ::boost::uint_t<bits>::fast digit_t;
 
-    int shift = std::numeric_limits< ::boost::uintmax_t>::digits - 1
+    int shift = std::numeric_limits< std::uintmax_t>::digits - 1
         - detail::integer_log2(m);
 
     a <<= shift;
@@ -51,7 +51,7 @@ inline div_t muldivmod(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t 
     for(int i = 0; i < 2; ++i) {
         digit_t carry = 0;
         for(int j = 0; j < 2; ++j) {
-            ::boost::uint64_t temp = ::boost::uintmax_t(a_[i]) * b_[j] +
+            std::uint64_t temp = std::uintmax_t(a_[i]) * b_[j] +
                 carry + product[i + j];
             product[i + j] = digit_t(temp & mask);
             carry = digit_t(temp >> bits);
@@ -65,23 +65,23 @@ inline div_t muldivmod(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t 
 
     if(m == 0) {
         div_t result = {
-            ((::boost::uintmax_t(product[3]) << bits) | product[2]),
-            ((::boost::uintmax_t(product[1]) << bits) | product[0]) >> shift,
+            ((std::uintmax_t(product[3]) << bits) | product[2]),
+            ((std::uintmax_t(product[1]) << bits) | product[0]) >> shift,
         };
         return result;
     }
 
     // divide product / m
     for(int i = 3; i >= 2; --i) {
-        ::boost::uintmax_t temp =
-            ::boost::uintmax_t(product[i]) << bits | product[i - 1];
+        std::uintmax_t temp =
+            std::uintmax_t(product[i]) << bits | product[i - 1];
 
         digit_t q = digit_t((product[i] == m_[1]) ? mask : temp / m_[1]);
 
-        ::boost::uintmax_t rem =
-            ((temp - ::boost::uintmax_t(q) * m_[1]) << bits) + product[i - 2];
+        std::uintmax_t rem =
+            ((temp - std::uintmax_t(q) * m_[1]) << bits) + product[i - 2];
 
-        ::boost::uintmax_t diff = m_[0] * ::boost::uintmax_t(q);
+        std::uintmax_t diff = m_[0] * std::uintmax_t(q);
 
         int error = 0;
         if(diff > rem) {
@@ -101,16 +101,16 @@ inline div_t muldivmod(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t 
     }
 
     div_t result = {
-        ((::boost::uintmax_t(quotient[1]) << bits) | quotient[0]),
-        ((::boost::uintmax_t(product[1]) << bits) | product[0]) >> shift,
+        ((std::uintmax_t(quotient[1]) << bits) | quotient[0]),
+        ((std::uintmax_t(product[1]) << bits) | product[0]) >> shift,
     };
     return result;
 }
 
-inline boost::uintmax_t muldiv(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t m)
+inline std::uintmax_t muldiv(std::uintmax_t a, std::uintmax_t b, std::uintmax_t m)
 { return detail::muldivmod(a, b, m).quotient; }
 
-inline boost::uintmax_t mulmod(boost::uintmax_t a, boost::uintmax_t b, boost::uintmax_t m)
+inline std::uintmax_t mulmod(std::uintmax_t a, std::uintmax_t b, std::uintmax_t m)
 { return detail::muldivmod(a, b, m).remainder; }
 
 } // namespace detail

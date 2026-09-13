@@ -11,15 +11,16 @@
 
 #include <boost/random/detail/const_mod.hpp>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
+#include <limits>
 #include <boost/mpl/vector.hpp>
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
 typedef boost::mpl::vector<
-    boost::int8_t,
-    boost::uint8_t
+    std::int8_t,
+    std::uint8_t
 > int8_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_mult8, IntType, int8_types) {
@@ -93,8 +94,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_invert8, IntType, int8_types) {
 }
 
 typedef boost::mpl::vector<
-    boost::int32_t,
-    boost::uint32_t
+    std::int32_t,
+    std::uint32_t
 > int32_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_mult32, IntType, int32_types) {
@@ -134,8 +135,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_invert32, IntType, int32_types) {
 #if !defined(BOOST_NO_INT64_T)
 
 typedef boost::mpl::vector<
-    boost::int64_t,
-    boost::uint64_t
+    std::int64_t,
+    std::uint64_t
 > int64_types;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_mult64, IntType, int64_types) {

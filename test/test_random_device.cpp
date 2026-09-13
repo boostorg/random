@@ -33,6 +33,6 @@ BOOST_AUTO_TEST_CASE(test_random_device)
         BOOST_CHECK_LE(val, (rng.max)());
     }
 
-    boost::uint32_t a[10];
+    std::uint32_t a[10];
     rng.generate(a, a + 10);
 }

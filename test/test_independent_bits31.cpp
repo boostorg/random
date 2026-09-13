@@ -12,7 +12,7 @@
 #include <boost/random/independent_bits.hpp>
 #include <boost/random/linear_congruential.hpp>
 
-typedef boost::random::independent_bits_engine<boost::random::minstd_rand0, 31, boost::uint32_t> independent_bits31;
+typedef boost::random::independent_bits_engine<boost::random::minstd_rand0, 31, std::uint32_t> independent_bits31;
 #define BOOST_RANDOM_URNG independent_bits31
 
 #define BOOST_RANDOM_SEED_WORDS 1

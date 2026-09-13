@@ -14,13 +14,12 @@
 #ifndef BOOST_RANDOM_XOR_COMBINE_HPP
 #define BOOST_RANDOM_XOR_COMBINE_HPP
 
+#include <cstdint>
 #include <istream>
 #include <iosfwd>
 #include <cassert>
 #include <algorithm> // for std::min and std::max
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
-#include <boost/cstdint.hpp>     // uint32_t
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/seed.hpp>
 #include <boost/random/detail/seed_impl.hpp>
@@ -128,7 +127,7 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
         _rng1.discard(z);
         _rng2.discard(z);

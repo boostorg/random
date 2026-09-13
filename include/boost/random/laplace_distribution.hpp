@@ -16,6 +16,7 @@
 #include <cassert>
 #include <istream>
 #include <iosfwd>
+#include <limits>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/exponential_distribution.hpp>
 

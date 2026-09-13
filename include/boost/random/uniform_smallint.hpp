@@ -19,9 +19,9 @@
 
 #include <istream>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>

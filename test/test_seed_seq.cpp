@@ -19,11 +19,11 @@
 using boost::assign::list_of;
 
 BOOST_AUTO_TEST_CASE(test_seed_seq) {
-    boost::uint32_t expected_param[4] = { 2, 3, 4, 0xdeadbeaf };
-    boost::uint32_t param[4] = { 2, 3, 4, 0xdeadbeaf };
-    boost::uint32_t store32[10];
-    boost::uint64_t store64[10];
-    boost::uint32_t expected[10] = {
+    std::uint32_t expected_param[4] = { 2, 3, 4, 0xdeadbeaf };
+    std::uint32_t param[4] = { 2, 3, 4, 0xdeadbeaf };
+    std::uint32_t store32[10];
+    std::uint64_t store64[10];
+    std::uint32_t expected[10] = {
         3155793538u,
         2047427591u,
         2886057794u,
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
 
-    boost::uint32_t expected_r[10] = {
+    std::uint32_t expected_r[10] = {
         2681148375u,
         3302224839u,
         249244011u,
@@ -113,9 +113,9 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
 }
 
 BOOST_AUTO_TEST_CASE(test_seed_seq_short_output) {
-    boost::uint32_t store32[2];
+    std::uint32_t store32[2];
 
-    boost::uint32_t expected_short[2] = {
+    std::uint32_t expected_short[2] = {
         4149590228u,
         3175758659u
     };

@@ -11,7 +11,7 @@
 
 #include <boost/random/lagged_fibonacci.hpp>
 
-typedef boost::random::lagged_fibonacci_engine<boost::uint32_t, 24, 607, 273> lagged_fibonacci;
+typedef boost::random::lagged_fibonacci_engine<std::uint32_t, 24, 607, 273> lagged_fibonacci;
 #define BOOST_RANDOM_URNG lagged_fibonacci
 
 #define BOOST_RANDOM_SEED_WORDS 607

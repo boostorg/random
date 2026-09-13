@@ -29,16 +29,16 @@
 struct seed_seq_0 {
     template<class It>
     void generate(It begin, It end) const {
-        std::fill(begin, end, boost::uint32_t(0xFFFFFFFF));
+        std::fill(begin, end, std::uint32_t(0xFFFFFFFF));
     }
 };
 
 BOOST_AUTO_TEST_CASE(test_special_seed) {
     {
         seed_seq_0 seed;
-        std::vector<boost::uint32_t> vec(17);
+        std::vector<std::uint32_t> vec(17);
         seed.generate(vec.begin(), vec.end()); // fill vec with ones
-        std::vector<boost::uint32_t>::iterator it = vec.begin();
+        std::vector<std::uint32_t>::iterator it = vec.begin();
         boost::random::mixmax gen1(it, vec.end()); // init gen1 with vec iterator
         BOOST_CHECK_EQUAL(gen1(), 775778250716139533ULL);
         BOOST_CHECK_EQUAL(gen1(), 846264592759195742ULL);

@@ -13,6 +13,7 @@
 
 #include <boost/core/bit.hpp> // lsb
 #include <boost/throw_exception.hpp>
+#include <limits>
 #include <stdexcept>
 
 #include <functional> // bit_xor

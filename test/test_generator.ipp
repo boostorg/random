@@ -9,6 +9,7 @@
  *
  */
 
+#include <cstdint>
 #include "concepts.hpp"
 #include <boost/random/seed_seq.hpp>
 #include <boost/random/detail/seed.hpp>
@@ -73,7 +74,7 @@ void test_seed(seed_type value)
     test_seed_conversion<unsigned long>(urng, value);
 #if !defined(BOOST_NO_INT64_T)
     test_seed_conversion<boost::int64_t>(urng, value);
-    test_seed_conversion<boost::uint64_t>(urng, value);
+    test_seed_conversion<std::uint64_t>(urng, value);
 #endif
 
     // floating point types
@@ -196,8 +197,8 @@ BOOST_AUTO_TEST_CASE(test_discard2)
 #ifdef BOOST_RANDOM_DISCARD_MAX
 BOOST_AUTO_TEST_CASE(test_discard_max)
 {
-    boost::uintmax_t val = (std::numeric_limits<boost::uintmax_t>::max)();
-    boost::uintmax_t half = val / 2;
+    std::uintmax_t val = (std::numeric_limits<std::uintmax_t>::max)();
+    std::uintmax_t half = val / 2;
     BOOST_RANDOM_URNG urng;
     BOOST_RANDOM_URNG urng2;
     urng.discard(half);
@@ -288,9 +289,9 @@ BOOST_AUTO_TEST_CASE(validate_iter)
 BOOST_AUTO_TEST_CASE(test_generate)
 {
     BOOST_RANDOM_URNG urng;
-    boost::uint32_t expected[] = BOOST_RANDOM_GENERATE_VALUES;
+    std::uint32_t expected[] = BOOST_RANDOM_GENERATE_VALUES;
     static const std::size_t N = sizeof(expected)/sizeof(expected[0]); 
-    boost::uint32_t actual[N];
+    std::uint32_t actual[N];
     urng.generate(&actual[0], &actual[0] + N);
     BOOST_CHECK_EQUAL_COLLECTIONS(actual, actual + N, expected, expected + N);
 }

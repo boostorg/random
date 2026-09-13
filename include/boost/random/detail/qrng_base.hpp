@@ -9,6 +9,7 @@
 #ifndef BOOST_RANDOM_DETAIL_QRNG_BASE_HPP
 #define BOOST_RANDOM_DETAIL_QRNG_BASE_HPP
 
+#include <cstdint>
 #include <stdexcept>
 #include <vector>
 #include <limits>
@@ -17,7 +18,6 @@
 #include <ostream>
 #include <sstream>
 
-#include <boost/cstdint.hpp>
 #include <boost/random/detail/operators.hpp>
 
 #include <boost/throw_exception.hpp>
@@ -100,7 +100,7 @@ public:
   //!X::operator() invocations were executed.
   //!
   //!Throws: range_error.
-  void discard(boost::uintmax_t z)
+  void discard(std::uintmax_t z)
   {
     const std::size_t dimension_value = dimension();
 
@@ -108,7 +108,7 @@ public:
     // statements. In fact, gcc does this even at -O1, so don't
     // be tempted to "optimize" % via subtraction and multiplication.
 
-    boost::uintmax_t vec_n = z / dimension_value;
+    std::uintmax_t vec_n = z / dimension_value;
     std::size_t carry = curr_elem + (z % dimension_value);
 
     vec_n += carry / dimension_value;
@@ -119,7 +119,7 @@ public:
     const bool corr = (!carry) & static_cast<bool>(vec_n);
 
     // Discards vec_n (with correction) consecutive s-dimensional vectors
-    discard_vector(vec_n - static_cast<boost::uintmax_t>(corr));
+    discard_vector(vec_n - static_cast<std::uintmax_t>(corr));
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
@@ -149,7 +149,7 @@ public:
   {
     std::size_t dim;
     size_type seed;
-    boost::uintmax_t z;
+    std::uintmax_t z;
     if (is >> dim >> std::ws >> seed >> std::ws >> z) // initialize iff success!
     {
       // Check seed sign before resizing the lattice and/or recomputing state
@@ -234,9 +234,9 @@ private:
 
   // Discards z consecutive s-dimensional vectors,
   // and preserves the position of the element-to-read
-  void discard_vector(boost::uintmax_t z)
+  void discard_vector(std::uintmax_t z)
   {
-    const boost::uintmax_t max_z = (std::numeric_limits<size_type>::max)() - seq_count;
+    const std::uintmax_t max_z = (std::numeric_limits<size_type>::max)() - seq_count;
 
     // Don't allow seq_count + z overflows here
     if (max_z < z)
