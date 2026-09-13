@@ -284,7 +284,12 @@ public:
     public:
         reference(digit_t &value, int idx)
             : _value(value), _idx(idx) {}
-        operator bool() const { return (_value & (digit_t(1) << _idx)) != 0; }
+        reference(const reference& other) = default;
+        reference(reference&& other) = default;
+        reference &operator=(const reference &other)
+        {
+            return *this = static_cast<bool>(other);
+        }
         reference& operator=(bool b)
         {
             if(b) {
@@ -294,15 +299,13 @@ public:
             }
             return *this;
         }
+        operator bool() const { return (_value & (digit_t(1) << _idx)) != 0; }
+
+
         reference &operator^=(bool b)
         {
             _value ^= (digit_t(b) << _idx);
             return *this;
-        }
-
-        reference &operator=(const reference &other)
-        {
-            return *this = static_cast<bool>(other);
         }
     private:
         digit_t &_value;
@@ -339,7 +342,7 @@ public:
     friend polynomial operator*(const polynomial &lhs, const polynomial &rhs);
     friend polynomial mod_pow_x(std::uintmax_t exponent, polynomial mod);
 private:
-    std::vector<polynomial_ops::digit_t> _storage;
+    std::vector<digit_t> _storage;
     std::size_t _size;
     void ensure_bit(std::size_t i)
     {
