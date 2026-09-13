@@ -15,6 +15,7 @@
 #ifndef BOOST_RANDOM_DETAIL_UNIFORM_INT_FLOAT_HPP
 #define BOOST_RANDOM_DETAIL_UNIFORM_INT_FLOAT_HPP
 
+#include <cstdint>
 #include <limits>
 #include <boost/config.hpp>
 #include <boost/integer.hpp>

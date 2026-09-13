@@ -11,6 +11,7 @@
 
 #include <boost/random/detail/qrng_base.hpp>
 
+#include <cstdint>
 #include <cmath>
 #include <vector>
 #include <algorithm>

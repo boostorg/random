@@ -9,6 +9,7 @@
  *
  */
 
+#include <cstdint>
 #include "concepts.hpp"
 #include <boost/random/seed_seq.hpp>
 #include <boost/random/detail/seed.hpp>

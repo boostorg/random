@@ -6,6 +6,7 @@
 #ifndef TEST_QRNG_FUNCTIONS_HPP_INCLUDED
 #define TEST_QRNG_FUNCTIONS_HPP_INCLUDED
 
+#include <cstdint>
 #include <boost/random/uniform_real.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 

@@ -9,6 +9,7 @@
 #ifndef BOOST_RANDOM_SOBOL_HPP
 #define BOOST_RANDOM_SOBOL_HPP
 
+#include <cstdint>
 #include <boost/random/detail/sobol_table.hpp>
 #include <boost/random/detail/gray_coded_qrng.hpp>
 #include <boost/assert.hpp>
