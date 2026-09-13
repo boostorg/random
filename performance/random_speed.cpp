@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <limits>
 #include <boost/config.hpp>
 #include <boost/random.hpp>
 #include <boost/progress.hpp>

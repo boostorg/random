@@ -22,6 +22,7 @@
 #include <boost/random.hpp>
 #include <boost/mpl/list.hpp>
 #include <sstream>
+#include <limits>
 
 
 typedef boost::multiprecision::number<boost::multiprecision::cpp_bin_float_100::backend_type, boost::multiprecision::et_on > big_float;

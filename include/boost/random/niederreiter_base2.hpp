@@ -10,6 +10,7 @@
 #define BOOST_RANDOM_NIEDERREITER_BASE2_HPP
 
 #include <cstdint>
+#include <limits>
 
 #include <boost/random/detail/niederreiter_base2_table.hpp>
 #include <boost/random/detail/gray_coded_qrng.hpp>

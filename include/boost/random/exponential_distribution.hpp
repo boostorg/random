@@ -20,6 +20,7 @@
 
 #include <boost/config/no_tr1/cmath.hpp>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>

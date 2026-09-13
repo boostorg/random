@@ -34,6 +34,7 @@
 #include <boost/random/discrete_distribution.hpp>
 #include <boost/mpl/list.hpp>
 #include <sstream>
+#include <limits>
 
 typedef boost::mpl::list <
    boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::uint1024_t >,

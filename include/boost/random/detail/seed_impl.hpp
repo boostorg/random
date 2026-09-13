@@ -14,6 +14,7 @@
 #define BOOST_RANDOM_DETAIL_SEED_IMPL_HPP
 
 #include <cstdint>
+#include <limits>
 #include <stdexcept>
 #include <boost/throw_exception.hpp>
 #include <boost/config/no_tr1/cmath.hpp>

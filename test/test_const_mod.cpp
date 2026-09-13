@@ -12,6 +12,7 @@
 #include <boost/random/detail/const_mod.hpp>
 
 #include <cstdint>
+#include <limits>
 #include <boost/mpl/vector.hpp>
 
 #define BOOST_TEST_MAIN
