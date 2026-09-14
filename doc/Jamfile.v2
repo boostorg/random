@@ -25,6 +25,7 @@ doxygen_files =
     chi_squared_distribution
     discard_block
     discrete_distribution
+    dynamic_discrete_distribution
     exponential_distribution
     extreme_value_distribution
     faure

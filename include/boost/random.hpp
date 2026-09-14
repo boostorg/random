@@ -64,6 +64,7 @@
 #include <boost/random/cauchy_distribution.hpp>
 #include <boost/random/chi_squared_distribution.hpp>
 #include <boost/random/discrete_distribution.hpp>
+#include <boost/random/dynamic_discrete_distribution.hpp>
 #include <boost/random/exponential_distribution.hpp>
 #include <boost/random/extreme_value_distribution.hpp>
 #include <boost/random/fisher_f_distribution.hpp>
