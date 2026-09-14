@@ -28,6 +28,7 @@
 #include <boost/random/detail/ptr_helper.hpp>
 #include <boost/random/detail/seed.hpp>
 #include <boost/random/detail/seed_impl.hpp>
+#include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/generator_seed_seq.hpp>
 #include <boost/random/detail/polynomial.hpp>
 
@@ -216,26 +217,28 @@ public:
 
 #ifndef BOOST_RANDOM_NO_STREAM_OPERATORS
     /** Writes a mersenne_twister_engine to a @c std::ostream */
-    template<class CharT, class Traits>
-    friend std::basic_ostream<CharT,Traits>&
-    operator<<(std::basic_ostream<CharT,Traits>& os,
-               const mersenne_twister_engine& mt)
+    BOOST_RANDOM_DETAIL_OSTREAM_OPERATOR(os, mersenne_twister_engine, mt)
     {
-        mt.print(os);
+        UIntType data[mt.state_size];
+        for (std::size_t j = 0; j < mt.i; ++j) {
+            data[j + mt.state_size - mt.i] = mt.x[j];
+        }
+        if (mt.i != mt.state_size) {
+            mt.rewind(&data[mt.state_size - mt.i - 1], mt.state_size - mt.i);
+        }
+        os << data[0];
+        for (std::size_t j = 1; j < mt.state_size; ++j) {
+            os << ' ' << data[j];
+        }
         return os;
     }
 
     /** Reads a mersenne_twister_engine from a @c std::istream */
-    template<class CharT, class Traits>
-    friend std::basic_istream<CharT,Traits>&
-    operator>>(std::basic_istream<CharT,Traits>& is,
-               mersenne_twister_engine& mt)
+    BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, mersenne_twister_engine, mt)
     {
-        for(std::size_t j = 0; j < mt.state_size; ++j)
-            is >> mt.x[j] >> std::ws;
-        // MSVC (up to 7.1) and Borland (up to 5.64) don't handle the template
-        // value parameter "n" available from the class template scope, so use
-        // the static constant with the same value
+        is >> mt.x[0];
+        for(std::size_t j = 1; j < mt.state_size; ++j)
+            is >> std::ws >> mt.x[j];
         mt.i = mt.state_size;
         return is;
     }
@@ -284,26 +287,6 @@ private:
             if(back[j + n - offset] != other.x[j])
                 return false;
         return true;
-    }
-
-    /**
-     * Does the work of operator<<.  This is in a member function
-     * for portability.
-     */
-    template<class CharT, class Traits>
-    void print(std::basic_ostream<CharT, Traits>& os) const
-    {
-        UIntType data[n];
-        for(std::size_t j = 0; j < i; ++j) {
-            data[j + n - i] = x[j];
-        }
-        if(i != n) {
-            rewind(&data[n - i - 1], n - i);
-        }
-        os << data[0];
-        for(std::size_t j = 1; j < n; ++j) {
-            os << ' ' << data[j];
-        }
     }
 
     /**

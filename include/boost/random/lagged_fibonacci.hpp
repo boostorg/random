@@ -153,9 +153,9 @@ public:
      */
     BOOST_RANDOM_DETAIL_ISTREAM_OPERATOR(is, lagged_fibonacci_engine, f)
     {
-        is >> f.i >> std::ws;
+        is >> f.i;
         for(unsigned int j = 0; j < f.long_lag; ++j)
-            is >> f.x[j] >> std::ws;
+            is >> std::ws >> f.x[j];
         return is;
     }
 
