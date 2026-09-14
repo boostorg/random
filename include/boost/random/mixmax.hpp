@@ -144,7 +144,7 @@ public: // SEEDING FUNCTIONS
             sum=me.MOD_MERSENNE(sum+v);
         }
         if (sum == savedsum && counter>0 && counter<Ndim){
-            me.S.V=vec; me.S.counter = counter; me.S.sumtot=savedsum;
+            me.S.V=vec; me.S.counter = static_cast<int>(counter); me.S.sumtot=savedsum;
         }else{
             in.setstate(std::ios::failbit);
         }

@@ -24,7 +24,7 @@ namespace detail {
 // compatibility.
 template<class URNG>
 struct generator_bits {
-    static std::size_t value() {
+    static int value() {
         return std::numeric_limits<typename URNG::result_type>::digits;
     }
 };

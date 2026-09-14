@@ -48,7 +48,7 @@
 BOOST_AUTO_TEST_CASE(test_random_shuffle)
 {
 #ifndef BOOST_NO_CXX98_RANDOM_SHUFFLE
-    typedef boost::uniform_int<> distribution_type;
+    typedef boost::uniform_int<std::ptrdiff_t> distribution_type;
     typedef boost::variate_generator<boost::mt19937 &, distribution_type> generator_type;
 
     boost::mt19937 engine1(1234);

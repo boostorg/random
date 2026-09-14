@@ -32,15 +32,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_float, Engine, engines)
     Engine expected;
     for(int i = 0; i < 1000; ++i) {
         float val = boost::random::generate_canonical<float, 64>(eng);
-        BOOST_TEST(val >= 0);
-        BOOST_TEST(val < 1);
+        BOOST_TEST(val >= 0.f);
+        BOOST_TEST(val < 1.f);
     }
     expected.discard(1000);
     BOOST_TEST(eng == expected);
     for(int i = 0; i < 1000; ++i) {
         float val = boost::random::generate_canonical<float, 12>(eng);
-        BOOST_TEST(val >= 0);
-        BOOST_TEST(val < 1);
+        BOOST_TEST(val >= 0.f);
+        BOOST_TEST(val < 1.f);
     }
     expected.discard(1000);
     BOOST_TEST(eng == expected);
@@ -98,7 +98,7 @@ struct max_engine
 BOOST_AUTO_TEST_CASE(test_max)
 {
     max_engine eng;
-    BOOST_TEST((boost::random::generate_canonical<float, 64>(eng)) < 1);
-    BOOST_TEST((boost::random::generate_canonical<double, 64>(eng)) < 1);
-    BOOST_TEST((boost::random::generate_canonical<long double, 64>(eng)) < 1);
+    BOOST_TEST((boost::random::generate_canonical<float, 64>(eng)) < 1.f);
+    BOOST_TEST((boost::random::generate_canonical<double, 64>(eng)) < 1.);
+    BOOST_TEST((boost::random::generate_canonical<long double, 64>(eng)) < 1.);
 }
