@@ -1,18 +1,19 @@
 /* integrate.hpp header file
  *
  * Copyright Jens Maurer 2000
+ * Copyright Alexander Grund 2026
  * Distributed under the Boost Software License, Version 1.0. (See
  * accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
  *
  * $Id$
  *
- * Revision history
- *   01 April 2001: Modified to use new <boost/limits.hpp> header. (JMaddock)
  */
 
 #ifndef INTEGRATE_HPP
 #define INTEGRATE_HPP
+
+#include <boost/utility/result_of.hpp>
 
 #include <limits>
 
@@ -45,7 +46,7 @@ simpson(UnaryFunction f, typename UnaryFunction::argument_type a,
 // compute b so that f(b) = y; assume f is monotone increasing
 template<class UnaryFunction, class T>
 inline T
-invert_monotone_inc(UnaryFunction f, typename UnaryFunction::result_type y,
+invert_monotone_inc(UnaryFunction f, typename boost::result_of<UnaryFunction(T)>::type y,
                     T lower = -1,
                     T upper = 1)
 {

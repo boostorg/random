@@ -37,6 +37,7 @@
 #include <cstdint>
 #include <istream>
 #include <ostream>
+#include <vector>
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
@@ -210,5 +211,10 @@ private:
 #ifdef BOOST_MSVC
 #pragma warning(pop)
 #endif
+
+template<typename T, typename... U>
+std::vector<T> make_vector(const T t1, U... u){
+    return std::vector<T>{ t1, static_cast<T>(u)... };
+}
 
 #endif

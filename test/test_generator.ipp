@@ -88,9 +88,9 @@ BOOST_AUTO_TEST_CASE(test_default_seed)
     BOOST_RANDOM_URNG urng;
     BOOST_RANDOM_URNG urng2;
     urng2();
-    BOOST_CHECK_NE(urng, urng2);
+    BOOST_TEST(urng != urng2);
     urng2.seed();
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 
 BOOST_AUTO_TEST_CASE(test_arithmetic_seed)
@@ -110,15 +110,15 @@ BOOST_AUTO_TEST_CASE(test_iterator_seed)
     BOOST_RANDOM_URNG urng(it, it_end);
     BOOST_CHECK(it != v.begin());
     std::iterator_traits<std::vector<int>::const_iterator>::difference_type n_words = (it - v.begin());
-    BOOST_CHECK_GT(n_words, 0);
-    BOOST_CHECK_EQUAL(n_words, BOOST_RANDOM_SEED_WORDS);
+    BOOST_TEST(n_words > 0);
+    BOOST_TEST(n_words == BOOST_RANDOM_SEED_WORDS);
 
     it = v.begin();
     BOOST_RANDOM_URNG urng2;
     urng2.seed(it, it_end);
     std::iterator_traits<std::vector<int>::const_iterator>::difference_type n_words2 = (it - v.begin());
-    BOOST_CHECK_EQUAL(n_words, n_words2);
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(n_words == n_words2);
+    BOOST_TEST(urng == urng2);
 
     it = v.end();
     BOOST_CHECK_THROW(BOOST_RANDOM_URNG(it, it_end), std::invalid_argument);
@@ -140,9 +140,9 @@ BOOST_AUTO_TEST_CASE(test_seed_seq_seed)
     boost::random::seed_seq q;
     BOOST_RANDOM_URNG urng(q);
     BOOST_RANDOM_URNG urng2;
-    BOOST_CHECK_NE(urng, urng2);
+    BOOST_TEST(urng != urng2);
     urng2.seed(q);
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 
 template<class CharT>
@@ -151,12 +151,12 @@ void do_test_streaming(const BOOST_RANDOM_URNG& urng)
     BOOST_RANDOM_URNG urng2;
     std::basic_ostringstream<CharT> output;
     BOOST_TEST_REQUIRE(static_cast<bool>(output << urng));
-    BOOST_CHECK_NE(urng, urng2);
+    BOOST_TEST(urng != urng2);
     // restore old state
     std::basic_istringstream<CharT> input(output.str());
     BOOST_TEST(static_cast<bool>(input >> urng2));
     BOOST_TEST(input.eof());
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 
 BOOST_AUTO_TEST_CASE(test_streaming)
@@ -173,12 +173,12 @@ BOOST_AUTO_TEST_CASE(test_discard)
 {
     BOOST_RANDOM_URNG urng;
     BOOST_RANDOM_URNG urng2;
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
     for(int i = 0; i < BOOST_RANDOM_DISCARD_COUNT1; ++i)
         urng();
-    BOOST_CHECK_NE(urng, urng2);
+    BOOST_TEST(urng != urng2);
     urng2.discard(BOOST_RANDOM_DISCARD_COUNT1);
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 
 #ifdef BOOST_RANDOM_DISCARD_COUNT2
@@ -186,12 +186,12 @@ BOOST_AUTO_TEST_CASE(test_discard2)
 {
     BOOST_RANDOM_URNG urng;
     BOOST_RANDOM_URNG urng2;
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
     for(int i = 0; i < BOOST_RANDOM_DISCARD_COUNT2; ++i)
         urng();
-    BOOST_CHECK_NE(urng, urng2);
+    BOOST_TEST(urng != urng2);
     urng2.discard(BOOST_RANDOM_DISCARD_COUNT2);
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 #endif
 
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(test_discard_max)
     urng.discard(half);
     urng.discard(val - 2*half);
     urng2.discard(val);
-    BOOST_CHECK_EQUAL(urng, urng2);
+    BOOST_TEST(urng == urng2);
 }
 #endif
 
@@ -216,16 +216,16 @@ BOOST_AUTO_TEST_CASE(test_copy)
     urng.discard(9307);
     {
         BOOST_RANDOM_URNG urng2 = urng;
-        BOOST_CHECK_EQUAL(urng, urng2);
+        BOOST_TEST(urng == urng2);
     }
     {
         BOOST_RANDOM_URNG urng2(urng);
-        BOOST_CHECK_EQUAL(urng, urng2);
+        BOOST_TEST(urng == urng2);
     }
     {
         BOOST_RANDOM_URNG urng2;
         urng2 = urng;
-        BOOST_CHECK_EQUAL(urng, urng2);
+        BOOST_TEST(urng == urng2);
     }
 }
 
@@ -234,8 +234,8 @@ BOOST_AUTO_TEST_CASE(test_min_max)
     BOOST_RANDOM_URNG urng;
     for(int i = 0; i < 10000; ++i) {
         result_type value = urng();
-        BOOST_CHECK_GE(value, (BOOST_RANDOM_URNG::min)());
-        BOOST_CHECK_LE(value, (BOOST_RANDOM_URNG::max)());
+        BOOST_TEST(value >= (BOOST_RANDOM_URNG::min)());
+        BOOST_TEST(value <= (BOOST_RANDOM_URNG::max)());
     }
 }
 
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(validate)
     for(int i = 0; i < 9999; ++i) {
         urng();
     }
-    BOOST_CHECK_EQUAL(urng(), BOOST_RANDOM_VALIDATION_VALUE);
+    BOOST_TEST(urng() == BOOST_RANDOM_VALIDATION_VALUE);
 }
 
 BOOST_AUTO_TEST_CASE(validate_seed_seq)
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(validate_seed_seq)
     for(int i = 0; i < 9999; ++i) {
         urng();
     }
-    BOOST_CHECK_EQUAL(urng(), BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE);
+    BOOST_TEST(urng() == BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE);
 }
 
 #if 0
@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE(validate_iter)
     for(int i = 0; i < 9999; ++i) {
         urng();
     }
-    BOOST_CHECK_EQUAL(urng(), BOOST_RANDOM_ITERATOR_VALIDATION_VALUE);
+    BOOST_TEST(urng() == BOOST_RANDOM_ITERATOR_VALIDATION_VALUE);
 }
 
 BOOST_AUTO_TEST_CASE(test_generate)

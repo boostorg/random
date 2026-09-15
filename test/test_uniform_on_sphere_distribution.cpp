@@ -10,17 +10,16 @@
  */
 
 #include <boost/random/uniform_on_sphere.hpp>
-#include <boost/assign/list_of.hpp>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::uniform_on_sphere<>
 #define BOOST_RANDOM_ARG1 dim
 #define BOOST_RANDOM_ARG1_DEFAULT 2
 #define BOOST_RANDOM_ARG1_VALUE 3
 
-std::vector<double> min0 = boost::assign::list_of(-1.0)(0.0);
-std::vector<double> max0 = boost::assign::list_of(1.0)(0.0);
-std::vector<double> min1 = boost::assign::list_of(-1.0)(0.0)(0.0);
-std::vector<double> max1 = boost::assign::list_of(1.0)(0.0)(0.0);
+std::vector<double> min0{ -1.0, 0.0 };
+std::vector<double> max0{ 1.0, 0.0 };
+std::vector<double> min1{ -1.0, 0.0, 0.0 };
+std::vector<double> max1{ 1.0, 0.0, 0.0 };
 
 #define BOOST_RANDOM_DIST0_MIN min0
 #define BOOST_RANDOM_DIST0_MAX max0
@@ -79,7 +78,7 @@ BOOST_AUTO_TEST_CASE(test_valid_output) {
             for(std::size_t j = 0; j < result.size(); ++j) {
                 sum_sq += result[j] * result[j];
             }
-            BOOST_CHECK_CLOSE_FRACTION(sum_sq, 1.0, 1e-5);
+            BOOST_TEST(sum_sq == 1.0, boost::test_tools::tolerance(1e-5));
         }
     }
 }

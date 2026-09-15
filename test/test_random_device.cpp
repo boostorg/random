@@ -26,11 +26,11 @@ BOOST_AUTO_TEST_CASE(test_random_device)
 
     boost::random_device rng;
     double entropy = rng.entropy();
-    BOOST_CHECK_GE(entropy, 0);
+    BOOST_TEST(entropy >= 0);
     for(int i = 0; i < 100; ++i) {
         boost::random_device::result_type val = rng();
-        BOOST_CHECK_GE(val, (rng.min)());
-        BOOST_CHECK_LE(val, (rng.max)());
+        BOOST_TEST(val >= (rng.min)());
+        BOOST_TEST(val <= (rng.max)());
     }
 
     std::uint32_t a[10];
