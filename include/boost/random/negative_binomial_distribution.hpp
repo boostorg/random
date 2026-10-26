@@ -16,6 +16,7 @@
 #include <iosfwd>
 #include <limits>
 
+#include <boost/assert.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/gamma_distribution.hpp>
 #include <boost/random/poisson_distribution.hpp>
@@ -32,6 +33,8 @@ namespace random {
  * \f$\displaystyle P(i) = {k+i-1\choose i}p^k(1-p)^i\f$.
  *
  * This implementation uses a gamma-poisson mixture.
+ * When @c k is zero or @c p is one, the result is always zero.
+ * For positive @c k, @c p must be strictly positive.
  */
 template<class IntType = int, class RealType = double>
 class negative_binomial_distribution {
@@ -46,7 +49,7 @@ public:
          * Construct a param_type object.  @c k and @c p
          * are the parameters of the distribution.
          *
-         * Requires: k >=0 && 0 <= p <= 1
+         * Requires: k >=0 && 0 <= p <= 1 && (k == 0 || p > 0)
          */
         explicit param_type(IntType k_arg = 1, RealType p_arg = RealType (0.5))
           : _k(k_arg), _p(p_arg)
@@ -94,7 +97,7 @@ public:
      * Construct a @c negative_binomial_distribution object. @c k and @c p
      * are the parameters of the distribution.
      *
-     * Requires: k >=0 && 0 <= p <= 1
+     * Requires: k >=0 && 0 <= p <= 1 && (k == 0 || p > 0)
      */
     explicit negative_binomial_distribution(IntType k_arg = 1,
                                             RealType p_arg = RealType(0.5))
@@ -116,6 +119,9 @@ public:
     template<class URNG>
     IntType operator()(URNG& urng) const
     {
+        if(_k == IntType(0) || _p == RealType(1))
+            return IntType(0);
+        BOOST_ASSERT(_p > RealType(0));
         gamma_distribution<RealType> gamma(_k, (1-_p)/_p);
         poisson_distribution<IntType, RealType> poisson(gamma(urng));
         return poisson(urng);
