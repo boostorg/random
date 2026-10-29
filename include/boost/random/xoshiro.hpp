@@ -17,6 +17,7 @@
 #include <boost/core/bit.hpp>
 #include <array>
 #include <cstdint>
+#include <limits>
 
 namespace boost {
 namespace random {

@@ -14,8 +14,8 @@
 #ifndef BOOST_RANDOM_DETAIL_INTEGER_LOG2_HPP
 #define BOOST_RANDOM_DETAIL_INTEGER_LOG2_HPP
 
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/integer/integer_log2.hpp>
 
 namespace boost {
@@ -72,7 +72,7 @@ BOOST_RANDOM_DETAIL_CONSTEXPR int integer_log2(T t)
 {
     return integer_log2_impl<
         ::boost::detail::max_pow2_less<
-            ::std::numeric_limits<T>::digits, 4
+            std::numeric_limits<T>::digits, 4
         >::value
     >::apply(t, 0);
 }

@@ -17,12 +17,12 @@
 #define BOOST_RANDOM_SUBTRACT_WITH_CARRY_HPP
 
 #include <boost/config/no_tr1/cmath.hpp>         // std::pow
+#include <cstdint>
 #include <iostream>
 #include <algorithm>     // std::equal
+#include <limits>
 #include <stdexcept>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/integer/static_log2.hpp>
 #include <boost/integer/integer_mask.hpp>
@@ -43,7 +43,7 @@ namespace detail {
 struct subtract_with_carry_discard
 {
     template<class Engine>
-    static void apply(Engine& eng, boost::uintmax_t z)
+    static void apply(Engine& eng, std::uintmax_t z)
     {
         typedef typename Engine::result_type IntType;
         const std::size_t short_lag = Engine::short_lag;
@@ -161,7 +161,7 @@ public:
                                         IntType, value)
     {
         typedef linear_congruential_engine<uint32_t,40014,0,2147483563> gen_t;
-        gen_t intgen(static_cast<boost::uint32_t>(value == 0 ? default_seed : value));
+        gen_t intgen(static_cast<std::uint32_t>(value == 0 ? default_seed : value));
         detail::generator_seed_seq<gen_t> gen(intgen);
         seed(gen);
     }
@@ -211,7 +211,7 @@ public:
     }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
         detail::subtract_with_carry_discard::apply(*this, z);
     }
@@ -343,7 +343,7 @@ public:
     BOOST_STATIC_CONSTANT(std::size_t, word_size = w);
     BOOST_STATIC_CONSTANT(std::size_t, long_lag = r);
     BOOST_STATIC_CONSTANT(std::size_t, short_lag = s);
-    BOOST_STATIC_CONSTANT(boost::uint32_t, default_seed = 19780503u);
+    BOOST_STATIC_CONSTANT(std::uint32_t, default_seed = 19780503u);
 
     BOOST_STATIC_ASSERT(!std::numeric_limits<result_type>::is_integer);
 
@@ -351,7 +351,7 @@ public:
     subtract_with_carry_01_engine() { init_modulus(); seed(); }
     /** Creates a new subtract_with_carry_01_engine and seeds it with value. */
     BOOST_RANDOM_DETAIL_ARITHMETIC_CONSTRUCTOR(subtract_with_carry_01_engine,
-                                               boost::uint32_t, value)
+                                               std::uint32_t, value)
     { init_modulus(); seed(value); }
     /**
      * Creates a new \subtract_with_carry_01_engine and seeds with values
@@ -389,7 +389,7 @@ public:
 
     /** Seeds the generator with @c value. */
     BOOST_RANDOM_DETAIL_ARITHMETIC_SEED(subtract_with_carry_01_engine,
-                                        boost::uint32_t, value)
+                                        std::uint32_t, value)
     {
         typedef linear_congruential_engine<uint32_t, 40014, 0, 2147483563> gen_t;
         gen_t intgen(value == 0 ? default_seed : value);
@@ -443,7 +443,7 @@ public:
     }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     { detail::subtract_with_carry_discard::apply(*this, z); }
 
     /** Fills a range with random values. */

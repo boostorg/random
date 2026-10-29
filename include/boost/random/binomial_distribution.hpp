@@ -16,6 +16,7 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <cstdlib>
 #include <iosfwd>
+#include <limits>
 
 #include <boost/random/detail/config.hpp>
 #include <boost/random/uniform_01.hpp>

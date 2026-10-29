@@ -11,7 +11,7 @@
 
 #include <boost/random/linear_feedback_shift.hpp>
 
-typedef boost::random::linear_feedback_shift_engine<boost::uint32_t, 32, 31, 13, 12> linear_feedback_shift;
+typedef boost::random::linear_feedback_shift_engine<std::uint32_t, 32, 31, 13, 12> linear_feedback_shift;
 #define BOOST_RANDOM_URNG linear_feedback_shift
 
 #define BOOST_RANDOM_SEED_WORDS 1

@@ -21,7 +21,7 @@
 #include <cassert>
 #include <iosfwd>
 #include <istream>
-#include <boost/limits.hpp>
+#include <limits>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/normal_distribution.hpp>

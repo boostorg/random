@@ -43,6 +43,6 @@ BOOST_AUTO_TEST_CASE(test_dbl_min_max) {
     double max = (std::numeric_limits<double>::max)();
     boost::random::uniform_real_distribution<double> dist(min, max);
     double val = dist(rng);
-    BOOST_CHECK_GE(val, min);
-    BOOST_CHECK_LE(val, max);
+    BOOST_TEST(val >= min);
+    BOOST_TEST(val <= max);
 }

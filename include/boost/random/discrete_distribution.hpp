@@ -456,7 +456,7 @@ public:
             {
                 sum += *iter;
                 if(sum > val) {
-                    return result;
+                    return static_cast<IntType>(result);
                 }
             }
             // This shouldn't be reachable, but round-off error
@@ -501,7 +501,7 @@ public:
         {
             WeightType val = iter->first;
             result[i] += val;
-            result[static_cast<std::size_t>(iter->second)] += _impl.get_weight(i) - val;
+            result[static_cast<std::size_t>(iter->second)] += _impl.get_weight(static_cast<IntType>(i)) - val;
         }
         impl_type::normalize(result);
         return(result);

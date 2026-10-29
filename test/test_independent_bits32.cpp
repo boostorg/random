@@ -12,7 +12,7 @@
 #include <boost/random/independent_bits.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
-typedef boost::random::independent_bits_engine<boost::random::mt19937, 32, boost::uint32_t> independent_bits32;
+typedef boost::random::independent_bits_engine<boost::random::mt19937, 32, std::uint32_t> independent_bits32;
 #define BOOST_RANDOM_URNG independent_bits32
 
 #define BOOST_RANDOM_SEED_WORDS 624

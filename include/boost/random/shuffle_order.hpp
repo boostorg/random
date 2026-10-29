@@ -15,13 +15,13 @@
 #ifndef BOOST_RANDOM_SHUFFLE_ORDER_HPP
 #define BOOST_RANDOM_SHUFFLE_ORDER_HPP
 
+#include <cstdint>
 #include <iostream>
 #include <algorithm>     // std::copy
 #include <cassert>
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/seed.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
@@ -149,8 +149,8 @@ public:
                 static_cast<uintmax_t>(off) * k /
                 (static_cast<uintmax_t>(brange) + 1));
         } else {
-            boost::uintmax_t divisor =
-                static_cast<boost::uintmax_t>(brange) + 1;
+            std::uintmax_t divisor =
+                static_cast<std::uintmax_t>(brange) + 1;
             j = static_cast<base_unsigned>(detail::muldiv(off, k, divisor));
         }
         // assert(0 <= j && j < k);
@@ -160,9 +160,9 @@ public:
     }
 
     /** Advances the generator by z steps. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }

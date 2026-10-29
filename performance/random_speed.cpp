@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <limits>
 #include <boost/config.hpp>
 #include <boost/random.hpp>
 #include <boost/progress.hpp>
@@ -327,10 +328,10 @@ int main(int argc, char*argv[])
 #if !defined(BOOST_NO_INT64_T) && \
     !defined(BOOST_NO_INCLASS_MEMBER_INITIALIZATION)
   run(iter, "rand48", boost::rand48());
-  linear_congruential<boost::uint64_t>
-    lcg48(boost::uint64_t(1)<<16 | 0x330e,
-          boost::uint64_t(0xDEECE66DUL) | (boost::uint64_t(0x5) << 32), 0xB,
-          boost::uint64_t(1)<<48);
+  linear_congruential<std::uint64_t>
+    lcg48(std::uint64_t(1)<<16 | 0x330e,
+          std::uint64_t(0xDEECE66DUL) | (std::uint64_t(0x5) << 32), 0xB,
+          std::uint64_t(1)<<48);
   timing(lcg48, iter, "lrand48 run-time");
 #endif
 

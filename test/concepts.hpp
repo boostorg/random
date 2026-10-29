@@ -33,10 +33,11 @@
 #include <boost/type_traits/is_arithmetic.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_same.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
+#include <cstdint>
 #include <istream>
 #include <ostream>
+#include <vector>
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
@@ -78,7 +79,7 @@ public:
     }
 private:
     SSeq q;
-    mutable_random_access_iterator_archetype<boost::uint32_t> rb, re;
+    mutable_random_access_iterator_archetype<std::uint32_t> rb, re;
 };
 
 template<class T>
@@ -157,7 +158,7 @@ private:
     typename boost::random::detail::seed_type<result_type>::type s;
     uintmax_t z;
     
-    input_iterator_archetype<boost::uint32_t> sb, se;
+    input_iterator_archetype<std::uint32_t> sb, se;
 };
 
 template<class D>
@@ -210,5 +211,10 @@ private:
 #ifdef BOOST_MSVC
 #pragma warning(pop)
 #endif
+
+template<typename T, typename... U>
+std::vector<T> make_vector(const T t1, U... u){
+    return std::vector<T>{ t1, static_cast<T>(u)... };
+}
 
 #endif

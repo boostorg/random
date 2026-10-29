@@ -15,9 +15,9 @@
 #define BOOST_RANDOM_GENERATE_CANONICAL_HPP
 
 #include <algorithm>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/config/no_tr1/cmath.hpp>
-#include <boost/limits.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/random/detail/signed_unsigned_tools.hpp>
 #include <boost/random/detail/generator_bits.hpp>

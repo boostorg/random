@@ -18,8 +18,8 @@
 #include <boost/config/no_tr1/cmath.hpp>
 #include <cstdlib>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/uniform_01.hpp>
 #include <boost/random/detail/config.hpp>
 

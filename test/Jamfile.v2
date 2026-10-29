@@ -1,7 +1,8 @@
 # Copyright 2003 Jens Maurer
 # Copyright 2009-2011 Steven Watanabe
-# Distributed under the Boost Software License, Version 1.0. (See accompany-
-# ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+# Copyright 2026 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # Boost Random Library test Jamfile
 
@@ -24,9 +25,8 @@ project /boost/random/test : requirements
 run test_const_mod.cpp /boost/test//boost_unit_test_framework ;
 run test_generate_canonical.cpp /boost/test//boost_unit_test_framework ;
 run test_random_number_generator.cpp /boost/test//boost_unit_test_framework ;
-run ../example/random_demo.cpp ;
-run test_random_device.cpp /boost/random//boost_random /boost/test//included : : : <link>static : test_random_device ;
-run test_random_device.cpp /boost/random//boost_random /boost/test//included : : : <link>shared : test_random_device_dll ;
+run ../example/random_demo.cpp /boost/iterator//boost_iterator ;
+run test_random_device.cpp /boost/test//boost_unit_test_framework ;
 
 run test_minstd_rand0.cpp /boost/test//boost_unit_test_framework ;
 run test_minstd_rand.cpp /boost/test//boost_unit_test_framework ;
@@ -103,21 +103,21 @@ explicit test_lagged_fibonacci1279 test_lagged_fibonacci2281
     test_lagged_fibonacci44497 ;
 
 alias math_test :
-    /boost/assign//boost_assign
     /boost/exception//boost_exception
     /boost/lexical_cast//boost_lexical_cast
     /boost/math//boost_math_tr1
     /boost/numeric_conversion//boost_numeric_conversion
+    /boost/range//boost_range
     ;
 
-run test_seed_seq.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_seed_seq.cpp /boost/test//boost_unit_test_framework ;
 
 run test_binomial.cpp math_test ;
 run test_binomial_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_poisson.cpp math_test ;
 run test_poisson_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_discrete.cpp math_test ;
-run test_discrete_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_discrete_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_gamma.cpp math_test ;
 run test_gamma_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_weibull.cpp math_test ;
@@ -135,9 +135,9 @@ run test_student_t_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_normal.cpp math_test ;
 run test_normal_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_piecewise_constant.cpp math_test ;
-run test_piecewise_constant_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_piecewise_constant_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_piecewise_linear.cpp math_test ;
-run test_piecewise_linear_distribution.cpp /boost/assign//boost_assign /boost/test//boost_unit_test_framework ;
+run test_piecewise_linear_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_exponential.cpp math_test ;
 run test_exponential_distribution.cpp /boost/test//boost_unit_test_framework ;
 run test_bernoulli.cpp math_test ;

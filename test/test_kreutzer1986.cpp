@@ -10,7 +10,7 @@
  */
 
 #include <boost/random/shuffle_order.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #define BOOST_RANDOM_URNG boost::random::kreutzer1986
 

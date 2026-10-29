@@ -10,7 +10,6 @@
  */
 
 #include <boost/random/uniform_int.hpp>
-#include <limits>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::uniform_int<>
 #define BOOST_RANDOM_ARG1 a
@@ -49,13 +48,13 @@
 BOOST_AUTO_TEST_CASE(test_random_shuffle)
 {
 #ifndef BOOST_NO_CXX98_RANDOM_SHUFFLE
-    typedef boost::uniform_int<> distribution_type;
+    typedef boost::uniform_int<std::ptrdiff_t> distribution_type;
     typedef boost::variate_generator<boost::mt19937 &, distribution_type> generator_type;
 
     boost::mt19937 engine1(1234);
     boost::mt19937 engine2(1234);
 
-    boost::random::random_number_generator<boost::mt19937> referenceRand(engine1);
+    boost::random::random_number_generator<boost::mt19937, std::ptrdiff_t> referenceRand(engine1);
 
     distribution_type dist(0,10);
     generator_type testRand(engine2, dist);
@@ -71,8 +70,6 @@ BOOST_AUTO_TEST_CASE(test_random_shuffle)
     std::random_shuffle(referenceVec.begin(), referenceVec.end(), referenceRand);
     std::random_shuffle(testVec.begin(), testVec.end(), testRand);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        testVec.begin(), testVec.end(),
-        referenceVec.begin(), referenceVec.end());
+    BOOST_TEST(testVec == referenceVec, boost::test_tools::per_element());
 #endif
 }

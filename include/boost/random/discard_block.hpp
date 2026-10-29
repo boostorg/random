@@ -17,10 +17,9 @@
 #ifndef BOOST_RANDOM_DISCARD_BLOCK_HPP
 #define BOOST_RANDOM_DISCARD_BLOCK_HPP
 
+#include <cstdint>
 #include <iostream>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/limits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/seed.hpp>
@@ -121,9 +120,9 @@ public:
         return _rng();
     }
 
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }

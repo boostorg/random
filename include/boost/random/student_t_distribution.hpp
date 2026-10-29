@@ -15,8 +15,8 @@
 
 #include <boost/config/no_tr1/cmath.hpp>
 #include <iosfwd>
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/chi_squared_distribution.hpp>
 #include <boost/random/normal_distribution.hpp>

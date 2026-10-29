@@ -15,10 +15,10 @@
 #ifndef BOOST_RANDOM_LINEAR_FEEDBACK_SHIFT_HPP
 #define BOOST_RANDOM_LINEAR_FEEDBACK_SHIFT_HPP
 
+#include <cstdint>
 #include <iosfwd>
 #include <stdexcept>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/random/detail/config.hpp>
@@ -128,9 +128,9 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }

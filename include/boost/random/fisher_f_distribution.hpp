@@ -15,8 +15,8 @@
 
 #include <iosfwd>
 #include <istream>
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/chi_squared_distribution.hpp>
 

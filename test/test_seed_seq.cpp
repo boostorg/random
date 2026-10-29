@@ -9,21 +9,18 @@
  */
 
 #include <boost/random/seed_seq.hpp>
-#include <boost/assign/list_of.hpp>
 #include <boost/config.hpp>
 #include <vector>
 
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-using boost::assign::list_of;
-
 BOOST_AUTO_TEST_CASE(test_seed_seq) {
-    boost::uint32_t expected_param[4] = { 2, 3, 4, 0xdeadbeaf };
-    boost::uint32_t param[4] = { 2, 3, 4, 0xdeadbeaf };
-    boost::uint32_t store32[10];
-    boost::uint64_t store64[10];
-    boost::uint32_t expected[10] = {
+    std::uint32_t expected_param[4] = { 2, 3, 4, 0xdeadbeaf };
+    std::uint32_t param[4] = { 2, 3, 4, 0xdeadbeaf };
+    std::uint32_t store32[10];
+    std::uint64_t store64[10];
+    std::uint32_t expected[10] = {
         3155793538u,
         2047427591u,
         2886057794u,
@@ -44,12 +41,12 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected[0], &expected[0] + 10);
-    BOOST_CHECK_EQUAL(seq.size(), 0u);
+    BOOST_TEST(seq.size() == 0u);
     seq.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
 
-    boost::uint32_t expected_r[10] = {
+    std::uint32_t expected_r[10] = {
         2681148375u,
         3302224839u,
         249244011u,
@@ -62,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
         494552679u
     };
 
-    std::vector<int> data = list_of(2)(3)(4);
+    std::vector<int> data{ 2, 3, 4 };
     
     std::fill_n(&store32[0], 10, 0);
     std::fill_n(&store64[0], 10, 0);
@@ -74,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_r.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_r.size(), 3u);
+    BOOST_TEST(seq_r.size() == 3u);
     seq_r.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -89,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_it.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_it.size(), 3u);
+    BOOST_TEST(seq_it.size() == 3u);
     seq_it.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -105,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
     seq_il.generate(&store64[0], &store64[0] + 10);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &store64[0], &store64[0] + 10, &expected_r[0], &expected_r[0] + 10);
-    BOOST_CHECK_EQUAL(seq_il.size(), 3u);
+    BOOST_TEST(seq_il.size() == 3u);
     seq_il.param(&param[0]);
     BOOST_CHECK_EQUAL_COLLECTIONS(
         &param[0], &param[0] + 4, &expected_param[0], &expected_param[0] + 4);
@@ -113,14 +110,14 @@ BOOST_AUTO_TEST_CASE(test_seed_seq) {
 }
 
 BOOST_AUTO_TEST_CASE(test_seed_seq_short_output) {
-    boost::uint32_t store32[2];
+    std::uint32_t store32[2];
 
-    boost::uint32_t expected_short[2] = {
+    std::uint32_t expected_short[2] = {
         4149590228u,
         3175758659u
     };
     
-    std::vector<int> data = list_of(2)(3)(4)(5);
+    std::vector<int> data{ 2, 3, 4, 5 };
 
     boost::random::seed_seq seq(data);
 

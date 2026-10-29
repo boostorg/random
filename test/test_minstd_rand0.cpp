@@ -10,7 +10,7 @@
  */
 
 #include <boost/random/linear_congruential.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #define BOOST_RANDOM_URNG boost::random::minstd_rand0
 

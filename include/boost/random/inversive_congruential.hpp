@@ -16,11 +16,11 @@
 #ifndef BOOST_RANDOM_INVERSIVE_CONGRUENTIAL_HPP
 #define BOOST_RANDOM_INVERSIVE_CONGRUENTIAL_HPP
 
+#include <cstdint>
 #include <iosfwd>
 #include <stdexcept>
 #include <boost/assert.hpp>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/const_mod.hpp>
 #include <boost/random/detail/seed.hpp>
@@ -171,9 +171,9 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t j = 0; j < z; ++j) {
+        for(std::uintmax_t j = 0; j < z; ++j) {
             (*this)();
         }
     }

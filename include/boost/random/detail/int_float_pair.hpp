@@ -15,6 +15,7 @@
 #ifndef BOOST_RANDOM_DETAIL_INT_FLOAT_PAIR_HPP
 #define BOOST_RANDOM_DETAIL_INT_FLOAT_PAIR_HPP
 
+#include <limits>
 #include <utility>
 #include <boost/integer.hpp>
 #include <boost/integer/integer_mask.hpp>

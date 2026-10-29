@@ -16,11 +16,11 @@
 #ifndef BOOST_RANDOM_ADDITIVE_COMBINE_HPP
 #define BOOST_RANDOM_ADDITIVE_COMBINE_HPP
 
+#include <cstdint>
 #include <istream>
 #include <iosfwd>
 #include <algorithm> // for std::min and std::max
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/detail/seed.hpp>
@@ -196,7 +196,7 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
         _mlcg1.discard(z);
         _mlcg2.discard(z);

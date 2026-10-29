@@ -17,8 +17,8 @@
 #define BOOST_RANDOM_UNIFORM_01_HPP
 
 #include <iostream>
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/ptr_helper.hpp>

@@ -11,6 +11,7 @@
 
 #include <boost/random/detail/qrng_base.hpp>
 
+#include <cstdint>
 #include <cmath>
 #include <vector>
 #include <algorithm>
@@ -318,10 +319,10 @@ public:
     return base_t::operator()();
   }
 
-  /** @copydoc boost::random::niederreiter_base2_engine::discard(boost::uintmax_t)
+  /** @copydoc boost::random::niederreiter_base2_engine::discard(std::uintmax_t)
    * Throws: bad_alloc.
    */
-  void discard(boost::uintmax_t z)
+  void discard(std::uintmax_t z)
   {
     base_t::discard(z);
   }
@@ -358,7 +359,7 @@ private:
  *
  * However, it is possible to provide your own prime table to \faure_engine should the default one be insufficient.
  */
-typedef faure_engine<double, boost::uint_least64_t, default_faure_prime_table> faure;
+typedef faure_engine<double, std::uint_least64_t, default_faure_prime_table> faure;
 
 } // namespace random
 
