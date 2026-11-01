@@ -71,6 +71,7 @@ doxygen_files =
     traits
     splitmix64
     xoshiro
+    mwcx
     inverse_gaussian_distribution
     generalized_inverse_gaussian_distribution
 ;
