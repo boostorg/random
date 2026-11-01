@@ -10,6 +10,7 @@
  */
 
 #include <boost/random/geometric_distribution.hpp>
+#include <limits>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::geometric_distribution<>
 #define BOOST_RANDOM_ARG1 p

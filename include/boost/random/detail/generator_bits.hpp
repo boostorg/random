@@ -14,7 +14,7 @@
 #ifndef BOOST_RANDOM_DETAIL_GENERATOR_BITS_HPP
 #define BOOST_RANDOM_DETAIL_GENERATOR_BITS_HPP
 
-#include <boost/limits.hpp>
+#include <limits>
 
 namespace boost {
 namespace random {
@@ -24,7 +24,7 @@ namespace detail {
 // compatibility.
 template<class URNG>
 struct generator_bits {
-    static std::size_t value() {
+    static int value() {
         return std::numeric_limits<typename URNG::result_type>::digits;
     }
 };

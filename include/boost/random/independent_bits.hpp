@@ -14,12 +14,12 @@
 #ifndef BOOST_RANDOM_INDEPENDENT_BITS_HPP
 #define BOOST_RANDOM_INDEPENDENT_BITS_HPP
 
+#include <cstdint>
 #include <istream>
 #include <iosfwd>
+#include <limits>
 #include <boost/assert.hpp>
-#include <boost/limits.hpp>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/integer/integer_mask.hpp>
 #include <boost/random/traits.hpp>
 #include <boost/random/detail/config.hpp>
@@ -194,9 +194,9 @@ public:
     { detail::generate_from_int(*this, first, last); }
 
     /** Advances the state of the generator by @c z. */
-    void discard(boost::uintmax_t z)
+    void discard(std::uintmax_t z)
     {
-        for(boost::uintmax_t i = 0; i < z; ++i) {
+        for(std::uintmax_t i = 0; i < z; ++i) {
             (*this)();
         }
     }

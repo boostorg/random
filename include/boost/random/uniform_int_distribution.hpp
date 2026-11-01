@@ -21,8 +21,8 @@
 #include <iosfwd>
 #include <ios>
 #include <istream>
+#include <limits>
 #include <boost/config.hpp>
-#include <boost/limits.hpp>
 #include <boost/assert.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>

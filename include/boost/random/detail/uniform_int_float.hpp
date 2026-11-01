@@ -15,7 +15,8 @@
 #ifndef BOOST_RANDOM_DETAIL_UNIFORM_INT_FLOAT_HPP
 #define BOOST_RANDOM_DETAIL_UNIFORM_INT_FLOAT_HPP
 
-#include <boost/limits.hpp>
+#include <cstdint>
+#include <limits>
 #include <boost/config.hpp>
 #include <boost/integer.hpp>
 #include <boost/random/detail/config.hpp>
@@ -35,9 +36,9 @@ public:
     typedef typename base_type::result_type base_result;
 
     typedef typename boost::uint_t<
-        (std::numeric_limits<boost::uintmax_t>::digits <
+        (std::numeric_limits<std::uintmax_t>::digits <
             std::numeric_limits<base_result>::digits)?
-        std::numeric_limits<boost::uintmax_t>::digits :
+        std::numeric_limits<std::uintmax_t>::digits :
         std::numeric_limits<base_result>::digits
     >::fast result_type;
 

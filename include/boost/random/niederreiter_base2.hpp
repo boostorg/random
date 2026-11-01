@@ -9,6 +9,9 @@
 #ifndef BOOST_RANDOM_NIEDERREITER_BASE2_HPP
 #define BOOST_RANDOM_NIEDERREITER_BASE2_HPP
 
+#include <cstdint>
+#include <limits>
+
 #include <boost/random/detail/niederreiter_base2_table.hpp>
 #include <boost/random/detail/gray_coded_qrng.hpp>
 
@@ -181,7 +184,7 @@ public:
           for (unsigned r = 0; r != bit_count; ++r) {
             value_type& num = cj[dimension * r + dim];
             // set the jth bit in num
-            num = (num & ~j) | (-v[r + u] & j);
+            num = (num & ~j) | (-static_cast<value_type>(v[r + u]) & j);
           }
         }
       } while (j != 0);
@@ -317,7 +320,7 @@ public:
   //!\endcode
   //!
   //!Throws: range_error.
-  void discard(boost::uintmax_t z)
+  void discard(std::uintmax_t z)
   {
     base_t::discard(z);
   }
@@ -351,7 +354,7 @@ public:
  *
  * However, it is possible to provide your own table to \niederreiter_base2_engine should the default one be insufficient.
  */
-typedef niederreiter_base2_engine<boost::uint_least64_t, 64u, default_niederreiter_base2_table> niederreiter_base2;
+typedef niederreiter_base2_engine<std::uint_least64_t, 64u, default_niederreiter_base2_table> niederreiter_base2;
 
 } // namespace random
 

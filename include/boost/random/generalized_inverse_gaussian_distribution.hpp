@@ -18,7 +18,6 @@
 #include <iosfwd>
 #include <limits>
 #include <boost/assert.hpp>
-#include <boost/limits.hpp>
 #include <boost/random/detail/config.hpp>
 #include <boost/random/detail/operators.hpp>
 #include <boost/random/uniform_01.hpp>

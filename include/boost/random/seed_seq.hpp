@@ -14,8 +14,8 @@
 #ifndef BOOST_RANDOM_SEED_SEQ_HPP
 #define BOOST_RANDOM_SEED_SEQ_HPP
 
+#include <cstdint>
 #include <boost/config.hpp>
-#include <boost/cstdint.hpp>
 #include <cstddef>
 #include <vector>
 #include <algorithm>
@@ -36,7 +36,7 @@ namespace random {
  */
 class seed_seq {
 public:
-    typedef boost::uint_least32_t result_type;
+    typedef std::uint_least32_t result_type;
 
     /** Initializes a seed_seq to hold an empty sequence. */
     seed_seq() {}

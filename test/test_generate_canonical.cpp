@@ -14,7 +14,7 @@
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/lagged_fibonacci.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/mpl/vector.hpp>
 
 #define BOOST_TEST_MAIN
@@ -32,18 +32,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_float, Engine, engines)
     Engine expected;
     for(int i = 0; i < 1000; ++i) {
         float val = boost::random::generate_canonical<float, 64>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0.f);
+        BOOST_TEST(val < 1.f);
     }
     expected.discard(1000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
     for(int i = 0; i < 1000; ++i) {
         float val = boost::random::generate_canonical<float, 12>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0.f);
+        BOOST_TEST(val < 1.f);
     }
     expected.discard(1000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_double, Engine, engines)
@@ -52,18 +52,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_double, Engine, engines)
     Engine expected;
     for(int i = 0; i < 1000; ++i) {
         double val = boost::random::generate_canonical<double, 64>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0);
+        BOOST_TEST(val < 1);
     }
     expected.discard(2000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
     for(int i = 0; i < 1000; ++i) {
         double val = boost::random::generate_canonical<double, 12>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0);
+        BOOST_TEST(val < 1);
     }
     expected.discard(1000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_long_double, Engine, engines)
@@ -72,33 +72,33 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_long_double, Engine, engines)
     Engine expected;
     for(int i = 0; i < 1000; ++i) {
         long double val = boost::random::generate_canonical<long double, 60>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0);
+        BOOST_TEST(val < 1);
     }
     expected.discard(2000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
     for(int i = 0; i < 1000; ++i) {
         long double val = boost::random::generate_canonical<long double, 12>(eng);
-        BOOST_CHECK_GE(val, 0);
-        BOOST_CHECK_LT(val, 1);
+        BOOST_TEST(val >= 0);
+        BOOST_TEST(val < 1);
     }
     expected.discard(1000);
-    BOOST_CHECK_EQUAL(eng, expected);
+    BOOST_TEST(eng == expected);
 }
 
 struct max_engine
 {
-    typedef boost::uint32_t result_type;
+    typedef std::uint32_t result_type;
     static result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }
     static result_type max BOOST_PREVENT_MACRO_SUBSTITUTION ()
-    { return ~boost::uint32_t(0); }
+    { return ~std::uint32_t(0); }
     result_type operator()() { return (max)(); }
 };
 
 BOOST_AUTO_TEST_CASE(test_max)
 {
     max_engine eng;
-    BOOST_CHECK_LT((boost::random::generate_canonical<float, 64>(eng)), 1);
-    BOOST_CHECK_LT((boost::random::generate_canonical<double, 64>(eng)), 1);
-    BOOST_CHECK_LT((boost::random::generate_canonical<long double, 64>(eng)), 1);
+    BOOST_TEST((boost::random::generate_canonical<float, 64>(eng)) < 1.f);
+    BOOST_TEST((boost::random::generate_canonical<double, 64>(eng)) < 1.);
+    BOOST_TEST((boost::random::generate_canonical<long double, 64>(eng)) < 1.);
 }

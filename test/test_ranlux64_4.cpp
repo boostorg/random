@@ -10,8 +10,8 @@
  */
 
 #include <boost/random/ranlux.hpp>
-#include <boost/cstdint.hpp>
 #include <cmath>
+#include <cstdint>
 
 #define BOOST_RANDOM_URNG boost::random::ranlux64_4
 

@@ -10,7 +10,6 @@
  */
 
 #include <boost/random/uniform_smallint.hpp>
-#include <limits>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::uniform_smallint<>
 #define BOOST_RANDOM_ARG1 a

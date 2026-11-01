@@ -10,7 +10,6 @@
  */
 
 #include <boost/random/uniform_int_distribution.hpp>
-#include <limits>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::uniform_int_distribution<>
 #define BOOST_RANDOM_ARG1 a

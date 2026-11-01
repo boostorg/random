@@ -16,6 +16,8 @@
 #ifndef BOOST_RANDOM_CONST_MOD_HPP
 #define BOOST_RANDOM_CONST_MOD_HPP
 
+#include <cstdint>
+#include <limits>
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/integer_traits.hpp>
@@ -84,7 +86,7 @@ public:
       return add(mult(a, x), c);
   }
 
-  static IntType pow(IntType a, boost::uintmax_t exponent)
+  static IntType pow(IntType a, std::uintmax_t exponent)
   {
       IntType result = 1;
       while(exponent != 0) {
@@ -129,10 +131,10 @@ private:
     BOOST_ASSERT(suppress_warnings == 0);
     IntType modulus = m + suppress_warnings;
     BOOST_ASSERT(modulus == m);
-    if(::boost::uintmax_t(modulus) <=
-        (::std::numeric_limits< ::boost::uintmax_t>::max)() / modulus)
+    if(std::uintmax_t(modulus) <=
+        (std::numeric_limits< std::uintmax_t>::max)() / modulus)
     {
-      return static_cast<IntType>(boost::uintmax_t(a) * b % modulus);
+      return static_cast<IntType>(std::uintmax_t(a) * b % modulus);
     } else {
       return static_cast<IntType>(detail::mulmod(a, b, modulus));
     }

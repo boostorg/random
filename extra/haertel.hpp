@@ -18,7 +18,7 @@
 #ifndef BOOST_RANDOM_HAERTEL_HPP
 #define BOOST_RANDOM_HAERTEL_HPP
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/inversive_congruential.hpp>
 
@@ -127,29 +127,29 @@ private:
 // distributions from Haertel's dissertation
 // (additional parameterizations of the basic templates)
 namespace Haertel {
-  typedef boost::random::linear_congruential<boost::uint64_t, 45965, 453816691,
-    (boost::uint64_t(1)<<31), 0> LCG_Af2;
-  typedef boost::random::linear_congruential<boost::uint64_t, 211936855, 0,
-    (boost::uint64_t(1)<<29)-3, 0> LCG_Die1;
-  typedef boost::random::linear_congruential<boost::uint32_t, 2824527309u, 0,
+  typedef boost::random::linear_congruential<std::uint64_t, 45965, 453816691,
+    (std::uint64_t(1)<<31), 0> LCG_Af2;
+  typedef boost::random::linear_congruential<std::uint64_t, 211936855, 0,
+    (std::uint64_t(1)<<29)-3, 0> LCG_Die1;
+  typedef boost::random::linear_congruential<std::uint32_t, 2824527309u, 0,
     0, 0> LCG_Fis;
-  typedef boost::random::linear_congruential<boost::uint64_t, 950706376u, 0,
-    (boost::uint64_t(1)<<31)-1, 0> LCG_FM;
-  typedef boost::random::linear_congruential<boost::int32_t, 51081, 0,
+  typedef boost::random::linear_congruential<std::uint64_t, 950706376u, 0,
+    (std::uint64_t(1)<<31)-1, 0> LCG_FM;
+  typedef boost::random::linear_congruential<std::int32_t, 51081, 0,
     2147483647, 0> LCG_Hae;
-  typedef boost::random::linear_congruential<boost::uint32_t, 69069, 1,
+  typedef boost::random::linear_congruential<std::uint32_t, 69069, 1,
     0, 0> LCG_VAX;
-  typedef boost::random::inversive_congruential<boost::int64_t, 240318, 197, 
+  typedef boost::random::inversive_congruential<std::int64_t, 240318, 197, 
     1000081, 0> NLG_Inv1;
-  typedef boost::random::inversive_congruential<boost::int64_t, 15707262,
+  typedef boost::random::inversive_congruential<std::int64_t, 15707262,
     13262967, (1<<24)-17, 0> NLG_Inv2;
-  typedef boost::random::inversive_congruential<boost::int32_t, 1, 1,
+  typedef boost::random::inversive_congruential<std::int32_t, 1, 1,
     2147483647, 0> NLG_Inv4;
-  typedef boost::random::inversive_congruential<boost::int32_t, 1, 2,
+  typedef boost::random::inversive_congruential<std::int32_t, 1, 2,
     1<<30, 0> NLG_Inv5;
-  typedef boost::random::additive_congruential<boost::int32_t, 6,
+  typedef boost::random::additive_congruential<std::int32_t, 6,
     (1<<30)-35, 0> MRG_Acorn7;
-  typedef boost::random::lagged_fibonacci_int<boost::uint32_t, 607, 273,
+  typedef boost::random::lagged_fibonacci_int<std::uint32_t, 607, 273,
     0, 0> MRG_Fib2;
 } // namespace Haertel
 

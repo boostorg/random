@@ -108,9 +108,9 @@ void long_jump(void) {
     uint32_t s1 = 0;
     uint32_t s2 = 0;
     uint32_t s3 = 0;
-    for(int i = 0; i < sizeof LONG_JUMP / sizeof *LONG_JUMP; i++)
+    for(const uint32_t jump: LONG_JUMP)
         for(int b = 0; b < 32; b++) {
-            if (LONG_JUMP[i] & UINT32_C(1) << b) {
+            if (jump & UINT32_C(1) << b) {
                 s0 ^= s[0];
                 s1 ^= s[1];
                 s2 ^= s[2];

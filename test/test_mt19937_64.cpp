@@ -10,7 +10,7 @@
  */
 
 #include <boost/random/mersenne_twister.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #define BOOST_RANDOM_URNG boost::random::mt19937_64
 

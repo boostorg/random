@@ -10,7 +10,6 @@
  */
 
 #include <boost/random/triangle_distribution.hpp>
-#include <limits>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::triangle_distribution<>
 #define BOOST_RANDOM_ARG1 a
