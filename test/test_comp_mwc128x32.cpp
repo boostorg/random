@@ -55,14 +55,14 @@ static void compare_with_reference(const uint32_t x, const uint32_t y, const uin
 {
     reference r = { x, y, z, c };
     mwc128x32 e = make_engine<mwc128x32>({ x, y, z, c });
-    for (int i = 0; i < 1000000; ++i)
+    // The index of the first output that differs from the reference implementation
+    int i = 0;
+    while (i < 1000000 && e() == r.next())
     {
-        if (e() != r.next())
-        {
-            BOOST_ERROR("mwc128x32 differs from the reference implementation");
-            return;
-        }
+        ++i;
     }
+
+    BOOST_TEST_EQ(i, 1000000);
 }
 
 int main()
@@ -127,6 +127,7 @@ int main()
     check_jump(start, 64);
 
     check_streaming(start);
+    check_short_seed<mwc128x32>();
 
     // Seeding with an integer: the lower and upper halves of two SplitMix
     // outputs (the upper half of the second is not used), and carry one

@@ -55,14 +55,14 @@ static void compare_with_reference(const uint64_t x, const uint64_t y, const uin
 {
     reference r = { x, y, c };
     mwc192x e = make_engine<mwc192x>({ x, y, c });
-    for (int i = 0; i < 1000000; ++i)
+    // The index of the first output that differs from the reference implementation
+    int i = 0;
+    while (i < 1000000 && e() == r.next())
     {
-        if (e() != r.next())
-        {
-            BOOST_ERROR("mwc192x differs from the reference implementation");
-            return;
-        }
+        ++i;
     }
+
+    BOOST_TEST_EQ(i, 1000000);
 }
 
 #endif
@@ -130,6 +130,7 @@ int main()
     check_jump(start, 96);
 
     check_streaming(start);
+    check_short_seed<mwc192x>();
 
     // Seeding with an integer: SplitMix digits and carry one
     {

@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <initializer_list>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 // Builds a generator from its state: the digits, oldest first, and then the carry.
@@ -120,6 +121,21 @@ void check_streaming(const Engine& e)
     Engine f;
     ss >> f;
     BOOST_TEST(e == f);
+}
+
+// Checks that seeding from a range with fewer values than the state throws.
+template <typename Engine>
+void check_short_seed()
+{
+    const std::size_t k = Engine().state().size();
+    const std::vector<typename Engine::result_type> v(k - 1, 1);
+    for (std::size_t n = 0; n < k; ++n)
+    {
+        Engine e;
+        BOOST_TEST_THROWS(e.seed(v.begin(), v.begin() + n), std::invalid_argument);
+        auto first = v.begin();
+        BOOST_TEST_THROWS(Engine(first, v.begin() + n), std::invalid_argument);
+    }
 }
 
 #endif // BOOST_RANDOM_TEST_COMP_MWCX_HPP
