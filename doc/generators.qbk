@@ -115,3 +115,21 @@ If you need either double or float as the return type prefer __xoshiro256d or __
 [note These random number generators are not intended for use in applications
 where non-deterministic random numbers are required. See __random_device
 for a choice of (hopefully) non-deterministic random number generators.]
+
+[warning For linear congruential generators with a power-of-two modulus, such
+as __rand48, `discard()` by a power of two yields strongly correlated streams.
+These are the first outputs of a default-constructed __rand48 (left) and of a
+copy after `discard(UINT64_C(1) << 47)` (right):
+``
+0x055424a4  0x455424a4
+0x3a2ccef5  0x7a2ccef5
+0x6adb4a65  0x2adb4a65
+0x2b019719  0x6b019719
+0x4861f4ef  0x0861f4ef
+0x0039e5ef  0x4039e5ef
+0x1802eeec  0x5802eeec
+0x7ec68b3f  0x3ec68b3f
+``
+The two streams differ only in the top bit, at every step. In general, for
+__rand48, `discard()` by 2[sup 17+t] leaves the lowest t bits of the outputs of
+the two streams identical.]
