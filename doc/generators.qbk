@@ -112,6 +112,13 @@ If you need a 32-bit return instead of 64-bit prefer __xoshiro128pp.
 
 If you need either double or float as the return type prefer __xoshiro256d or __xoshiro128f respectively.
 
+The xoshiro generators compute `discard(z)` in time logarithmic in `z`.
+Besides `jump()` and `long_jump()`, they provide `jump(c, e)`, which advances
+the generator by c*2[sup e] steps in time logarithmic in c plus linear in e,
+to obtain non-overlapping subsequences at arbitrary distances: for example,
+for the xoshiro256 generators `jump(1, 128)` and `jump(1, 192)` are equivalent
+to `jump()` and `long_jump()`.
+
 [note These random number generators are not intended for use in applications
 where non-deterministic random numbers are required. See __random_device
 for a choice of (hopefully) non-deterministic random number generators.]

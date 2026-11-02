@@ -85,6 +85,7 @@ run test_xoshiro128mm.cpp /boost/test//boost_unit_test_framework ;
 run test_comp_xoshiro128mm.cpp ;
 run test_xoshiro128f.cpp /boost/test//boost_unit_test_framework ;
 run test_comp_xoshiro128f.cpp ;
+run test_xoshiro_jump.cpp ;
 
 run github_issue_133.cpp ;
 run github_issue_147.cpp ;

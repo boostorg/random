@@ -13,6 +13,7 @@
 #define BOOST_RANDOM_DETAIL_XOSHIRO_BASE
 
 #include <boost/random/splitmix64.hpp>
+#include <boost/random/detail/f2x_arithmetic.hpp>
 #include <boost/random/detail/seed.hpp>
 #include <boost/throw_exception.hpp>
 #include <boost/config.hpp>
@@ -251,6 +252,59 @@ private:
         state_[3] = s3;
     }
 
+    // The characteristic polynomials of the linear engines, without the
+    // leading term (see f2x_arithmetic.hpp)
+    static std::array<std::uint64_t, 4> charpoly(const std::integral_constant<std::uint64_t, 4>&) noexcept
+    {
+        return {{ UINT64_C(0x9d116f2bb0f0f001), UINT64_C(0x0280002bcefd1a5e),
+                  UINT64_C(0x04b4edcf26259f85), UINT64_C(0x0003c03c3f3ecb19) }};
+    }
+
+    static std::array<std::uint64_t, 8> charpoly(const std::integral_constant<std::uint64_t, 8>&) noexcept
+    {
+        return {{ UINT64_C(0xcf3cff0c00000001), UINT64_C(0x7fdc78d886f00c63),
+                  UINT64_C(0xf05e63fca6d7b781), UINT64_C(0x7a67058e7bbab6f0),
+                  UINT64_C(0xf11eef832e32518f), UINT64_C(0x51ba7c47edc758ad),
+                  UINT64_C(0x8f2d27268ce4b20b), UINT64_C(0x0000500055d8b77f) }};
+    }
+
+    static std::array<std::uint64_t, 2> charpoly(const std::integral_constant<std::uint32_t, 4>&) noexcept
+    {
+        return {{ UINT64_C(0x1b489db6de18fc01), UINT64_C(0x00fc65a2006254b1) }};
+    }
+
+    // Applies the jump polynomial poly (x^n mod the characteristic
+    // polynomial, for the desired distance n) to the state, using the same
+    // accumulate-and-step loop as jump().
+    template <std::size_t W>
+    inline void jump_apply(const std::array<std::uint64_t, W>& poly) noexcept
+    {
+        std::array<BlockType, N> t {};
+
+        for (std::size_t i = 0; i < W; ++i)
+        {
+            for (std::size_t b = 0; b < 64U; ++b)
+            {
+                if (poly[i] & UINT64_C(1) << b)
+                {
+                    for (std::size_t w = 0; w < state_.size(); ++w)
+                    {
+                        t[w] ^= state_[w];
+                    }
+                }
+
+                next();
+            }
+        }
+
+        state_ = t;
+    }
+
+    // Below this distance, discard() steps the generator instead of jumping.
+    // The threshold is proportional to the size of the state, and it is close
+    // to the break-even point on current x86-64 processors.
+    static constexpr std::uint64_t discard_threshold = UINT64_C(2048) * N * sizeof(BlockType) / sizeof(std::uint64_t);
+
 public:
 
     using result_type = OutputType;
@@ -354,20 +408,42 @@ public:
     }
 
     /** This is the jump function for the generator. It is equivalent
-     *  to 2^128 calls to next(); it can be used to generate 2^128
-     *  non-overlapping subsequences for parallel computations. */
+     *  to 2^(n/2) calls to next(), where n is the number of bits of state
+     *  (2^64 for xoshiro128, 2^128 for xoshiro256, and 2^256 for
+     *  xoshiro512); it can be used to generate 2^(n/2) non-overlapping
+     *  subsequences for parallel computations. */
     inline void jump() noexcept
     {
         jump_impl(xoshiro_type());
     }
 
     /** This is the long-jump function for the generator. It is equivalent to
-     *  2^192 calls to next(); it can be used to generate 2^64 starting points,
-     *  from each of which jump() will generate 2^64 non-overlapping
+     *  2^(3n/4) calls to next(), where n is the number of bits of state
+     *  (2^96 for xoshiro128, 2^192 for xoshiro256, and 2^384 for
+     *  xoshiro512); it can be used to generate 2^(n/4) starting points,
+     *  from each of which jump() will generate 2^(n/4) non-overlapping
      *  subsequences for parallel distributed computations. */
     inline void long_jump() noexcept
     {
         long_jump_impl(xoshiro_type());
+    }
+
+    /**
+     * Advances the state of the generator by c * 2^e steps, in time
+     * logarithmic in c plus linear in e, by computing x^(c * 2^e) modulo
+     * the characteristic polynomial of the generator. This makes it possible
+     * to obtain non-overlapping subsequences at distances larger than
+     * discard() can express: for example, for xoshiro256 generators
+     * jump(1, 128) is equivalent to jump(), and jump(1, 192) is equivalent
+     * to long_jump(). For the jump to be meaningful, c * 2^e should be
+     * smaller than the period of the generator.
+     */
+    inline void jump(const std::uint64_t c, const unsigned int e) noexcept
+    {
+        if (c != 0)
+        {
+            jump_apply(f2x_jump_poly(c, e, charpoly(xoshiro_type())));
+        }
     }
 
     /**  Returns the next value of the generator. */
@@ -376,12 +452,22 @@ public:
         return next();
     }
 
-    /** Advances the state of the generator by @c z. */
+    /**
+     * Advances the state of the generator by @c z steps. Large distances are
+     * computed in time logarithmic in @c z, using jump(z, 0).
+     */
     inline void discard(const std::uint64_t z) noexcept
     {
-        for (std::uint64_t i {}; i < z; ++i)
+        if (z < discard_threshold)
         {
-            next();
+            for (std::uint64_t i {}; i < z; ++i)
+            {
+                next();
+            }
+        }
+        else
+        {
+            jump(z, 0);
         }
     }
 
