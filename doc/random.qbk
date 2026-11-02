@@ -79,6 +79,10 @@
 [def __xoshiro128pp [classref boost::random::xoshiro128pp xoshiro128pp]]
 [def __xoshiro128f [classref boost::random::xoshiro128f xoshiro128f]]
 [def __xoshiro128mm [classref boost::random::xoshiro128mm xoshiro128mm]]
+[def __mwc192x [classref boost::random::mwc192x mwc192x]]
+[def __mwc128x [classref boost::random::mwc128x mwc128x]]
+[def __mwc128x32 [classref boost::random::mwc128x32 mwc128x32]]
+[def __mwc64x32 [classref boost::random::mwc64x32 mwc64x32]]
 
 [def __uniform_smallint [classref boost::random::uniform_smallint uniform_smallint]]
 [def __uniform_int_distribution [classref boost::random::uniform_int_distribution uniform_int_distribution]]

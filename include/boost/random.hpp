@@ -50,6 +50,7 @@
 #include <boost/random/xor_combine.hpp>
 #include <boost/random/splitmix64.hpp>
 #include <boost/random/xoshiro.hpp>
+#include <boost/random/mwcx.hpp>
 
 // misc
 #include <boost/random/generate_canonical.hpp>
