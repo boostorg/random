@@ -10,7 +10,10 @@
  */
 
 #include <boost/random/negative_binomial_distribution.hpp>
+#include <boost/random/linear_congruential.hpp>
+#include <iomanip>
 #include <limits>
+#include <sstream>
 
 #define BOOST_RANDOM_DISTRIBUTION boost::random::negative_binomial_distribution<>
 #define BOOST_RANDOM_ARG1 k
@@ -38,14 +41,17 @@
 
 namespace {
 
-struct counting_engine {
-    typedef boost::uint32_t result_type;
+// Forwards to a real engine so non-degenerate draws terminate, and counts every call
+struct counting_engine
+{
+    typedef boost::random::minstd_rand::result_type result_type;
 
-    counting_engine() : calls(0) {}
-    static result_type min() { return 0; }
-    static result_type max() { return (std::numeric_limits<result_type>::max)(); }
-    result_type operator()() { ++calls; return 123; }
+    counting_engine() : calls {0} {}
+    static result_type min() { return (boost::random::minstd_rand::min)(); }
+    static result_type max() { return (boost::random::minstd_rand::max)(); }
+    result_type operator()() { ++calls; return base(); }
 
+    boost::random::minstd_rand base;
     unsigned calls;
 };
 
@@ -63,7 +69,8 @@ void check_degenerate(IntType k, RealType p)
     distribution explicit_param(5, RealType(0.5));
     distribution streamed;
     std::stringstream stream;
-    stream << direct;
+    // At default precision min() prints as a subnormal, which libc++ fails to read back
+    stream << std::setprecision(std::numeric_limits<RealType>::max_digits10) << direct;
     stream >> streamed;
     BOOST_REQUIRE(!stream.fail());
 
@@ -120,4 +127,18 @@ BOOST_AUTO_TEST_CASE(test_unit_probability)
     check_unit_probability<boost::int64_t, double>();
     check_unit_probability<unsigned, float>();
     check_unit_probability<boost::uint64_t, long double>();
+}
+
+// Positive control: a non-degenerate draw must consume the engine,
+// so the engine.calls == 0 checks above would catch a sampling call
+BOOST_AUTO_TEST_CASE(test_non_degenerate_uses_engine)
+{
+    counting_engine engine;
+    boost::random::negative_binomial_distribution<> dist {1, 0.5};
+    for (unsigned i {0}; i < 4; ++i)
+    {
+        const int value {dist(engine)};
+        BOOST_TEST(value >= 0);
+    }
+    BOOST_TEST(engine.calls > 0u);
 }
