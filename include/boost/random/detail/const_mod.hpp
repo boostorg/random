@@ -151,7 +151,9 @@ private:
   static unsigned_type unsigned_m()
   {
       if(m == 0) {
-          return unsigned_type((std::numeric_limits<IntType>::max)()) + 1;
+          // For unsigned IntType the modulus 2^N wraps to 0, as it already does for unsigned int.
+          // The explicit cast keeps narrow types (promoted to int) from warning about it.
+          return static_cast<unsigned_type>(unsigned_type((std::numeric_limits<IntType>::max)()) + 1);
       } else {
           return unsigned_type(m);
       }
