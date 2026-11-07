@@ -117,7 +117,7 @@ int main()
     // discard() from the default state, a distance computed with the reference implementation
     e = mwc64x32();
     e.discard(1000000);
-    BOOST_TEST(e == make_engine<mwc64x32>({ UINT32_C(0x0afc4416), UINT32_C(0x2a3869bb) }));
+    BOOST_TEST(e == make_engine<mwc64x32>({ UINT32_C(0x8dd366bf), UINT32_C(0x8fb562ee) }));
 
     check_discard(start);
     check_discard(mwc64x32(42));
@@ -127,16 +127,12 @@ int main()
     check_streaming(start);
     check_short_seed<mwc64x32>();
 
-    // Seeding with an integer: the lower half of a SplitMix output, and carry one
-    {
-        uint64_t s = 42;
-        uint64_t w = (s += UINT64_C(0x9E3779B97F4A7C15));
-        w = (w ^ (w >> 30)) * UINT64_C(0xBF58476D1CE4E5B9);
-        w = (w ^ (w >> 27)) * UINT64_C(0x94D049BB133111EB);
-        w ^= w >> 31;
-        BOOST_TEST(mwc64x32(42) == make_engine<mwc64x32>({ static_cast<uint32_t>(w), 1 }));
-        BOOST_TEST(mwc64x32() == mwc64x32(0));
-    }
+    // Seeding with an integer: SplitMix fills the digits and then the carry
+    // (32-bit values take the lower and then the upper half of each output),
+    // whose value r is mapped to 1 + (r * (a - 2) >> 32); state computed with
+    // the reference implementation
+    BOOST_TEST(mwc64x32(42) == make_engine<mwc64x32>({ UINT32_C(0x2feb6e95), UINT32_C(0xbdcc466c) }));
+    BOOST_TEST(mwc64x32() == mwc64x32(0));
 
     // The zero state and the states not smaller than m get carry one; the
     // other states, including the largest one, are left unchanged.
