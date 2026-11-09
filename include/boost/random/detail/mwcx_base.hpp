@@ -136,6 +136,19 @@ private:
         set_words(mwcx_mul_mod(words(), r, Derived::modulus()));
     }
 
+    // The upper half of the product of x and y.
+    static std::uint32_t mul_hi(const std::uint32_t x, const std::uint32_t y) noexcept
+    {
+        return static_cast<std::uint32_t>(static_cast<std::uint64_t>(x) * y >> 32);
+    }
+
+    static std::uint64_t mul_hi(const std::uint64_t x, const std::uint64_t y) noexcept
+    {
+        std::uint64_t hi;
+        mwcx_mul_add(x, y, 0, hi);
+        return hi;
+    }
+
     static std::uint64_t splitmix(std::uint64_t& x) noexcept
     {
         std::uint64_t z = (x += UINT64_C(0x9E3779B97F4A7C15));
@@ -154,15 +167,16 @@ public:
 
     /**
      * Seeds the generator with a user provided seed, as suggested by the
-     * reference implementation: the carry is set to one, and the digits are
-     * filled with the output of a SplitMix generator seeded with @c value
-     * (32-bit digits take the lower and then the upper half of each output).
+     * reference implementation: the digits and the carry are initialized to
+     * valid values using the output of a SplitMix generator seeded with
+     * @c value (32-bit values take the lower and then the upper half of each
+     * output).
      */
     void seed(const seed_type value) noexcept
     {
         std::uint64_t x = value;
         std::uint64_t z = 0;
-        for (std::size_t i = 0; i < K - 1; ++i)
+        for (std::size_t i = 0; i < K; ++i)
         {
             BOOST_IF_CONSTEXPR (sizeof(Digit) == sizeof(std::uint64_t))
             {
@@ -179,7 +193,11 @@ public:
             }
         }
 
-        state_[K - 1] = 1;
+        // The value r used for the carry is read as a fixed-point fraction
+        // r / 2^w in [0..1) and multiplied by a - 2, the size of the range of
+        // valid carries: the carry is 1 + (r * (a - 2) >> w), where w is the
+        // size in bits of a digit.
+        state_[K - 1] = 1 + mul_hi(state_[K - 1], Derived::a - 2);
     }
 
     /** Seeds the generator with the default seed (zero). */
@@ -189,10 +207,8 @@ public:
     }
 
     /**
-     * Sets the state of the generator to the little-endian integer formed by
-     * 32-bit values produced by @c seq.generate(). If the integer is not a
-     * valid state, that is, if it is zero or not smaller than the modulus,
-     * the carry is set to one.
+     * Initializes the digits and the carry to valid values using 32-bit
+     * values produced by @c seq.generate().
      */
     template <typename Sseq, typename std::enable_if<!std::is_convertible<Sseq, seed_type>::value, bool>::type = true>
     void seed(Sseq& seq)
@@ -206,7 +222,10 @@ public:
             w[i] = static_cast<std::uint64_t>(seeds[2 * i]) | static_cast<std::uint64_t>(seeds[2 * i + 1]) << 32;
         }
 
-        set_state(w);
+        set_words(w);
+        // The value used for the carry is mapped into the range of valid
+        // carries as in seed(value).
+        state_[K - 1] = 1 + mul_hi(state_[K - 1], Derived::a - 2);
     }
 
     /**
@@ -233,6 +252,8 @@ public:
             boost::throw_exception(std::invalid_argument("Not enough elements in call to seed."));
         }
 
+        // The values are an explicit state: unlike in seed(value) and
+        // seed(seq), the carry is not mapped into the range of valid carries.
         set_state(to_words(s, is_64()));
     }
 

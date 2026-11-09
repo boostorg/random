@@ -16,8 +16,8 @@
 
 // Values computed with the reference implementation (https://github.com/vigna/MWCPRNG)
 // from the initial states produced by the default constructor and by seed_seq
-#define BOOST_RANDOM_VALIDATION_VALUE UINT32_C(0xce976888)
-#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE UINT32_C(0xcb40dfb2)
+#define BOOST_RANDOM_VALIDATION_VALUE UINT32_C(0x9a93c2b9)
+#define BOOST_RANDOM_SEED_SEQ_VALIDATION_VALUE UINT32_C(0xaa2f804a)
 
 // Larger than the distance below which discard() steps the generator
 #define BOOST_RANDOM_DISCARD_COUNT2 1000000
